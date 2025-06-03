@@ -509,11 +509,10 @@ const PanelistSection = ({ panelists }) => {
                   {panelist.title}
                 </p>
               )}
-              {/* Centered "View Bio" button */}
               <div className="w-full flex justify-center">
                 <button
                   onClick={(e) => {
-                    e.stopPropagation(); // Prevent card click when clicking button
+                    e.stopPropagation();
                     handlePanelistClick(panelist.id);
                   }}
                   className="mt-2 text-xs text-sky-600 hover:text-sky-700 font-medium flex items-center"
@@ -1329,22 +1328,22 @@ const EventsPage = ({ setActivePage, setSelectedProject }) => {
       id: 'panelist1-forum2025',
       name: "Micah Rasmussen",
       title: "Director, Rebovich Institute for NJ Politics",
-      imageUrl: "https://placehold.co/150x150/E0F2FE/0C4A6E?text=MR&font=Lora",
-      bio: "Micah Rasmussen is the director of the Rebovich Institute for New Jersey Politics at Rider University. He has worked in the New Jersey General Assembly and managed several political campaigns. After completing his undergraduate studies at Rider under his mentor David Rebovich, the namesake of the institute he now leads, Rasmussen earned his Master of Arts in Political Science from the Eagleton Institute of Politics at Rutgers University. Rasmussen is a panelist for the state's biggest political debates-- twice so far this year in the race to elect New Jersey's next governor, and in the only debate last year between now Senator Andy Kim and First Lady Tammy Murphy. He is regularly included on New Jersey's political power and higher education influencer lists. One called him "the go-to guy for the media to comment on what's happening in New Jersey politics-- and what it means"."
+      imageUrl: "/micah.png", // Updated image path
+      bio: "Micah Rasmussen is the director of the Rebovich Institute for New Jersey Politics at Rider University. He has worked in the New Jersey General Assembly and managed several political campaigns. After completing his undergraduate studies at Rider under his mentor David Rebovich, the namesake of the institute he now leads, Rasmussen earned his Master of Arts in Political Science from the Eagleton Institute of Politics at Rutgers University. Rasmussen is a panelist for the state's biggest political debates-- twice so far this year in the race to elect New Jersey's next governor, and in the only debate last year between now Senator Andy Kim and First Lady Tammy Murphy. He is regularly included on New Jersey's political power and higher education influencer lists. One called him \"the go-to guy for the media to comment on what's happening in New Jersey politics-- and what it means\"."
     },
     {
       id: 'panelist2-forum2025',
       name: "David Matthau",
       title: "WHYY NJ Reporter",
-      imageUrl: "https://placehold.co/150x150/E0F2FE/0C4A6E?text=DM&font=Lora",
-      bio: "David Matthau is a seasoned reporter for WHYY, focusing on New Jersey news. He covers a wide range of topics, including state politics, local government, and community issues.\nHe is known for his in-depth reporting and ability to explain complex issues clearly."
+      imageUrl: "/matthau.png", // Updated image path
+      bio: "David Matthau is a WHYY New Jersey reporter covering the Statehouse and general assignments in the Garden State. Prior to joining WHYY, David was lead investigative reporter for NJ 101.5 News, winning multiple Associated Press and Society of Professional Journalists awards, the National Association of Broadcasters Service to Community Award, and contributed to the National Edward R. Murrow Best Newscast award. David is a graduate of the University of Southern California."
     },
     {
       id: 'panelist3-forum2025',
       name: "Rhea Biswas",
       title: "West Windsor HS Student & Journalist",
-      imageUrl: "https://placehold.co/150x150/E0F2FE/0C4A6E?text=RB&font=Lora",
-      bio: "Rhea Biswas is an accomplished student journalist from West Windsor High School. She brings a fresh perspective and represents the youth voice in community discussions.\nHer involvement highlights the importance of civic engagement among young people."
+      imageUrl: "/rhea.png", // Updated image path
+      bio: "Rhea Biswas is a West Windsor high school student passionate about politics and social justice, with hopes of pursuing a career in law. She regularly competes in debate competitions and Model Congress conferences, as well as writes for her school newspaper and a local newspaper, The West Windsor Voice. She is committed to transparent debate and honest discussion in order to better advocate for meaningful change in her community."
     },
   ];
 
