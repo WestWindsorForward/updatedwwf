@@ -100,13 +100,10 @@ const IconUsers = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     xmlnsXlink="http://www.w3.org/1999/xlink"
-    className="h-5 w-5" // Removed 'block', 'mx-auto', and 'text-sky-600'
-    // 'h-5 w-5' sets the size.
-    // Omitting explicit color class lets it inherit from parent.
+    className="h-5 w-5"
     viewBox="0 0 35.695 35.695"
-    fill="currentColor" // This will make the SVG use the text color of its parent.
+    fill="currentColor"
   >
-    {/* The existing path data for the users icon goes here: */}
     <g>
       <path d="M11.558,10.767c0-3.473,2.815-6.29,6.289-6.29c3.476,0,6.289,2.817,6.289,6.29c0,3.475-2.813,6.29-6.289,6.29C14.373,17.057,11.558,14.243,11.558,10.767z M35.667,22.607l-0.879-5.27c-0.158-0.954-0.961-1.754-1.896-1.984c-0.836,0.74-1.932,1.191-3.136,1.191c-1.203,0-2.3-0.452-3.135-1.191c-0.938,0.229-1.739,1.03-1.897,1.984l-0.021,0.124c-0.522-0.503-1.17-0.881-1.868-1.052c-1.33,1.176-3.072,1.896-4.987,1.896s-3.657-0.72-4.987-1.896c-0.698,0.171-1.346,0.549-1.868,1.052l-0.021-0.124c-0.158-0.954-0.962-1.754-1.897-1.984c-0.835,0.74-1.932,1.191-3.135,1.191c-1.204,0-2.3-0.452-3.136-1.191c-0.936,0.229-1.738,1.03-1.896,1.984l-0.879,5.27c-0.189,1.131,0.596,2.057,1.741,2.057h7.222l-0.548,3.283c-0.3,1.799,0.948,3.271,2.771,3.271H24.48c1.823,0,3.071-1.475,2.771-3.271l-0.548-3.283h7.222C35.071,24.662,35.855,23.738,35.667,22.607z M29.755,15.762c2.184,0,3.954-1.77,3.954-3.954c0-2.183-1.771-3.954-3.954-3.954s-3.953,1.771-3.953,3.954C25.802,13.992,27.574,15.762,29.755,15.762z M5.938,15.762c2.183,0,3.953-1.77,3.953-3.954c0-2.183-1.771-3.954-3.953-3.954c-2.184,0-3.954,1.771-3.954,3.954C1.984,13.992,3.755,15.762,5.938,15.762z" />
     </g>
@@ -122,7 +119,6 @@ const IconDotsVertical = () => (
     <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
   </svg>
 );
-// IconBriefcase is kept as it might be used elsewhere or desired for other contexts
 const IconBriefcase = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -151,7 +147,6 @@ const IconInfo = () => (
     />
   </svg>
 );
-// IconDollar is kept as it might be used elsewhere or desired for other contexts
 const IconDollar = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -174,7 +169,7 @@ const IconFacebook = () => (
   </svg>
 );
 
-const IconProfile = () => ( // Added IconProfile
+const IconProfile = () => (
   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
     <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
   </svg>
@@ -472,7 +467,7 @@ const Button = ({
   );
 };
 
-// --- Panelist Section Component (NEW) ---
+// --- Panelist Section Component ---
 const PanelistSection = ({ panelists }) => {
   const [selectedPanelistId, setSelectedPanelistId] = useState(null);
 
@@ -514,9 +509,11 @@ const PanelistSection = ({ panelists }) => {
                   {panelist.title}
                 </p>
               )}
-               <button
+              {/* Centered "View Bio" button */}
+              <div className="w-full flex justify-center">
+                <button
                   onClick={(e) => {
-                    e.stopPropagation();
+                    e.stopPropagation(); // Prevent card click when clicking button
                     handlePanelistClick(panelist.id);
                   }}
                   className="mt-2 text-xs text-sky-600 hover:text-sky-700 font-medium flex items-center"
@@ -532,6 +529,7 @@ const PanelistSection = ({ panelists }) => {
                     </svg>
                   )}
                 </button>
+              </div>
             </Card>
             {selectedPanelistId === panelist.id && (
               <div className="bg-white p-4 sm:p-5 -mt-2 rounded-b-xl shadow-lg border border-t-0 border-gray-200 animate-fadeIn">
@@ -591,7 +589,7 @@ const projectsData = [
     getInvolved:
       "Attend the forum, submit your questions for candidates, volunteer for event day support (contact us for roles like timekeeping, greeting, tech assistance), or help spread the word to your neighbors and community groups.",
     image:
-      "https://placehold.co/600x400/0A2342/FFFFFF?text=Candidate+Forum&font=Lora", // Placeholder image
+      "https://placehold.co/600x400/0A2342/FFFFFF?text=Candidate+Forum&font=Lora",
     partnerOrganizations: [
       "League of Women Voters of the Greater Princeton Area",
     ],
@@ -660,11 +658,9 @@ const HomePage = ({ setActivePage, setSelectedProject }) => {
             }}
           />
           <h1 className="text-2xl sm:text-3xl md:text-5xl font-extrabold mb-3 sm:mb-4 tracking-tight">
-            {" "}
             West Windsor Forward
           </h1>
           <p className="text-sm sm:text-md md:text-xl text-sky-200 mb-6 sm:mb-8 max-w-3xl mx-auto">
-            {" "}
             A dedicated coalition of residents igniting positive change and
             working collaboratively to build a better future for West Windsor.
           </p>
@@ -672,7 +668,7 @@ const HomePage = ({ setActivePage, setSelectedProject }) => {
             <Button
               onClick={() => {
                 setSelectedProject(null);
-                setActivePage("About"); // Changed from "Mission" to "About"
+                setActivePage("About");
               }}
               className="w-full sm:w-auto text-xs sm:text-sm px-5 py-2 sm:px-6 sm:py-2.5"
               icon={<IconChevronRight />}
@@ -1328,27 +1324,26 @@ const ProjectDetailPage = ({ project, setActivePage, setSelectedProject }) => {
 };
 
 const EventsPage = ({ setActivePage, setSelectedProject }) => {
-  // Define panelist data (example for the first event)
   const eventPanelistsForum2025 = [
     {
       id: 'panelist1-forum2025',
       name: "Micah Rasmussen",
       title: "Director, Rebovich Institute for NJ Politics",
-      imageUrl: "https://placehold.co/150x150/E0F2FE/0C4A6E?text=MR&font=Lora", // Replace with actual image URL if available
+      imageUrl: "https://placehold.co/150x150/E0F2FE/0C4A6E?text=MR&font=Lora",
       bio: "Micah Rasmussen is the Director of the Rebovich Institute for New Jersey Politics at Rider University. He has extensive experience in New Jersey government and politics, having served in various roles including as a press secretary and communications director.\nHis insights are frequently sought by media outlets covering the New Jersey political scene."
     },
     {
       id: 'panelist2-forum2025',
       name: "David Matthau",
       title: "WHYY NJ Reporter",
-      imageUrl: "https://placehold.co/150x150/E0F2FE/0C4A6E?text=DM&font=Lora", // Replace with actual image URL if available
+      imageUrl: "https://placehold.co/150x150/E0F2FE/0C4A6E?text=DM&font=Lora",
       bio: "David Matthau is a seasoned reporter for WHYY, focusing on New Jersey news. He covers a wide range of topics, including state politics, local government, and community issues.\nHe is known for his in-depth reporting and ability to explain complex issues clearly."
     },
     {
       id: 'panelist3-forum2025',
       name: "Rhea Biswas",
       title: "West Windsor HS Student & Journalist",
-      imageUrl: "https://placehold.co/150x150/E0F2FE/0C4A6E?text=RB&font=Lora", // Replace with actual image URL if available
+      imageUrl: "https://placehold.co/150x150/E0F2FE/0C4A6E?text=RB&font=Lora",
       bio: "Rhea Biswas is an accomplished student journalist from West Windsor High School. She brings a fresh perspective and represents the youth voice in community discussions.\nHer involvement highlights the importance of civic engagement among young people."
     },
   ];
@@ -1365,7 +1360,7 @@ const EventsPage = ({ setActivePage, setSelectedProject }) => {
         "A non-partisan candidate forum for the 2025 West Windsor Township elections for Mayor and Council. This event marks the return of a vital voter tool, enhanced with experienced panelists, an in-person audience, and live-streaming for expanded access.",
       details: [
         "Positions: Mayor of West Windsor Township, 2 seats on West Windsor Township Council.",
-        "Panelists: Micah Rasmussen (Director, Rebovich Institute for NJ Politics), David Matthau (WHYY NJ Reporter), Rhea Biswas (West Windsor HS Student & Journalist).", // This text can remain as a summary
+        "Panelists: Micah Rasmussen (Director, Rebovich Institute for NJ Politics), David Matthau (WHYY NJ Reporter), Rhea Biswas (West Windsor HS Student & Journalist).",
         "Format: Panelist Q&A, Town-hall style Q&A with audience, Informal meet-and-greet.",
         "Goal: To allow voters to hear from candidates, understand their platforms, and ask questions on important local issues.",
       ],
@@ -1375,10 +1370,10 @@ const EventsPage = ({ setActivePage, setSelectedProject }) => {
         "This is your opportunity to become an informed and empowered voter! Hear directly from candidates, get answers to your questions, engage with the community, and have one-on-one discussions.",
       volunteerInfo:
         "Volunteers needed for set-up, timekeeping, ticket verification, camera operation, live stream operation. Contact us to help make this event a success!",
-      image: "2025 Forum Graphic (2).png", // Placeholder image
+      image: "2025 Forum Graphic (2).png",
       isLiveStream: true,
       relatedProjectId: 1,
-      panelists: eventPanelistsForum2025, // Assigning the panelists data to this event
+      panelists: eventPanelistsForum2025,
     },
   ];
 
@@ -1415,7 +1410,7 @@ const EventsPage = ({ setActivePage, setSelectedProject }) => {
           let [hourMinute, period] = timeStrWithPeriod.split(/\s+/);
           let [hour, minute] = hourMinute.split(":").map(Number);
           if (period.toUpperCase() === "PM" && hour < 12) hour += 12;
-          if (period.toUpperCase() === "AM" && hour === 12) hour = 0; // Midnight case
+          if (period.toUpperCase() === "AM" && hour === 12) hour = 0;
           return `${String(hour).padStart(2, "0")}${String(minute).padStart(
             2,
             "0"
@@ -1425,7 +1420,6 @@ const EventsPage = ({ setActivePage, setSelectedProject }) => {
         if (timeMatches.length > 1) {
           endTimeStr = formatTime(timeMatches[1]);
         } else {
-          // Default to 2 hour duration if only start time is found
           let startHour = parseInt(startTimeStr.substring(0, 2));
           let endHour = (startHour + 2) % 24;
           endTimeStr = `${String(endHour).padStart(
@@ -1517,7 +1511,7 @@ const EventsPage = ({ setActivePage, setSelectedProject }) => {
       {events.map((event) => (
         <Card
           key={event.id}
-          className="mb-10 sm:mb-12" // Removed flex classes from outer card for PanelistSection flow
+          className="mb-10 sm:mb-12"
           hasDotPattern
         >
           <div className="lg:flex lg:flex-row-reverse lg:space-x-reverse lg:space-x-6 md:space-x-8">
@@ -1560,7 +1554,7 @@ const EventsPage = ({ setActivePage, setSelectedProject }) => {
                 {event.description}
               </p>
 
-              {event.id === 1 && ( // Specific to the Candidate Forum event
+              {event.id === 1 && (
                 <div className="mt-3 mb-4 sm:mb-6 flex flex-col sm:flex-row flex-wrap gap-2">
                   <Button
                     onClick={() => downloadICSFile(event)}
@@ -1626,10 +1620,9 @@ const EventsPage = ({ setActivePage, setSelectedProject }) => {
                   </Button>
                 </div>
               )}
-            </div> {/* End of lg:w-3/5 for main event textual content */}
-          </div> {/* End of lg:flex for image and main text */}
+            </div>
+          </div>
 
-          {/* Panelist Section Integrated Here */}
           {event.panelists && event.panelists.length > 0 && (
             <div className="mt-6 sm:mt-8 border-t border-slate-200 pt-6 sm:pt-8">
               <PanelistSection panelists={event.panelists} />
@@ -1893,7 +1886,7 @@ const ContactPage = () => {
 function App() {
   const initialState = window.getInitialPageFromURL
     ? window.getInitialPageFromURL()
-    : { page: "Home", projectSlug: null }; // Fallback if not defined
+    : { page: "Home", projectSlug: null };
   const [activePage, setActivePage] = useState(initialState.page);
   const [selectedProject, setSelectedProject] = useState(() => {
     if (initialState.projectSlug) {
@@ -1916,7 +1909,7 @@ function App() {
 
   useEffect(() => {
     if (window.handleRouteChange) {
-        window.originalHandleRouteChange = window.handleRouteChange; // Save original if exists
+        window.originalHandleRouteChange = window.handleRouteChange;
         window.handleRouteChange = (page, projectSlug) => {
             setActivePage(page);
             if (projectSlug) {
@@ -1930,7 +1923,7 @@ function App() {
 
     return () => {
         if (window.originalHandleRouteChange) {
-            window.handleRouteChange = window.originalHandleRouteChange; // Restore original
+            window.handleRouteChange = window.originalHandleRouteChange;
             delete window.originalHandleRouteChange;
         } else if (window.handleRouteChange) {
             delete window.handleRouteChange;
@@ -2004,12 +1997,7 @@ function App() {
 
 export default App;
 
-// Global styles (ensure this part is correctly handled in your project, typically in an index.html or via a bundler)
-// For a simple create-react-app or similar, you might put these in index.css or App.css
-// and import them, rather than manipulating document.head directly in a component file.
-// However, I'm keeping it as provided for now.
-
-if (typeof window !== 'undefined') { // Ensure this runs only in browser
+if (typeof window !== 'undefined') {
     const styleSheet = document.createElement("style");
     styleSheet.type = "text/css";
     styleSheet.innerText = `
@@ -2041,7 +2029,6 @@ if (typeof window !== 'undefined') { // Ensure this runs only in browser
         animation: pulse-slow 5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
       }
 
-      /* Print styles adjusted for clarity */
       @media print {
         body {
           font-family: 'Times New Roman', Times, serif;
@@ -2053,7 +2040,7 @@ if (typeof window !== 'undefined') { // Ensure this runs only in browser
         .print\\:bg-white { background-color: #fff !important; }
         .container { max-width: 100% !important; padding-left: 0.5in !important; padding-right: 0.5in !important; margin-left: auto; margin-right: auto; }
         .shadow-lg, .shadow-xl, .shadow-2xl, .shadow-md { box-shadow: none !important; }
-        .border, .border-l-4, .border-t { border-color: #ccc !important; } /* Added border-t for consistency */
+        .border, .border-l-4, .border-t { border-color: #ccc !important; }
         .bg-slate-50, .bg-sky-50, .bg-green-50, .bg-red-100, .bg-gradient-to-br, .bg-slate-900, .bg-sky-800, .bg-indigo-900, .bg-slate-800 {
             background-image: none !important;
             background-color: #fff !important;
@@ -2061,7 +2048,7 @@ if (typeof window !== 'undefined') { // Ensure this runs only in browser
             print-color-adjust: exact;
         }
         .text-sky-700, .text-green-700, .text-red-700, .text-slate-800, .text-slate-900, .text-slate-700, .text-slate-600 { color: #000 !important; }
-        .text-white, .text-gray-300, .text-gray-400, .text-sky-200, .text-gray-700 { color: #333 !important; } /* .text-gray-700 adjusted for better print visibility */
+        .text-white, .text-gray-300, .text-gray-400, .text-sky-200, .text-gray-700 { color: #333 !important; }
 
         img { max-width: 100% !important; page-break-inside: avoid; }
         a { text-decoration: none; color: #0000EE; }
@@ -2076,7 +2063,7 @@ if (typeof window !== 'undefined') { // Ensure this runs only in browser
           font-size: 9pt;
           color: #555;
         }
-        .card, section > div > div, article, .PanelistSection > div > div { page-break-inside: avoid; } /* Added PanelistSection to avoid breaks */
+        .card, section > div > div, article, .PanelistSection > div > div { page-break-inside: avoid; }
         button {
           border: 1px solid #ccc !important;
           background-color: #eee !important;
@@ -2094,7 +2081,6 @@ if (typeof window !== 'undefined') { // Ensure this runs only in browser
       "https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap";
     document.head.appendChild(fontLinkLora);
 
-    // Mocking window functions if they are not present (for environments where this code might be tested outside full browser context)
     if (!window.getInitialPageFromURL) {
         window.getInitialPageFromURL = () => ({ page: "Home", projectSlug: null });
     }
