@@ -1253,7 +1253,7 @@ const EventsPage = ({ setActivePage, setSelectedProject }) => {
       date: "Thursday, September 25th, 2025",
       time: "Approximately 7:00 PM - 9:15 PM",
       location:
-        "Kelsey Theatre @ Mercer County Community College, West Windsor, NJ",
+        <a href=“https://https://www.google.com/maps/place/Kelsey+Theatre/@40.2548034,-74.6531813,17z/data=!3m2!4b1!5s0x89c3e1d776f10993:0xe2320e123e7ca370!4m6!3m5!1s0x89c3e1d71420e9af:0xfe334cedd3e03312!8m2!3d40.2548034!4d-74.6506064!16s%2Fm%2F0khm087?entry=ttu&g_ep=EgoyMDI1MDUyOC4wIKXMDSoASAFQAw%3D%3D” target=“_blank”>Kelsey Theatre @ Mercer County Community College, West Windsor, NJ</a>
       description:
         "A non-partisan candidate forum for the 2025 West Windsor Township elections for Mayor and Council. This event marks the return of a vital voter tool, enhanced with experienced panelists, an in-person audience, and live-streaming for expanded access.",
       details: [
