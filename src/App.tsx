@@ -344,11 +344,11 @@ const Navbar = ({
                 <button
                   onClick={() => handleMobileNav(item)}
                   className={`w-full text-left px-3 py-2.5 rounded-md text-sm font-medium transition-all duration-150 ease-in-out
-                                      ${
-                                        activePage === item && !selectedProject
-                                          ? "bg-sky-500 text-white"
-                                          : "text-gray-300 hover:bg-sky-600 hover:text-white"
-                                      }`}
+                                        ${
+                                          activePage === item && !selectedProject
+                                            ? "bg-sky-500 text-white"
+                                            : "text-gray-300 hover:bg-sky-600 hover:text-white"
+                                        }`}
                 >
                   {item}
                 </button>
@@ -384,18 +384,11 @@ const Footer = () => {
         </p>
         <div className="flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-4 mb-3 sm:mb-4 text-xs sm:text-sm">
           <a
-            href="mailto:emailparth11@gmail.com"
+            href="mailto:contact@westwindsorforward.org"
             className="hover:text-sky-400 transition-colors flex items-center"
           >
             <IconMail />
-            <span className="ml-2">emailparth11@gmail.com</span>{" "}
-          </a>
-          <a
-            href="mailto:darshan.chids@gmail.com"
-            className="hover:text-sky-400 transition-colors flex items-center"
-          >
-            <IconMail />
-            <span className="ml-2">darshan.chids@gmail.com</span>{" "}
+            <span className="ml-2">contact@westwindsorforward.org</span>{" "}
           </a>
         </div>
         <div className="flex justify-center items-center space-x-4 mt-4">
@@ -519,14 +512,14 @@ const PanelistSection = ({ panelists }) => {
                 >
                   {selectedPanelistId === panelist.id ? 'Hide Bio' : 'View Bio'}
                   {selectedPanelistId === panelist.id ? (
-                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
-                       <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" />
-                     </svg>
-                  ) : (
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                    </svg>
-                  )}
+                       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                           <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" />
+                       </svg>
+                   ) : (
+                       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                         <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                       </svg>
+                   )}
                 </button>
               </div>
             </Card>
@@ -1672,7 +1665,7 @@ const ContactPage = () => {
   };
   const [formData, setFormData] = useState(initialFormData);
   const [result, setResult] = useState("");
-  const web3FormsAccessKey = "ccb9ef54-31b7-4397-9eb8-ff8d3b587265";
+  const web3FormsAccessKey = "ccb9ef54-31b7-4397-9eb8-ff8d3b587265"; // Replace with your actual access key
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -1749,23 +1742,15 @@ const ContactPage = () => {
               <IconMail className="text-sky-600 mr-2 sm:mr-3 mt-0.5 sm:mt-1 flex-shrink-0 h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6" />
               <div>
                 <strong className="text-slate-700 text-xs sm:text-sm md:text-base">
-                  Emails:
+                  Email:
                 </strong>
                 <ul className="list-none text-gray-600 mt-1 space-y-1 text-2xs sm:text-xs md:text-sm">
                   <li>
                     <a
-                      href="mailto:emailparth11@gmail.com"
+                      href="mailto:contact@westwindsorforward.org"
                       className="hover:text-sky-500 transition-colors"
                     >
-                      Parth Gupta: emailparth11@gmail.com
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="mailto:darshan.chids@gmail.com"
-                      className="hover:text-sky-500 transition-colors"
-                    >
-                      Darshan Chidambaram: darshan.chids@gmail.com
+                      contact@westwindsorforward.org
                     </a>
                   </li>
                 </ul>
