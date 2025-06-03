@@ -1268,7 +1268,7 @@ const EventsPage = ({ setActivePage, setSelectedProject }) => {
         "This is your opportunity to become an informed and empowered voter! Hear directly from candidates, get answers to your questions, engage with the community, and have one-on-one discussions.",
       volunteerInfo:
         "Volunteers needed for set-up, timekeeping, ticket verification, camera operation, live stream operation. Contact us to help make this event a success!",
-      image: "2025 Forum Graphic.png", // Placeholder image
+      image: "2025 Forum Graphic (2).png", // Placeholder image
       isLiveStream: true,
       relatedProjectId: 1,
     },
