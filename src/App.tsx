@@ -466,6 +466,80 @@ const Button = ({
   );
 };
 
+const PanelistSection = ({ panelists }) => {
+  const [selectedPanelistId, setSelectedPanelistId] = useState(null);
+
+  const handlePanelistClick = (panelistId) => {
+    setSelectedPanelistId(selectedPanelistId === panelistId ? null : panelistId);
+  };
+
+  if (!panelists || panelists.length === 0) {
+    return null; // Don't render anything if there are no panelists
+  }
+
+  return (
+    <div className="my-8 sm:my-10">
+      <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 mb-6 sm:mb-8 text-center">
+        Meet the Panelists
+      </h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
+        {panelists.map((panelist) => (
+          <div key={panelist.id} className="flex flex-col">
+            <Card
+              noHoverEffect={selectedPanelistId === panelist.id} // Optional: reduce hover if bio is open
+              className={`flex flex-col text-center items-center p-4 sm:p-5 transition-all duration-300 ${selectedPanelistId === panelist.id ? 'ring-2 ring-sky-500 shadow-xl' : 'hover:shadow-xl'}`}
+              onClick={() => handlePanelistClick(panelist.id)}
+            >
+              <img
+                src={panelist.imageUrl || `https://placehold.co/150x150/E0F2FE/0C4A6E?text=<span class="math-inline">\{panelist\.name\.substring\(0,1\)\}</span>{panelist.name.split(' ')[1] ? panelist.name.split(' ')[1].substring(0,1) : ''}&font=Lora`}
+                alt={panelist.name}
+                className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full mx-auto mb-3 sm:mb-4 border-4 border-sky-200 group-hover:border-sky-400 transition-colors object-cover shadow-sm"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = `https://placehold.co/150x150/CCCCCC/FFFFFF?text=Panelist&font=Lora`;
+                }}
+              />
+              <h3 className="text-md sm:text-lg font-semibold text-sky-700">
+                {panelist.name}
+              </h3>
+              {panelist.title && (
+                <p className="text-xs sm:text-sm text-slate-600 mb-1 sm:mb-2">
+                  {panelist.title}
+                </p>
+              )}
+               <button
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent card click when clicking button
+                    handlePanelistClick(panelist.id);
+                  }}
+                  className="mt-2 text-xs text-sky-600 hover:text-sky-700 font-medium flex items-center"
+                >
+                  {selectedPanelistId === panelist.id ? 'Hide Bio' : 'View Bio'}
+                  {selectedPanelistId === panelist.id ? (
+                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                       <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" />
+                     </svg>
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                  )}
+                </button>
+            </Card>
+            {selectedPanelistId === panelist.id && (
+              <div className="bg-white p-4 sm:p-5 -mt-2 rounded-b-xl shadow-lg border border-t-0 border-gray-200 animate-fadeIn">
+                <p className="text-xs sm:text-sm text-gray-700 leading-relaxed whitespace-pre-line">
+                  {panelist.bio}
+                </p>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 // --- Project Data ---
 const projectsData = [
   {
@@ -1246,6 +1320,32 @@ const ProjectDetailPage = ({ project, setActivePage, setSelectedProject }) => {
 };
 
 const EventsPage = ({ setActivePage, setSelectedProject }) => {
+  const EventsPage = ({ setActivePage, setSelectedProject }) => {
+  // --- ADD PANELISTS DATA FOR YOUR EVENT(S) HERE ---
+  const eventPanelistsForum2025 = [
+    {
+      id: 'panelist1-forum2025', // Make IDs unique if you have multiple events with panelists
+      name: "Micah Rasmussen",
+      title: "Director, Rebovich Institute for NJ Politics",
+      imageUrl: "https://placehold.co/150x150/E0F2FE/0C4A6E?text=MR&font=Lora", // Replace with actual image URL
+      bio: "Micah Rasmussen is the Director of the Rebovich Institute for New Jersey Politics at Rider University. He has extensive experience in New Jersey government and politics, having served in various roles including as a press secretary and communications director.\nHis insights are frequently sought by media outlets covering the New Jersey political scene."
+    },
+    {
+      id: 'panelist2-forum2025',
+      name: "David Matthau",
+      title: "WHYY NJ Reporter",
+      imageUrl: "https://placehold.co/150x150/E0F2FE/0C4A6E?text=DM&font=Lora", // Replace with actual image URL
+      bio: "David Matthau is a seasoned reporter for WHYY, focusing on New Jersey news. He covers a wide range of topics, including state politics, local government, and community issues.\nHe is known for his in-depth reporting and ability to explain complex issues clearly."
+    },
+    {
+      id: 'panelist3-forum2025',
+      name: "Rhea Biswas",
+      title: "West Windsor HS Student & Journalist",
+      imageUrl: "https://placehold.co/150x150/E0F2FE/0C4A6E?text=RB&font=Lora", // Replace with actual image URL
+      bio: "Rhea Biswas is an accomplished student journalist from West Windsor High School. She brings a fresh perspective and represents the youth voice in community discussions.\nHer involvement highlights the importance of civic engagement among young people."
+    },
+  ];
+  // --- END OF PANELISTS DATA ---
   const events = [
     {
       id: 1,
@@ -1525,6 +1625,11 @@ const EventsPage = ({ setActivePage, setSelectedProject }) => {
                   Contact to Volunteer
                 </Button>
               </div>
+          {event.panelists && event.panelists.length > 0 && (
+  <div className="mt-6 sm:mt-8 border-t border-slate-200 pt-6 sm:pt-8"> {/* This div adds spacing and an optional top border */}
+    <PanelistSection panelists={event.panelists} />
+  </div>
+)}
             )}
             {event.relatedProjectId && (
               <Button
