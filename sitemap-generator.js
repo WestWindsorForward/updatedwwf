@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Your website's base URL
-const BASE_URL = 'https://yoursite.com'; // Replace with your actual domain
+const BASE_URL = 'https://www.westwindsorforward.org/'; // Replace with your actual domain
 
 // Your project data (copy from your React code)
 const projectsData = [
