@@ -174,6 +174,12 @@ const IconFacebook = () => (
   </svg>
 );
 
+const IconProfile = () => ( // Added IconProfile
+  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+  </svg>
+);
+
 // --- Hamburger Menu Icons ---
 const IconMenu = () => (
   <svg
@@ -343,11 +349,11 @@ const Navbar = ({
                 <button
                   onClick={() => handleMobileNav(item)}
                   className={`w-full text-left px-3 py-2.5 rounded-md text-sm font-medium transition-all duration-150 ease-in-out
-                                    ${
-                                      activePage === item && !selectedProject
-                                        ? "bg-sky-500 text-white"
-                                        : "text-gray-300 hover:bg-sky-600 hover:text-white"
-                                    }`}
+                                      ${
+                                        activePage === item && !selectedProject
+                                          ? "bg-sky-500 text-white"
+                                          : "text-gray-300 hover:bg-sky-600 hover:text-white"
+                                      }`}
                 >
                   {item}
                 </button>
@@ -466,6 +472,7 @@ const Button = ({
   );
 };
 
+// --- Panelist Section Component (NEW) ---
 const PanelistSection = ({ panelists }) => {
   const [selectedPanelistId, setSelectedPanelistId] = useState(null);
 
@@ -474,7 +481,7 @@ const PanelistSection = ({ panelists }) => {
   };
 
   if (!panelists || panelists.length === 0) {
-    return null; // Don't render anything if there are no panelists
+    return null;
   }
 
   return (
@@ -486,12 +493,12 @@ const PanelistSection = ({ panelists }) => {
         {panelists.map((panelist) => (
           <div key={panelist.id} className="flex flex-col">
             <Card
-              noHoverEffect={selectedPanelistId === panelist.id} // Optional: reduce hover if bio is open
+              noHoverEffect={selectedPanelistId === panelist.id}
               className={`flex flex-col text-center items-center p-4 sm:p-5 transition-all duration-300 ${selectedPanelistId === panelist.id ? 'ring-2 ring-sky-500 shadow-xl' : 'hover:shadow-xl'}`}
               onClick={() => handlePanelistClick(panelist.id)}
             >
               <img
-                src={panelist.imageUrl || `https://placehold.co/150x150/E0F2FE/0C4A6E?text=<span class="math-inline">\{panelist\.name\.substring\(0,1\)\}</span>{panelist.name.split(' ')[1] ? panelist.name.split(' ')[1].substring(0,1) : ''}&font=Lora`}
+                src={panelist.imageUrl || `https://placehold.co/150x150/E0F2FE/0C4A6E?text=${panelist.name.substring(0,1)}${panelist.name.split(' ')[1] ? panelist.name.split(' ')[1].substring(0,1) : ''}&font=Lora`}
                 alt={panelist.name}
                 className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full mx-auto mb-3 sm:mb-4 border-4 border-sky-200 group-hover:border-sky-400 transition-colors object-cover shadow-sm"
                 onError={(e) => {
@@ -509,7 +516,7 @@ const PanelistSection = ({ panelists }) => {
               )}
                <button
                   onClick={(e) => {
-                    e.stopPropagation(); // Prevent card click when clicking button
+                    e.stopPropagation();
                     handlePanelistClick(panelist.id);
                   }}
                   className="mt-2 text-xs text-sky-600 hover:text-sky-700 font-medium flex items-center"
@@ -539,6 +546,7 @@ const PanelistSection = ({ panelists }) => {
     </div>
   );
 };
+
 
 // --- Project Data ---
 const projectsData = [
@@ -1320,32 +1328,31 @@ const ProjectDetailPage = ({ project, setActivePage, setSelectedProject }) => {
 };
 
 const EventsPage = ({ setActivePage, setSelectedProject }) => {
-  const EventsPage = ({ setActivePage, setSelectedProject }) => {
-  // --- ADD PANELISTS DATA FOR YOUR EVENT(S) HERE ---
+  // Define panelist data (example for the first event)
   const eventPanelistsForum2025 = [
     {
-      id: 'panelist1-forum2025', // Make IDs unique if you have multiple events with panelists
+      id: 'panelist1-forum2025',
       name: "Micah Rasmussen",
       title: "Director, Rebovich Institute for NJ Politics",
-      imageUrl: "https://placehold.co/150x150/E0F2FE/0C4A6E?text=MR&font=Lora", // Replace with actual image URL
+      imageUrl: "https://placehold.co/150x150/E0F2FE/0C4A6E?text=MR&font=Lora", // Replace with actual image URL if available
       bio: "Micah Rasmussen is the Director of the Rebovich Institute for New Jersey Politics at Rider University. He has extensive experience in New Jersey government and politics, having served in various roles including as a press secretary and communications director.\nHis insights are frequently sought by media outlets covering the New Jersey political scene."
     },
     {
       id: 'panelist2-forum2025',
       name: "David Matthau",
       title: "WHYY NJ Reporter",
-      imageUrl: "https://placehold.co/150x150/E0F2FE/0C4A6E?text=DM&font=Lora", // Replace with actual image URL
+      imageUrl: "https://placehold.co/150x150/E0F2FE/0C4A6E?text=DM&font=Lora", // Replace with actual image URL if available
       bio: "David Matthau is a seasoned reporter for WHYY, focusing on New Jersey news. He covers a wide range of topics, including state politics, local government, and community issues.\nHe is known for his in-depth reporting and ability to explain complex issues clearly."
     },
     {
       id: 'panelist3-forum2025',
       name: "Rhea Biswas",
       title: "West Windsor HS Student & Journalist",
-      imageUrl: "https://placehold.co/150x150/E0F2FE/0C4A6E?text=RB&font=Lora", // Replace with actual image URL
+      imageUrl: "https://placehold.co/150x150/E0F2FE/0C4A6E?text=RB&font=Lora", // Replace with actual image URL if available
       bio: "Rhea Biswas is an accomplished student journalist from West Windsor High School. She brings a fresh perspective and represents the youth voice in community discussions.\nHer involvement highlights the importance of civic engagement among young people."
     },
   ];
-  // --- END OF PANELISTS DATA ---
+
   const events = [
     {
       id: 1,
@@ -1358,7 +1365,7 @@ const EventsPage = ({ setActivePage, setSelectedProject }) => {
         "A non-partisan candidate forum for the 2025 West Windsor Township elections for Mayor and Council. This event marks the return of a vital voter tool, enhanced with experienced panelists, an in-person audience, and live-streaming for expanded access.",
       details: [
         "Positions: Mayor of West Windsor Township, 2 seats on West Windsor Township Council.",
-        "Panelists: Micah Rasmussen (Director, Rebovich Institute for NJ Politics), David Matthau (WHYY NJ Reporter), Rhea Biswas (West Windsor HS Student & Journalist).",
+        "Panelists: Micah Rasmussen (Director, Rebovich Institute for NJ Politics), David Matthau (WHYY NJ Reporter), Rhea Biswas (West Windsor HS Student & Journalist).", // This text can remain as a summary
         "Format: Panelist Q&A, Town-hall style Q&A with audience, Informal meet-and-greet.",
         "Goal: To allow voters to hear from candidates, understand their platforms, and ask questions on important local issues.",
       ],
@@ -1371,23 +1378,14 @@ const EventsPage = ({ setActivePage, setSelectedProject }) => {
       image: "2025 Forum Graphic (2).png", // Placeholder image
       isLiveStream: true,
       relatedProjectId: 1,
+      panelists: eventPanelistsForum2025, // Assigning the panelists data to this event
     },
   ];
 
   const generateICSData = (eventData) => {
     const monthMap = {
-      January: "01",
-      February: "02",
-      March: "03",
-      April: "04",
-      May: "05",
-      June: "06",
-      July: "07",
-      August: "08",
-      September: "09",
-      October: "10",
-      November: "11",
-      December: "12",
+      January: "01", February: "02", March: "03", April: "04", May: "05", June: "06",
+      July: "07", August: "08", September: "09", October: "10", November: "11", December: "12",
     };
 
     let startDateStr = "20250925";
@@ -1417,7 +1415,7 @@ const EventsPage = ({ setActivePage, setSelectedProject }) => {
           let [hourMinute, period] = timeStrWithPeriod.split(/\s+/);
           let [hour, minute] = hourMinute.split(":").map(Number);
           if (period.toUpperCase() === "PM" && hour < 12) hour += 12;
-          if (period.toUpperCase() === "AM" && hour === 12) hour = 0;
+          if (period.toUpperCase() === "AM" && hour === 12) hour = 0; // Midnight case
           return `${String(hour).padStart(2, "0")}${String(minute).padStart(
             2,
             "0"
@@ -1427,6 +1425,7 @@ const EventsPage = ({ setActivePage, setSelectedProject }) => {
         if (timeMatches.length > 1) {
           endTimeStr = formatTime(timeMatches[1]);
         } else {
+          // Default to 2 hour duration if only start time is found
           let startHour = parseInt(startTimeStr.substring(0, 2));
           let endHour = (startHour + 2) % 24;
           endTimeStr = `${String(endHour).padStart(
@@ -1518,120 +1517,127 @@ const EventsPage = ({ setActivePage, setSelectedProject }) => {
       {events.map((event) => (
         <Card
           key={event.id}
-          className="mb-10 sm:mb-12 lg:flex lg:flex-row-reverse lg:space-x-reverse lg:space-x-6 md:space-x-8"
+          className="mb-10 sm:mb-12" // Removed flex classes from outer card for PanelistSection flow
           hasDotPattern
         >
-          <div className="lg:w-2/5 mb-4 sm:mb-6 lg:mb-0">
-            <img
-              src={event.image}
-              alt={event.title}
-              className="rounded-lg shadow-md w-full h-auto object-cover aspect-video sm:aspect-[4/3]"
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = `https://placehold.co/600x350/CCCCCC/FFFFFF?text=Event+Image&font=Lora`;
-              }}
-            />
-          </div>
-          <div className="lg:w-3/5">
-            <h2 className="text-lg sm:text-xl font-semibold text-sky-700 mb-2 sm:mb-3">
-              {event.title}
-            </h2>
-            <div className="flex flex-wrap items-center text-slate-600 text-xs sm:text-sm mb-3 sm:mb-4 space-y-1 sm:space-y-0 sm:space-x-0 sm:space-x-3 md:space-x-4">
-              <span className="flex items-center w-full sm:w-auto">
-                <IconCalendar className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-sky-600" />
-                {event.date}
-              </span>
-              <span className="flex items-center w-full sm:w-auto">
-                <IconClock className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-sky-600" />
-                {event.time}
-              </span>
+          <div className="lg:flex lg:flex-row-reverse lg:space-x-reverse lg:space-x-6 md:space-x-8">
+            <div className="lg:w-2/5 mb-4 sm:mb-6 lg:mb-0">
+              <img
+                src={event.image}
+                alt={event.title}
+                className="rounded-lg shadow-md w-full h-auto object-cover aspect-video sm:aspect-[4/3]"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = `https://placehold.co/600x350/CCCCCC/FFFFFF?text=Event+Image&font=Lora`;
+                }}
+              />
             </div>
-            <div className="flex items-center text-slate-600 text-xs sm:text-sm mb-3 sm:mb-4">
-              <IconMapMarker className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-sky-600 flex-shrink-0" />
-              {event.location}
-            </div>
-            {event.isLiveStream && (
-              <span className="inline-block bg-red-100 text-red-700 text-[0.6rem] sm:text-xs font-semibold px-2 py-1 sm:px-2.5 sm:py-1 rounded-full mb-3 sm:mb-4 uppercase tracking-wider">
-                <span className="inline-block w-1.5 h-1.5 sm:w-2 sm:h-2 bg-red-500 rounded-full mr-1.5 sm:mr-2 animate-pulse"></span>
-                Live Stream Available
-              </span>
-            )}
-            <p className="text-gray-700 leading-relaxed mb-4 sm:mb-6 text-xs sm:text-sm md:text-base">
-              {event.description}
-            </p>
-
-            {event.id === 1 && (
-              <div className="mt-3 mb-4 sm:mb-6 flex flex-col sm:flex-row flex-wrap gap-2">
-                <Button
-                  onClick={() => downloadICSFile(event)}
-                  type="secondary"
-                  className="flex-grow sm:flex-grow-0 text-2xs sm:text-xs px-3 py-1.5"
-                  icon={<IconCalendar className="h-4 w-4" />}
-                >
-                  Add to Calendar
-                </Button>
-                <Button
-                  onClick={() =>
-                    window.open(
-                      "/WWF_Candidate_Forum_Public_Release.pdf",
-                      "_blank"
-                    )
-                  }
-                  type="secondary"
-                  className="flex-grow sm:flex-grow-0 text-2xs sm:text-xs px-3 py-1.5"
-                  icon={<IconInfo className="h-4 w-4 mr-0 sm:mr-0" />}
-                >
-                  View PDF Release
-                </Button>
+            <div className="lg:w-3/5">
+              <h2 className="text-lg sm:text-xl font-semibold text-sky-700 mb-2 sm:mb-3">
+                {event.title}
+              </h2>
+              <div className="flex flex-wrap items-center text-slate-600 text-xs sm:text-sm mb-3 sm:mb-4 space-y-1 sm:space-y-0 sm:space-x-0 sm:space-x-3 md:space-x-4">
+                <span className="flex items-center w-full sm:w-auto">
+                  <IconCalendar className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-sky-600" />
+                  {event.date}
+                </span>
+                <span className="flex items-center w-full sm:w-auto">
+                  <IconClock className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-sky-600" />
+                  {event.time}
+                </span>
               </div>
-            )}
-
-            <div className="mb-4 sm:mb-6 p-2.5 sm:p-3 md:p-4 bg-slate-50 rounded-lg border border-slate-200">
-              <h3 className="text-sm sm:text-md md:text-lg font-semibold text-slate-700 mb-1.5 sm:mb-2">
-                Event Highlights:
-              </h3>
-              <ul className="list-disc list-inside text-gray-700 space-y-1 sm:space-y-1.5 text-2xs sm:text-xs md:text-sm">
-                {event.details.map((detail, index) => (
-                  <li key={index}>{detail}</li>
-                ))}
-                <li>{event.accessibility}</li>
-              </ul>
-            </div>
-            <div className="bg-sky-50 p-2.5 sm:p-3 md:p-4 rounded-lg mb-4 sm:mb-6 border border-sky-200">
-              <h3 className="text-sm sm:text-md md:text-lg font-semibold text-sky-700 mb-1.5 sm:mb-2">
-                For Attendees:
-              </h3>
-              <p className="text-gray-700 leading-relaxed text-2xs sm:text-xs md:text-sm">
-                {event.audienceInfo}
+              <div className="flex items-center text-slate-600 text-xs sm:text-sm mb-3 sm:mb-4">
+                <IconMapMarker className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-sky-600 flex-shrink-0" />
+                {event.location}
+              </div>
+              {event.isLiveStream && (
+                <span className="inline-block bg-red-100 text-red-700 text-[0.6rem] sm:text-xs font-semibold px-2 py-1 sm:px-2.5 sm:py-1 rounded-full mb-3 sm:mb-4 uppercase tracking-wider">
+                  <span className="inline-block w-1.5 h-1.5 sm:w-2 sm:h-2 bg-red-500 rounded-full mr-1.5 sm:mr-2 animate-pulse"></span>
+                  Live Stream Available
+                </span>
+              )}
+              <p className="text-gray-700 leading-relaxed mb-4 sm:mb-6 text-xs sm:text-sm md:text-base">
+                {event.description}
               </p>
-            </div>
-            {event.volunteerInfo && (
-              <div className="bg-green-50 p-2.5 sm:p-3 md:p-4 rounded-lg border border-green-200 mb-4 sm:mb-6">
-                <h3 className="text-sm sm:text-md md:text-lg font-semibold text-green-700 mb-1.5 sm:mb-2">
-                  Volunteer Opportunities:
+
+              {event.id === 1 && ( // Specific to the Candidate Forum event
+                <div className="mt-3 mb-4 sm:mb-6 flex flex-col sm:flex-row flex-wrap gap-2">
+                  <Button
+                    onClick={() => downloadICSFile(event)}
+                    type="secondary"
+                    className="flex-grow sm:flex-grow-0 text-2xs sm:text-xs px-3 py-1.5"
+                    icon={<IconCalendar className="h-4 w-4" />}
+                  >
+                    Add to Calendar
+                  </Button>
+                  <Button
+                    onClick={() =>
+                      window.open(
+                        "/WWF_Candidate_Forum_Public_Release.pdf",
+                        "_blank"
+                      )
+                    }
+                    type="secondary"
+                    className="flex-grow sm:flex-grow-0 text-2xs sm:text-xs px-3 py-1.5"
+                    icon={<IconInfo className="h-4 w-4 mr-0 sm:mr-0" />}
+                  >
+                    View PDF Release
+                  </Button>
+                </div>
+              )}
+
+              <div className="mb-4 sm:mb-6 p-2.5 sm:p-3 md:p-4 bg-slate-50 rounded-lg border border-slate-200">
+                <h3 className="text-sm sm:text-md md:text-lg font-semibold text-slate-700 mb-1.5 sm:mb-2">
+                  Event Highlights:
+                </h3>
+                <ul className="list-disc list-inside text-gray-700 space-y-1 sm:space-y-1.5 text-2xs sm:text-xs md:text-sm">
+                  {event.details.map((detail, index) => (
+                    <li key={index}>{detail}</li>
+                  ))}
+                  <li>{event.accessibility}</li>
+                </ul>
+              </div>
+              <div className="bg-sky-50 p-2.5 sm:p-3 md:p-4 rounded-lg mb-4 sm:mb-6 border border-sky-200">
+                <h3 className="text-sm sm:text-md md:text-lg font-semibold text-sky-700 mb-1.5 sm:mb-2">
+                  For Attendees:
                 </h3>
                 <p className="text-gray-700 leading-relaxed text-2xs sm:text-xs md:text-sm">
-                  {event.volunteerInfo}
+                  {event.audienceInfo}
                 </p>
-                <Button
-                  onClick={() => {
-                    setSelectedProject(null);
-                    setActivePage("Contact");
-                  }}
-                  type="secondary"
-                  className="mt-2 sm:mt-3 text-2xs sm:text-xs px-2.5 py-1 sm:px-3 sm:py-1.5"
-                  icon={<IconMail />}
-                >
-                  Contact to Volunteer
-                </Button>
               </div>
+              {event.volunteerInfo && (
+                <div className="bg-green-50 p-2.5 sm:p-3 md:p-4 rounded-lg border border-green-200 mb-4 sm:mb-6">
+                  <h3 className="text-sm sm:text-md md:text-lg font-semibold text-green-700 mb-1.5 sm:mb-2">
+                    Volunteer Opportunities:
+                  </h3>
+                  <p className="text-gray-700 leading-relaxed text-2xs sm:text-xs md:text-sm">
+                    {event.volunteerInfo}
+                  </p>
+                  <Button
+                    onClick={() => {
+                      setSelectedProject(null);
+                      setActivePage("Contact");
+                    }}
+                    type="secondary"
+                    className="mt-2 sm:mt-3 text-2xs sm:text-xs px-2.5 py-1 sm:px-3 sm:py-1.5"
+                    icon={<IconMail />}
+                  >
+                    Contact to Volunteer
+                  </Button>
+                </div>
+              )}
+            </div> {/* End of lg:w-3/5 for main event textual content */}
+          </div> {/* End of lg:flex for image and main text */}
+
+          {/* Panelist Section Integrated Here */}
           {event.panelists && event.panelists.length > 0 && (
-  <div className="mt-6 sm:mt-8 border-t border-slate-200 pt-6 sm:pt-8"> {/* This div adds spacing and an optional top border */}
-    <PanelistSection panelists={event.panelists} />
-  </div>
-)}
-            )}
-            {event.relatedProjectId && (
+            <div className="mt-6 sm:mt-8 border-t border-slate-200 pt-6 sm:pt-8">
+              <PanelistSection panelists={event.panelists} />
+            </div>
+          )}
+
+          {event.relatedProjectId && (
+             <div className={`mt-6 sm:mt-8 pt-6 sm:pt-8 ${event.panelists && event.panelists.length > 0 ? 'border-t border-slate-200' : ''}`}>
               <Button
                 onClick={() => {
                   const project = projectsData.find(
@@ -1643,13 +1649,13 @@ const EventsPage = ({ setActivePage, setSelectedProject }) => {
                   }
                 }}
                 type="primary"
-                className="mt-2 sm:mt-3 text-2xs sm:text-xs px-2.5 py-1 sm:px-3 sm:py-1.5"
+                className="text-2xs sm:text-xs px-2.5 py-1 sm:px-3 sm:py-1.5"
                 icon={<IconInfo className="h-4 w-4 mr-0 sm:mr-0" />}
               >
                 View Related Project
               </Button>
-            )}
-          </div>
+            </div>
+          )}
         </Card>
       ))}
 
@@ -1667,7 +1673,6 @@ const EventsPage = ({ setActivePage, setSelectedProject }) => {
 };
 
 const ContactPage = () => {
-  // Corrected initialFormData to not include 'subject'
   const initialFormData = {
     name: "",
     email: "",
@@ -1685,17 +1690,14 @@ const ContactPage = () => {
     event.preventDefault();
     setResult("Sending....");
     const formElement = event.target;
-    const web3FormData = new FormData(formElement); // Contains name, email, message from form fields
+    const web3FormData = new FormData(formElement);
 
     web3FormData.append("access_key", web3FormsAccessKey);
-    // Dynamically add a subject for the email notification from web3forms
     web3FormData.append(
       "subject",
       `New Contact from ${formElement.name.value || "Website Visitor"}`
     );
 
-    // Validation using values directly from formElement or controlled state (formData)
-    // Using formData for consistency with controlled inputs
     if (!formData.name || !formData.email || !formData.message) {
       setResult("Please fill in all required fields.");
       setTimeout(() => setResult(""), 6000);
@@ -1716,8 +1718,8 @@ const ContactPage = () => {
 
       if (data.success) {
         setResult("Form Submitted Successfully");
-        formElement.reset(); // Reset native form fields
-        setFormData(initialFormData); // Reset React state
+        formElement.reset();
+        setFormData(initialFormData);
         setTimeout(() => setResult(""), 6000);
       } else {
         console.log("Error from web3forms", data);
@@ -1794,7 +1796,6 @@ const ContactPage = () => {
             </a>
           </div>
         </Card>
-        {/* This is the Card that contains the form */}
         <Card hasDotPattern>
           <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-sky-700 mb-4 sm:mb-6">
             Send Us a Message
@@ -1890,8 +1891,9 @@ const ContactPage = () => {
 
 // --- Main App Component with Routing Support ---
 function App() {
-  // Get initial page from URL instead of hardcoding "Home"
-  const initialState = window.getInitialPageFromURL();
+  const initialState = window.getInitialPageFromURL
+    ? window.getInitialPageFromURL()
+    : { page: "Home", projectSlug: null }; // Fallback if not defined
   const [activePage, setActivePage] = useState(initialState.page);
   const [selectedProject, setSelectedProject] = useState(() => {
     if (initialState.projectSlug) {
@@ -1900,35 +1902,42 @@ function App() {
     return null;
   });
 
-  // Add effect to handle URL and title updates
   useEffect(() => {
     const projectSlug = selectedProject?.slug;
     const projectTitle = selectedProject?.title;
-    
-    // Update URL
-    window.updateURL(activePage, projectSlug);
-    
-    // Update page title
-    const pageTitle = window.getPageTitle(activePage, projectTitle);
-    window.updatePageTitle(pageTitle);
+
+    if (window.updateURL) window.updateURL(activePage, projectSlug);
+    if (window.getPageTitle && window.updatePageTitle) {
+        const pageTitle = window.getPageTitle(activePage, projectTitle);
+        window.updatePageTitle(pageTitle);
+    }
+
   }, [activePage, selectedProject]);
 
-  // Add route change handler for browser navigation
   useEffect(() => {
-    window.handleRouteChange = (page, projectSlug) => {
-      setActivePage(page);
-      if (projectSlug) {
-        const project = projectsData.find(p => p.slug === projectSlug);
-        setSelectedProject(project || null);
-      } else {
-        setSelectedProject(null);
-      }
-    };
-    
+    if (window.handleRouteChange) {
+        window.originalHandleRouteChange = window.handleRouteChange; // Save original if exists
+        window.handleRouteChange = (page, projectSlug) => {
+            setActivePage(page);
+            if (projectSlug) {
+                const project = projectsData.find(p => p.slug === projectSlug);
+                setSelectedProject(project || null);
+            } else {
+                setSelectedProject(null);
+            }
+        };
+    }
+
     return () => {
-      window.handleRouteChange = null;
+        if (window.originalHandleRouteChange) {
+            window.handleRouteChange = window.originalHandleRouteChange; // Restore original
+            delete window.originalHandleRouteChange;
+        } else if (window.handleRouteChange) {
+            delete window.handleRouteChange;
+        }
     };
   }, []);
+
 
   const renderPage = () => {
     if (activePage === "ProjectDetails" && selectedProject) {
@@ -1995,86 +2004,107 @@ function App() {
 
 export default App;
 
-// Global styles
-const styleSheet = document.createElement("style");
-styleSheet.type = "text/css";
-styleSheet.innerText = `
-  body { font-family: 'Lora', Georgia, serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
-  .font-body { font-family: 'Lora', Georgia, serif; }
-  h1, h2, h3, h4, h5, h6 { font-family: 'Lora', Georgia, serif; }
-  .prose { font-family: 'Lora', Georgia, serif; } 
-  .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 { margin-bottom: 0.5em; margin-top: 1em; }
-  .prose p { margin-bottom: 1em; line-height: 1.7; }
-  .prose ul, .prose ol { margin-left: 1.5em; margin-bottom: 1em; }
-  .prose li { margin-bottom: 0.25em; }
+// Global styles (ensure this part is correctly handled in your project, typically in an index.html or via a bundler)
+// For a simple create-react-app or similar, you might put these in index.css or App.css
+// and import them, rather than manipulating document.head directly in a component file.
+// However, I'm keeping it as provided for now.
 
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-  .animate-fadeIn { animation: fadeIn 0.6s ease-out forwards; }
- 
-  @keyframes slideDown { 
-    from { opacity: 0; transform: translateY(-10px); } 
-    to { opacity: 1; transform: translateY(0); } 
-  }
-  .animate-slideDown { animation: slideDown 0.3s ease-out forwards; }
+if (typeof window !== 'undefined') { // Ensure this runs only in browser
+    const styleSheet = document.createElement("style");
+    styleSheet.type = "text/css";
+    styleSheet.innerText = `
+      body { font-family: 'Lora', Georgia, serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+      .font-body { font-family: 'Lora', Georgia, serif; }
+      h1, h2, h3, h4, h5, h6 { font-family: 'Lora', Georgia, serif; }
+      .prose { font-family: 'Lora', Georgia, serif; }
+      .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 { margin-bottom: 0.5em; margin-top: 1em; }
+      .prose p { margin-bottom: 1em; line-height: 1.7; }
+      .prose ul, .prose ol { margin-left: 1.5em; margin-bottom: 1em; }
+      .prose li { margin-bottom: 0.25em; }
 
-  .group:hover .dot-pattern-animated div div { transform: scale(1.5); opacity: 0.5; }
+      @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+      .animate-fadeIn { animation: fadeIn 0.6s ease-out forwards; }
 
-  @keyframes pulse-slow {
-    0%, 100% { opacity: 0.05; }
-    50% { opacity: 0.15; }
-  }
-  .animate-pulse-slow {
-    animation: pulse-slow 5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  }
+      @keyframes slideDown {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .animate-slideDown { animation: slideDown 0.3s ease-out forwards; }
 
-  @media print { 
-    body {
-      font-family: 'Times New Roman', Times, serif; 
-      font-size: 11pt;
-      color: #000;
-      background-color: #fff !important; 
+      .group:hover .dot-pattern-animated div div { transform: scale(1.5); opacity: 0.5; }
+
+      @keyframes pulse-slow {
+        0%, 100% { opacity: 0.05; }
+        50% { opacity: 0.15; }
+      }
+      .animate-pulse-slow {
+        animation: pulse-slow 5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      }
+
+      /* Print styles adjusted for clarity */
+      @media print {
+        body {
+          font-family: 'Times New Roman', Times, serif;
+          font-size: 11pt;
+          color: #000;
+          background-color: #fff !important;
+        }
+        .print\\:hidden { display: none !important; }
+        .print\\:bg-white { background-color: #fff !important; }
+        .container { max-width: 100% !important; padding-left: 0.5in !important; padding-right: 0.5in !important; margin-left: auto; margin-right: auto; }
+        .shadow-lg, .shadow-xl, .shadow-2xl, .shadow-md { box-shadow: none !important; }
+        .border, .border-l-4, .border-t { border-color: #ccc !important; } /* Added border-t for consistency */
+        .bg-slate-50, .bg-sky-50, .bg-green-50, .bg-red-100, .bg-gradient-to-br, .bg-slate-900, .bg-sky-800, .bg-indigo-900, .bg-slate-800 {
+            background-image: none !important;
+            background-color: #fff !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        .text-sky-700, .text-green-700, .text-red-700, .text-slate-800, .text-slate-900, .text-slate-700, .text-slate-600 { color: #000 !important; }
+        .text-white, .text-gray-300, .text-gray-400, .text-sky-200, .text-gray-700 { color: #333 !important; } /* .text-gray-700 adjusted for better print visibility */
+
+        img { max-width: 100% !important; page-break-inside: avoid; }
+        a { text-decoration: none; color: #0000EE; }
+        a[href^="http"]:not([href*="placehold.co"]):after,
+        a[href^="https"]:not([href*="placehold.co"]):after {
+          content: " (" attr(href) ")";
+          font-size: 9pt;
+          color: #555;
+        }
+        a[href^="mailto:"]:after {
+          content: " (" attr(href) ")";
+          font-size: 9pt;
+          color: #555;
+        }
+        .card, section > div > div, article, .PanelistSection > div > div { page-break-inside: avoid; } /* Added PanelistSection to avoid breaks */
+        button {
+          border: 1px solid #ccc !important;
+          background-color: #eee !important;
+          color: #000 !important;
+          padding: 4px 8px !important;
+          box-shadow: none !important;
+        }
+      }
+    `;
+    document.head.appendChild(styleSheet);
+
+    const fontLinkLora = document.createElement("link");
+    fontLinkLora.rel = "stylesheet";
+    fontLinkLora.href =
+      "https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap";
+    document.head.appendChild(fontLinkLora);
+
+    // Mocking window functions if they are not present (for environments where this code might be tested outside full browser context)
+    if (!window.getInitialPageFromURL) {
+        window.getInitialPageFromURL = () => ({ page: "Home", projectSlug: null });
     }
-    .print\\:hidden { display: none !important; } 
-    .print\\:bg-white { background-color: #fff !important; }
-    .container { max-width: 100% !important; padding-left: 0.5in !important; padding-right: 0.5in !important; margin-left: auto; margin-right: auto; }
-    .shadow-lg, .shadow-xl, .shadow-2xl, .shadow-md { box-shadow: none !important; }
-    .border, .border-l-4 { border-color: #ccc !important; }
-    .bg-slate-50, .bg-sky-50, .bg-green-50, .bg-red-100, .bg-gradient-to-br, .bg-slate-900, .bg-sky-800, .bg-indigo-900, .bg-slate-800 { 
-        background-image: none !important; 
-        background-color: #fff !important; 
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
+    if (!window.updateURL) {
+        window.updateURL = (page, projectSlug) => console.log("Mock updateURL:", page, projectSlug);
     }
-    .text-sky-700, .text-green-700, .text-red-700, .text-slate-800, .text-slate-900, .text-slate-700 { color: #000 !important; } 
-    .text-white, .text-gray-300, .text-gray-400, .text-sky-200 { color: #333 !important; }
-
-    img { max-width: 100% !important; page-break-inside: avoid; }
-    a { text-decoration: none; color: #0000EE; } 
-    a[href^="http"]:not([href*="placehold.co"]):after,
-    a[href^="https"]:not([href*="placehold.co"]):after {
-      content: " (" attr(href) ")";
-      font-size: 9pt;
-      color: #555;
+    if (!window.getPageTitle) {
+        window.getPageTitle = (page, projectTitle) => `WWF - ${projectTitle || page}`;
     }
-    a[href^="mailto:"]:after {
-      content: " (" attr(href) ")";
-      font-size: 9pt;
-      color: #555;
+    if (!window.updatePageTitle) {
+        window.updatePageTitle = (title) => console.log("Mock updatePageTitle:", title);
     }
-    .card, section > div > div, article { page-break-inside: avoid; }
-    button {
-      border: 1px solid #ccc !important;
-      background-color: #eee !important;
-      color: #000 !important;
-      padding: 4px 8px !important;
-      box-shadow: none !important;
-    }
-  }
-`;
-document.head.appendChild(styleSheet);
-
-const fontLinkLora = document.createElement("link");
-fontLinkLora.rel = "stylesheet"; // Added rel="stylesheet" for correctness
-fontLinkLora.href =
-  "https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap";
-document.head.appendChild(fontLinkLora);
+}
