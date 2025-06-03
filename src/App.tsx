@@ -1330,7 +1330,7 @@ const EventsPage = ({ setActivePage, setSelectedProject }) => {
       name: "Micah Rasmussen",
       title: "Director, Rebovich Institute for NJ Politics",
       imageUrl: "https://placehold.co/150x150/E0F2FE/0C4A6E?text=MR&font=Lora",
-      bio: "Micah Rasmussen is the Director of the Rebovich Institute for New Jersey Politics at Rider University. He has extensive experience in New Jersey government and politics, having served in various roles including as a press secretary and communications director.\nHis insights are frequently sought by media outlets covering the New Jersey political scene."
+      bio: "Micah Rasmussen is the director of the Rebovich Institute for New Jersey Politics at Rider University. He has worked in the New Jersey General Assembly and managed several political campaigns. After completing his undergraduate studies at Rider under his mentor David Rebovich, the namesake of the institute he now leads, Rasmussen earned his Master of Arts in Political Science from the Eagleton Institute of Politics at Rutgers University. Rasmussen is a panelist for the state's biggest political debates-- twice so far this year in the race to elect New Jersey's next governor, and in the only debate last year between now Senator Andy Kim and First Lady Tammy Murphy. He is regularly included on New Jersey's political power and higher education influencer lists. One called him "the go-to guy for the media to comment on what's happening in New Jersey politics-- and what it means"."
     },
     {
       id: 'panelist2-forum2025',
