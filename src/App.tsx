@@ -1253,7 +1253,7 @@ const EventsPage = ({ setActivePage, setSelectedProject }) => {
       date: "Thursday, September 25th, 2025",
       time: "Approximately 7:00 PM - 9:15 PM",
       location:
-       "Kelsey Theatre @ Mercer County Community College, West Windsor, NJ"}
+        "Kelsey Theatre @ Mercer County Community College, West Windsor, NJ",
       description:
         "A non-partisan candidate forum for the 2025 West Windsor Township elections for Mayor and Council. This event marks the return of a vital voter tool, enhanced with experienced panelists, an in-person audience, and live-streaming for expanded access.",
       details: [
@@ -1790,9 +1790,7 @@ function App() {
   const [activePage, setActivePage] = useState(initialState.page);
   const [selectedProject, setSelectedProject] = useState(() => {
     if (initialState.projectSlug) {
-      return (
-        projectsData.find((p) => p.slug === initialState.projectSlug) || null
-      );
+      return projectsData.find(p => p.slug === initialState.projectSlug) || null;
     }
     return null;
   });
@@ -1801,10 +1799,10 @@ function App() {
   useEffect(() => {
     const projectSlug = selectedProject?.slug;
     const projectTitle = selectedProject?.title;
-
+    
     // Update URL
     window.updateURL(activePage, projectSlug);
-
+    
     // Update page title
     const pageTitle = window.getPageTitle(activePage, projectTitle);
     window.updatePageTitle(pageTitle);
@@ -1815,13 +1813,13 @@ function App() {
     window.handleRouteChange = (page, projectSlug) => {
       setActivePage(page);
       if (projectSlug) {
-        const project = projectsData.find((p) => p.slug === projectSlug);
+        const project = projectsData.find(p => p.slug === projectSlug);
         setSelectedProject(project || null);
       } else {
         setSelectedProject(null);
       }
     };
-
+    
     return () => {
       window.handleRouteChange = null;
     };
