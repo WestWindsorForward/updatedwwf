@@ -605,10 +605,10 @@ const projectsData = [
       "A more attractive and functional public space, enhanced commuter experience, increased community pride, and a showcase for local artistic talent. This directly addresses improving quality of life and fostering community.",
     timeline: [
       {
-        stage: "Planning and application",
+        stage: "Upcoming: Planning and application",
         details:
           "Application approved for Adopt-a-Station Program by NJ Transit and West Windsor Parking Authority (WWPA).",
-        completed: true,
+        completed: false,
       },
       {
         stage: "Upcoming: Regular Clean-Up & Flower Planting",
