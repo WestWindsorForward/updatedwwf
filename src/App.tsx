@@ -598,7 +598,7 @@ const projectsData = [
     titleImage: null,
     shortGoal: "Revitalizing our key transit hub.",
     goal: "To transform the Princeton Junction Station into a more welcoming, safe, and vibrant community asset.",
-    status: "Ongoing Initiative",
+    status: "Upcoming Initiative",
     description:
       "This multi-faceted project aims to improve the aesthetics, safety, and overall experience at our key transit hub. We seek collaboration with NJ Transit, local non-profits, and community volunteers to implement regular clean-ups, install public art, and advocate for better amenities. This project injects fresh energy into a vital public space.",
     impact:
