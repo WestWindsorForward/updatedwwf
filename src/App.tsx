@@ -604,21 +604,21 @@ const forumData = {
     {
       id: 1,
       title: "Venue & Panelists Secured",
-      description: "Kelsey Theatre confirmed, distinguished panelists recruited, partnerships established",
+      description: "Completed: Kelsey Theatre confirmed, distinguished panelists recruited, partnerships established",
       completed: true,
       date: "Completed"
     },
     {
       id: 2,
-      title: "Candidate Invitations & Agreements",
+      title: "In Progress: Candidate Invitations & Agreements",
       description: "Formal invitations sent to all declared candidates, agreements being collected",
       completed: false,
       date: "In Progress"
     },
     {
       id: 3,
-      title: "Community Engagement & Promotion",
-      description: "Public awareness campaign, ticket distribution, volunteer recruitment",
+      title: "Upcoming: Community Engagement & Promotion",
+      description: "Public awareness campaign, volunteer recruitment",
       completed: false,
       date: "August - September 2025"
     },
@@ -641,7 +641,6 @@ const forumData = {
     "Attendee Greeting & Check-in", 
     "Camera & Live Stream Operation",
     "Question Collection & Management",
-    "Community Organization Coordination",
     "Post-Event Cleanup"
   ]
 };
@@ -714,25 +713,25 @@ const projectsData = [
       "Enhanced commuter experience for thousands of daily users, strengthened community identity through public art, environmental benefits through recycling and beautification programs, increased community engagement through events and programming, and preserved infrastructure value through maintenance and improvements.",
     timeline: [
       {
-        stage: "Concept Development & Research",
+        stage: "Completed: Concept Development & Research",
         details:
           "Initial research completed on station usage, community needs, and potential improvement opportunities. Concept proposal drafted.",
         completed: true,
       },
       {
-        stage: "Stakeholder Outreach & Partnership Development",
+        stage: "In Progress: Stakeholder Outreach & Partnership Development",
         details:
           "Reaching out to NJ TRANSIT, West Windsor Parking Authority, and community organizations to gauge interest and explore potential partnerships.",
         completed: false,
       },
       {
-        stage: "Community Input & Proposal Refinement",
+        stage: "Upcoming: Community Input & Proposal Refinement",
         details:
           "Gathering community feedback on proposed improvements and refining plans based on resident input and partnership possibilities.",
         completed: false,
       },
       {
-        stage: "Implementation Planning",
+        stage: "Upcoming: Implementation Planning",
         details:
           "If partnerships are established, develop detailed implementation timeline and begin coordination with relevant authorities.",
         completed: false,
@@ -754,21 +753,21 @@ const projectsData = [
       },
       {
         title: "Art & Cultural Enhancement", 
-        description: "Proposed community murals, decorative elements, and cultural programming",
+        description: "Proposed community murals, and decorative lighting elements",
         icon: <IconPaintBrush />,
         status: "Concept Phase"
       },
       {
         title: "Environmental Initiatives",
-        description: "Exploring recycling programs and sustainable improvements",
+        description: "Exploring plastic film recycling programs and sustainable improvements",
         icon: <IconRecycle />,
-        status: "Research Phase"
+        status: "Concept Phase"
       },
       {
         title: "Community Programming",
         description: "Ideas for events and community engagement opportunities",
         icon: <IconUsers />,
-        status: "Planning Phase"
+        status: "Concept Phase"
       }
     ]
   },
