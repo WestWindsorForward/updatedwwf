@@ -604,27 +604,27 @@ const forumData = {
     {
       id: 1,
       title: "Venue & Panelists Secured",
-      description: "Completed: Kelsey Theatre confirmed, distinguished panelists recruited, partnerships established",
+      description: "Kelsey Theatre confirmed, distinguished panelists recruited, partnerships established",
       completed: true,
       date: "Completed"
     },
     {
       id: 2,
-      title: "In Progress: Candidate Invitations & Agreements",
+      title: "Candidate Invitations & Agreements",
       description: "Formal invitations sent to all declared candidates, agreements being collected",
       completed: false,
       date: "In Progress"
     },
     {
       id: 3,
-      title: "Upcoming: Community Engagement & Promotion",
-      description: "Public awareness campaign, volunteer recruitment",
+      title: "Community Engagement & Promotion",
+      description: "Public awareness campaign, ticket distribution, volunteer recruitment",
       completed: false,
       date: "August - September 2025"
     },
     {
       id: 4,
-      title: "Upcoming: Forum Event Day",
+      title: "Forum Event Day",
       description: "Live forum with streaming, Q&A sessions, and community engagement",
       completed: false,
       date: "September 25, 2025"
@@ -641,62 +641,22 @@ const forumData = {
     "Attendee Greeting & Check-in", 
     "Camera & Live Stream Operation",
     "Question Collection & Management",
+    "Community Organization Coordination",
     "Post-Event Cleanup"
   ]
 };
 
-// Project Data with Enhanced Station Project
+// Project Data
 const projectsData = [
   {
     id: 1,
     slug: "candidate-forum-2025",
     title: "2025 Candidate Forum",
-    titleImage: null,
     shortGoal: "Fostering informed civic participation.",
-    goal: "To provide a non-partisan platform for candidates to share their vision and for residents to make informed decisions.",
     status: "Upcoming: September 25, 2025",
-    description:
-      "Reinstating a vital tradition, this forum will allow Mayoral and Council candidates to engage directly with the community. It will feature experienced panelists, live Q&A, and will be live-streamed for broad accessibility, ensuring all residents can participate in this important civic process. We aim to empower voters and promote transparency in local governance.",
-    impact:
-      "Empowered voters, increased accountability, and a more transparent local government. This initiative directly supports our mission of empowering neighbors and demanding responsive leadership.",
-    timeline: [
-      {
-        stage: "Venue & Panelists Secured",
-        details:
-          "Kelsey Theatre @MCCC confirmed. Panelists secured and date set. Connections with local news established.",
-        completed: true,
-      },
-      {
-        stage: "Upcoming: Invitations Sent to Candidates",
-        details:
-          "Invitations will be sent to all declared candidates. Volunteer roles will be assigned.",
-        completed: false,
-      },
-      {
-        stage: "Upcoming: Forum Day",
-        details:
-          "The forum will feature moderated Q&A sessions, audience participation, and live broadcast on September 25, 2025.",
-        completed: false,
-      },
-      {
-        stage: "Upcoming: Post-Forum Report",
-        details:
-          "Sharing recordings and gathering community feedback to enhance future civic initiatives.",
-        completed: false,
-      },
-    ],
-    getInvolved:
-      "Attend the forum, submit your questions for candidates, volunteer for event day support (contact us for roles like timekeeping, greeting, tech assistance), or help spread the word to your neighbors and community groups.",
-    image:
-      "https://placehold.co/600x400/0A2342/FFFFFF?text=Candidate+Forum&font=Lora",
-    partnerOrganizations: [
-      "League of Women Voters of the Greater Princeton Area",
-    ],
-    fundingSources: [
-      "West Windsor Forward Funds",
-      "The generosity of the LWV of the Greater Princeton Area and Kelsey Theatre",
-    ],
-    quickActions: [],
+    description: "Providing a non-partisan platform for Mayoral and Council candidates to engage with residents, ensuring informed participation in our local democracy.",
+    image: "https://placehold.co/600x400/0A2342/FFFFFF?text=Candidate+Forum&font=Lora",
+    partnerOrganizations: ["League of Women Voters of the Greater Princeton Area"],
     redirectTo: "Events"
   },
   {
@@ -713,25 +673,25 @@ const projectsData = [
       "Enhanced commuter experience for thousands of daily users, strengthened community identity through public art, environmental benefits through recycling and beautification programs, increased community engagement through events and programming, and preserved infrastructure value through maintenance and improvements.",
     timeline: [
       {
-        stage: "Completed: Concept Development & Research",
+        stage: "Concept Development & Research",
         details:
           "Initial research completed on station usage, community needs, and potential improvement opportunities. Concept proposal drafted.",
         completed: true,
       },
       {
-        stage: "In Progress: Stakeholder Outreach & Partnership Development",
+        stage: "Stakeholder Outreach & Partnership Development",
         details:
           "Reaching out to NJ TRANSIT, West Windsor Parking Authority, and community organizations to gauge interest and explore potential partnerships.",
         completed: false,
       },
       {
-        stage: "Upcoming: Community Input & Proposal Refinement",
+        stage: "Community Input & Proposal Refinement",
         details:
           "Gathering community feedback on proposed improvements and refining plans based on resident input and partnership possibilities.",
         completed: false,
       },
       {
-        stage: "Upcoming: Implementation Planning",
+        stage: "Implementation Planning",
         details:
           "If partnerships are established, develop detailed implementation timeline and begin coordination with relevant authorities.",
         completed: false,
@@ -753,21 +713,21 @@ const projectsData = [
       },
       {
         title: "Art & Cultural Enhancement", 
-        description: "Proposed community murals, and decorative lighting elements",
+        description: "Proposed community murals, decorative elements, and cultural programming",
         icon: <IconPaintBrush />,
         status: "Concept Phase"
       },
       {
         title: "Environmental Initiatives",
-        description: "Exploring plastic film recycling programs and sustainable improvements",
+        description: "Exploring recycling programs and sustainable improvements",
         icon: <IconRecycle />,
-        status: "Concept Phase"
+        status: "Research Phase"
       },
       {
         title: "Community Programming",
         description: "Ideas for events and community engagement opportunities",
         icon: <IconUsers />,
-        status: "Concept Phase"
+        status: "Planning Phase"
       }
     ]
   },
@@ -954,9 +914,9 @@ const PanelistSection = () => {
       
       <div className="grid md:grid-cols-3 gap-6">
         {forumData.panelists.map((panelist) => (
-          <div key={panelist.id} className="flex flex-col">
+          <div key={panelist.id} className="flex flex-col h-full">
             <div 
-              className={`text-center p-6 rounded-xl border transition-all duration-300 cursor-pointer ${
+              className={`text-center p-6 rounded-xl border transition-all duration-300 cursor-pointer flex flex-col h-full ${
                 selectedPanelistId === panelist.id 
                   ? 'border-sky-500 bg-sky-50 shadow-lg' 
                   : 'border-gray-200 hover:border-sky-300 hover:shadow-md'
@@ -972,13 +932,20 @@ const PanelistSection = () => {
                   e.target.src = `https://placehold.co/150x150/CCCCCC/FFFFFF?text=Panelist&font=Lora`;
                 }}
               />
-              <h3 className="font-semibold text-sky-700 mb-1">{panelist.name}</h3>
-              <p className="text-sm text-slate-600 mb-3">{panelist.title}</p>
-              {panelist.note && (
-                <p className="text-xs text-amber-600 italic mb-3">{panelist.note}</p>
-              )}
+              <div className="flex-grow flex flex-col">
+                <h3 className="font-semibold text-sky-700 mb-1 min-h-[1.5rem]">{panelist.name}</h3>
+                <p className="text-sm text-slate-600 mb-3 flex-grow">{panelist.title}</p>
+                {panelist.note && (
+                  <p className="text-xs text-amber-600 italic mb-3 min-h-[2.5rem] flex items-center justify-center">
+                    {panelist.note}
+                  </p>
+                )}
+                {!panelist.note && (
+                  <div className="min-h-[2.5rem] mb-3"></div>
+                )}
+              </div>
               
-              <button className="text-xs text-sky-600 hover:text-sky-700 font-medium flex items-center justify-center mx-auto">
+              <button className="text-xs text-sky-600 hover:text-sky-700 font-medium flex items-center justify-center mx-auto mt-auto">
                 {selectedPanelistId === panelist.id ? 'Hide Bio' : 'View Bio'}
                 {selectedPanelistId === panelist.id ? (
                   <IconChevronUp className="ml-1 h-4 w-4" />
@@ -1087,16 +1054,17 @@ const InteractiveSection = () => {
         <div>
           <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
             <IconQuestionMark className="mr-2" />
-            Suggest Questions to Panelists
+            Submit Your Question for the Town Hall
           </h3>
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
             <p className="text-sm text-blue-800 flex items-start">
               <IconInfo className="mr-2 mt-0.5 flex-shrink-0" />
               Questions are submitted through a secure Google Form to ensure anonymity and proper handling. 
+              Your information will only be used for question attribution if selected.
             </p>
           </div>
           <p className="text-sm text-slate-600 mb-4">
-            Have a topic you'd like candidates to address? Submit it through our secure form, and it may be incorporated into a panelist question.
+            Have a question you'd like candidates to address? Submit it through our secure form and it may be selected for the town hall Q&A session.
           </p>
           
           <Button 
@@ -1119,7 +1087,8 @@ const InteractiveSection = () => {
           <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
             <p className="text-sm text-green-800 flex items-start">
               <IconCheckCircle className="mr-2 mt-0.5 flex-shrink-0" />
-              We'll contact you with specific details.
+              Volunteer applications are processed through a secure Google Form. 
+              We'll contact you with specific details and training information.
             </p>
           </div>
           <p className="text-sm text-slate-600 mb-4">
@@ -1174,7 +1143,8 @@ const KeyInformationSection = () => {
           </div>
           <div>
             <h4 className="font-semibold text-slate-800 mb-2">What to Expect</h4>
-            <p className="text-sm text-slate-600">The event will be live-streamed 
+            <p className="text-sm text-slate-600">
+              Free tickets will be available online starting September 2025. The event will be live-streamed 
               on YouTube for those unable to attend in person. Audience members are expected to maintain 
               respectful behavior during moderated portions.
             </p>
@@ -1631,51 +1601,55 @@ const ProjectCard = ({ project, setActivePage, setSelectedProject }) => {
         <img
           src={project.image}
           alt={project.title}
-          className="w-full h-40 sm:h-48 object-cover rounded-t-lg mb-4 transition-transform duration-300 group-hover:scale-105"
+          className="w-full h-48 object-cover rounded-t-lg mb-4 transition-transform duration-300 group-hover:scale-105"
           onError={(e) => {
             e.target.onerror = null;
             e.target.src = `https://placehold.co/600x400/CCCCCC/FFFFFF?text=Project+Image&font=Lora`;
           }}
         />
-        <div className="flex-grow flex flex-col p-1">
-          <h3 className="text-lg sm:text-xl font-semibold text-sky-700 mb-1 group-hover:text-sky-600 transition-colors">
+        <div className="flex-grow flex flex-col px-2">
+          <h3 className="text-lg sm:text-xl font-semibold text-sky-700 mb-2 group-hover:text-sky-600 transition-colors min-h-[3rem] flex items-start">
             {project.title}
           </h3>
-          <p className="text-xs sm:text-sm text-gray-500 mb-3">
+          <p className="text-sm text-gray-600 mb-4 flex-grow line-clamp-3 leading-relaxed">
             {project.shortGoal}
           </p>
-          {project.partnerOrganizations &&
-            project.partnerOrganizations.length > 0 && (
-              <div className="mb-3">
-                <h4 className="text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">
-                  Partners:
-                </h4>
-                <div className="flex flex-wrap gap-1">
-                  {project.partnerOrganizations.slice(0, 2).map((org) => (
-                    <span
-                      key={org}
-                      className="text-xs bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full"
-                    >
-                      {org}
-                    </span>
-                  ))}
-                  {project.partnerOrganizations.length > 2 && (
-                    <span className="text-xs text-slate-500">
-                      +{project.partnerOrganizations.length - 2} more
-                    </span>
-                  )}
-                </div>
+          <div className="mb-4">
+            <span className="inline-block text-xs font-medium px-2 py-1 bg-sky-100 text-sky-700 rounded-full">
+              {project.status}
+            </span>
+          </div>
+          {project.partnerOrganizations && project.partnerOrganizations.length > 0 && (
+            <div className="mb-4 min-h-[2rem]">
+              <h4 className="text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">
+                Partners:
+              </h4>
+              <div className="flex flex-wrap gap-1">
+                {project.partnerOrganizations.slice(0, 1).map((org) => (
+                  <span
+                    key={org}
+                    className="text-xs bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full"
+                  >
+                    {org.length > 25 ? `${org.substring(0, 25)}...` : org}
+                  </span>
+                ))}
+                {project.partnerOrganizations.length > 1 && (
+                  <span className="text-xs text-slate-500">
+                    +{project.partnerOrganizations.length - 1} more
+                  </span>
+                )}
               </div>
-            )}
+            </div>
+          )}
         </div>
       </div>
-      <div className="mt-auto pt-4 flex justify-center p-1">
+      <div className="mt-auto pt-4 px-2 pb-2">
         <Button
           onClick={handleButtonClick}
           type="secondary"
-          className="text-xs px-3 py-1.5"
+          className="w-full text-xs"
         >
-          {project.redirectTo ? "View Event Details" : "View Full Details"}
+          {project.redirectTo ? "View Event Details" : "View Project Details"}
         </Button>
       </div>
     </Card>
@@ -1911,16 +1885,28 @@ const ProjectDetailPage = ({ project, setActivePage, setSelectedProject }) => {
             <p className="text-gray-700 leading-relaxed mb-4 text-xs sm:text-sm md:text-base">
               {project.getInvolved}
             </p>
-            <Button
-              onClick={() => {
-                setSelectedProject(null);
-                setActivePage("Contact");
-              }}
-              icon={<IconUsers />}
-              className="text-xs sm:text-sm"
-            >
-              Volunteer or Offer Support
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button
+                onClick={() => {
+                  setSelectedProject(null);
+                  setActivePage("Contact");
+                }}
+                icon={<IconUsers />}
+                className="text-xs sm:text-sm"
+              >
+                Volunteer or Offer Support
+              </Button>
+              {project.id === 2 && (
+                <Button
+                  onClick={() => window.open("/WWF_Station_Proposal.pdf", "_blank")}
+                  type="secondary"
+                  icon={<IconDocument />}
+                  className="text-xs sm:text-sm"
+                >
+                  Read Full Proposal
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </Card>
@@ -2193,12 +2179,84 @@ function App() {
   const [activePage, setActivePage] = useState("Home");
   const [selectedProject, setSelectedProject] = useState(null);
 
+  // URL and title management
+  const updateUrlAndTitle = (page, project = null) => {
+    let url = '/';
+    let title = 'West Windsor Forward';
+    
+    switch (page) {
+      case 'Home':
+        url = '/';
+        title = 'West Windsor Forward - Building a Better Community';
+        break;
+      case 'About':
+        url = '/about';
+        title = 'About Us - West Windsor Forward';
+        break;
+      case 'Projects':
+        url = '/projects';
+        title = 'Our Initiatives - West Windsor Forward';
+        break;
+      case 'Events':
+        url = '/events';
+        title = '2025 Candidate Forum - West Windsor Forward';
+        break;
+      case 'Contact':
+        url = '/contact';
+        title = 'Contact Us - West Windsor Forward';
+        break;
+      case 'ProjectDetails':
+        if (project) {
+          url = `/projects/${project.slug}`;
+          title = `${project.title} - West Windsor Forward`;
+        }
+        break;
+      default:
+        url = '/';
+        title = 'West Windsor Forward';
+    }
+    
+    // Update URL without page reload
+    if (typeof window !== 'undefined') {
+      window.history.pushState({ page, project }, title, url);
+      document.title = title;
+    }
+  };
+
+  // Handle browser back/forward navigation
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const handlePopState = (event) => {
+        if (event.state) {
+          setActivePage(event.state.page);
+          setSelectedProject(event.state.project);
+        }
+      };
+      
+      window.addEventListener('popstate', handlePopState);
+      
+      // Set initial page title
+      updateUrlAndTitle(activePage, selectedProject);
+      
+      return () => {
+        window.removeEventListener('popstate', handlePopState);
+      };
+    }
+  }, []);
+
+  // Enhanced navigation functions
+  const navigateToPage = (page, project = null) => {
+    setActivePage(page);
+    setSelectedProject(project);
+    updateUrlAndTitle(page, project);
+  };
+
   const renderPage = () => {
     if (activePage === "ProjectDetails" && selectedProject) {
       return (
         <ProjectDetailPage
           project={selectedProject}
-          setActivePage={setActivePage}
+          setActivePage={navigateToPage}
           setSelectedProject={setSelectedProject}
         />
       );
@@ -2207,7 +2265,7 @@ function App() {
       case "Home":
         return (
           <HomePage
-            setActivePage={setActivePage}
+            setActivePage={navigateToPage}
             setSelectedProject={setSelectedProject}
           />
         );
@@ -2216,14 +2274,14 @@ function App() {
       case "Projects":
         return (
           <ProjectsPage
-            setActivePage={setActivePage}
+            setActivePage={navigateToPage}
             setSelectedProject={setSelectedProject}
           />
         );
       case "Events":
         return (
           <EventsPage
-            setActivePage={setActivePage}
+            setActivePage={navigateToPage}
             setSelectedProject={setSelectedProject}
           />
         );
@@ -2232,7 +2290,7 @@ function App() {
       default:
         return (
           <HomePage
-            setActivePage={setActivePage}
+            setActivePage={navigateToPage}
             setSelectedProject={setSelectedProject}
           />
         );
@@ -2245,7 +2303,7 @@ function App() {
       className="flex flex-col min-h-screen bg-slate-100 font-body text-slate-700"
     >
       <Navbar
-        setActivePage={setActivePage}
+        setActivePage={navigateToPage}
         activePage={activePage}
         selectedProject={selectedProject}
         setSelectedProject={setSelectedProject}
@@ -2288,6 +2346,14 @@ if (typeof window !== 'undefined') {
       }
       .animate-pulse-slow {
         animation: pulse-slow 5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      }
+      
+      /* Line clamp utilities for consistent text truncation */
+      .line-clamp-3 {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
       }
     `;
     document.head.appendChild(styleSheet);
