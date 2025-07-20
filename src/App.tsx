@@ -2271,80 +2271,82 @@ function App() {
   const [activePage, setActivePage] = useState("Home");
   const [selectedProject, setSelectedProject] = useState(null);
 
-  // Helper function to get URL and Title based on the page state
-  const getPageDetails = (page, project = null) => {
-    let url = "/";
-    let title = "West Windsor Forward";
-    switch (page) {
-      case "Home":
-        url = "/";
-        title = "West Windsor Forward - Building a Better Community";
-        break;
-      case "About":
-        url = "/about";
-        title = "About Us - West Windsor Forward";
-        break;
-      case "Projects":
-        url = "/projects";
-        title = "Our Initiatives - West Windsor Forward";
-        break;
-      case "Events":
-        url = "/events";
-        title = "2025 Candidate Forum - West Windsor Forward";
-        break;
-      case "Contact":
-        url = "/contact";
-        title = "Contact Us - West Windsor Forward";
-        break;
-      case "ProjectDetails":
-        if (project) {
-          url = `/projects/${project.slug}`;
-          title = `${project.title} - West Windsor Forward`;
-        } else {
-          url = '/projects';
-          title = 'Our Initiatives - West Windsor Forward';
-        }
-        break;
-      default:
-        url = "/";
-        title = "West Windsor Forward";
-    }
-    return { url, title };
-  };
-
-  // Main navigation function for link clicks
+  // This is now the ONLY function that changes the page state.
   const navigateToPage = (page, project = null) => {
-    const { url, title } = getPageDetails(page, project);
-
-    // Only push a new state if the URL is actually changing
-    if (window.location.pathname !== url) {
-      window.history.pushState({ page, project }, title, url);
+    // If the target is the same as the current page, scroll to top but don't re-navigate
+    if (page === activePage && project?.id === selectedProject?.id) {
+        window.scrollTo(0, 0);
+        return;
     }
-    
-    // Always update the document title and scroll to top
-    document.title = title;
-    window.scrollTo(0, 0);
-
-    // Update React's state to trigger the component re-render
     setActivePage(page);
     setSelectedProject(project);
   };
 
-  // This useEffect handles initial load and back/forward browser buttons
+  // This useEffect hook is for side-effects: updating the URL and title
+  // It runs whenever the activePage or selectedProject state changes.
+  useEffect(() => {
+    const getPageDetails = (page, project = null) => {
+      let url = "/";
+      let title = "West Windsor Forward";
+      switch (page) {
+        case "Home":
+          url = "/";
+          title = "West Windsor Forward - Building a Better Community";
+          break;
+        case "About":
+          url = "/about";
+          title = "About Us - West Windsor Forward";
+          break;
+        case "Projects":
+          url = "/projects";
+          title = "Our Initiatives - West Windsor Forward";
+          break;
+        case "Events":
+          url = "/events";
+          title = "2025 Candidate Forum - West Windsor Forward";
+          break;
+        case "Contact":
+          url = "/contact";
+          title = "Contact Us - West Windsor Forward";
+          break;
+        case "ProjectDetails":
+          if (project) {
+            url = `/projects/${project.slug}`;
+            title = `${project.title} - West Windsor Forward`;
+          } else {
+            url = '/projects';
+            title = 'Our Initiatives - West Windsor Forward';
+          }
+          break;
+        default:
+          url = "/";
+          title = "West Windsor Forward";
+      }
+      return { url, title };
+    };
+
+    const { url, title } = getPageDetails(activePage, selectedProject);
+
+    document.title = title;
+    // Push a new state to history only if the URL is different from the current one
+    if (window.location.pathname !== url) {
+      window.history.pushState({ page: activePage, project: selectedProject }, title, url);
+    }
+    window.scrollTo(0, 0);
+  }, [activePage, selectedProject]); // This effect depends on these state variables
+
+  // This useEffect hook handles the browser's back/forward buttons and initial load
   useEffect(() => {
     const handlePopState = (event) => {
       if (event.state) {
-        const { page, project } = event.state;
-        const { title } = getPageDetails(page, project);
-        document.title = title;
-        setActivePage(page);
-        setSelectedProject(project);
+        setActivePage(event.state.page);
+        setSelectedProject(event.state.project);
       }
     };
 
     window.addEventListener("popstate", handlePopState);
 
-    // Handle initial page load by reading the URL from the address bar
+    // Initial load logic
     const path = window.location.pathname;
     const parts = path.split("/").filter(Boolean);
 
@@ -2354,7 +2356,7 @@ function App() {
       const projectSlug = parts[1];
       if (projectSlug) {
         const project = projectsData.find((p) => p.slug === projectSlug);
-        navigateToPage("ProjectDetails", project);
+        navigateToPage("ProjectDetails", project || null);
       } else {
         navigateToPage("Projects");
       }
@@ -2369,7 +2371,7 @@ function App() {
     return () => {
       window.removeEventListener("popstate", handlePopState);
     };
-  }, []); // The empty array [] ensures this effect runs only once on initial load
+  }, []); // Runs only once on mount
 
   const renderPage = () => {
     if (activePage === "ProjectDetails" && selectedProject) {
