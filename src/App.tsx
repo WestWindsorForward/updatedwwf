@@ -587,21 +587,21 @@ const forumData = {
       title: "Panelist Q&A Sessions",
       description: "Equal time Q&A sessions for Mayoral and Council candidates with questions from our distinguished panelists",
       location: "Main Theatre",
-      icon: <IconMicrophone />
+      iconType: "microphone"
     },
     {
       id: 2,
       title: "Town Hall Q&A",
       description: "Community-driven Q&A where residents can submit questions for candidates to address",
       location: "Main Theatre", 
-      icon: <IconUsers />
+      iconType: "users"
     },
     {
       id: 3,
       title: "Meet & Greet",
       description: "Informal conversations between candidates and voters, plus community organization tables",
       location: "Theatre Lobby",
-      icon: <IconLightBulb />
+      iconType: "lightbulb"
     }
   ],
   
@@ -936,31 +936,43 @@ const ForumFormatSection = () => (
     </h2>
     
     <div className="grid md:grid-cols-3 gap-6">
-      {forumData.forumParts.map((part, index) => (
-        <div 
-          key={part.id}
-          className="relative bg-gradient-to-br from-slate-50 to-sky-50 p-6 rounded-xl border border-sky-200 hover:shadow-lg transition-all duration-300"
-        >
-          <div className="flex items-center mb-4">
-            <div className="bg-sky-600 text-white p-2 rounded-lg mr-3 flex justify-center items-center">
-              {part.icon}
-            </div>
-            <div>
-              <div className="text-xs font-semibold text-sky-600 uppercase tracking-wider">
-                Part {part.id}
+      {forumData.forumParts.map((part, index) => {
+        // Define icons based on iconType
+        const getIcon = (iconType) => {
+          switch(iconType) {
+            case "microphone": return <IconMicrophone />;
+            case "users": return <IconUsers />;
+            case "lightbulb": return <IconLightBulb />;
+            default: return <IconLightBulb />;
+          }
+        };
+
+        return (
+          <div 
+            key={part.id}
+            className="relative bg-gradient-to-br from-slate-50 to-sky-50 p-6 rounded-xl border border-sky-200 hover:shadow-lg transition-all duration-300"
+          >
+            <div className="flex items-center mb-4">
+              <div className="bg-sky-600 text-white p-2 rounded-lg mr-3 flex justify-center items-center">
+                {getIcon(part.iconType)}
               </div>
-              <h3 className="font-semibold text-slate-800">{part.title}</h3>
+              <div>
+                <div className="text-xs font-semibold text-sky-600 uppercase tracking-wider">
+                  Part {part.id}
+                </div>
+                <h3 className="font-semibold text-slate-800">{part.title}</h3>
+              </div>
+            </div>
+            
+            <p className="text-sm text-slate-600 mb-3">{part.description}</p>
+            
+            <div className="flex items-center text-xs text-slate-500">
+              <IconMapMarker className="h-3 w-3 mr-1" />
+              {part.location}
             </div>
           </div>
-          
-          <p className="text-sm text-slate-600 mb-3">{part.description}</p>
-          
-          <div className="flex items-center text-xs text-slate-500">
-            <IconMapMarker className="h-3 w-3 mr-1" />
-            {part.location}
-          </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
     
     <div className="mt-8 p-4 bg-amber-50 border border-amber-200 rounded-lg">
@@ -1872,27 +1884,38 @@ const ProjectDetailPage = ({ project, setActivePage, setSelectedProject }) => {
                 Project Initiatives
               </h2>
               <div className="grid sm:grid-cols-2 gap-4 mb-6">
-                {project.initiatives.map((initiative, index) => (
-                  <div
-                    key={index}
-                    className="bg-gradient-to-br from-sky-50 to-slate-50 p-4 rounded-lg border border-sky-200"
-                  >
-                    <div className="flex items-center mb-2">
-                      <div className="text-sky-600 mr-3 flex justify-center items-center">
-                        {initiative.icon}
+                {project.initiatives.map((initiative, index) => {
+                  // Define icons based on title
+                  const getIcon = (title) => {
+                    if (title.includes("Beautification")) return <IconLightBulb />;
+                    if (title.includes("Art")) return <IconPaintBrush />;
+                    if (title.includes("Environmental")) return <IconRecycle />;
+                    if (title.includes("Programming")) return <IconUsers />;
+                    return <IconLightBulb />;
+                  };
+
+                  return (
+                    <div
+                      key={index}
+                      className="bg-gradient-to-br from-sky-50 to-slate-50 p-4 rounded-lg border border-sky-200"
+                    >
+                      <div className="flex items-center mb-2">
+                        <div className="text-sky-600 mr-3 flex justify-center items-center">
+                          {getIcon(initiative.title)}
+                        </div>
+                        <h3 className="font-semibold text-slate-800 text-sm">
+                          {initiative.title}
+                        </h3>
                       </div>
-                      <h3 className="font-semibold text-slate-800 text-sm">
-                        {initiative.title}
-                      </h3>
+                      <p className="text-xs text-slate-600 mb-2">
+                        {initiative.description}
+                      </p>
+                      <span className="text-xs font-medium px-2 py-1 bg-sky-100 text-sky-700 rounded">
+                        {initiative.status}
+                      </span>
                     </div>
-                    <p className="text-xs text-slate-600 mb-2">
-                      {initiative.description}
-                    </p>
-                    <span className="text-xs font-medium px-2 py-1 bg-sky-100 text-sky-700 rounded">
-                      {initiative.status}
-                    </span>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </>
           )}
