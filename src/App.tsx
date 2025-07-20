@@ -624,7 +624,7 @@ const forumData = {
     },
     {
       id: 4,
-      title: "Forum Event Day",
+      title: "Upcoming: Forum Event Day",
       description: "Live forum with streaming, Q&A sessions, and community engagement",
       completed: false,
       date: "September 25, 2025"
@@ -1087,17 +1087,16 @@ const InteractiveSection = () => {
         <div>
           <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
             <IconQuestionMark className="mr-2" />
-            Submit Your Question for the Town Hall
+            Suggest Questions to Panelists
           </h3>
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
             <p className="text-sm text-blue-800 flex items-start">
               <IconInfo className="mr-2 mt-0.5 flex-shrink-0" />
               Questions are submitted through a secure Google Form to ensure anonymity and proper handling. 
-              Your information will only be used for question attribution if selected.
             </p>
           </div>
           <p className="text-sm text-slate-600 mb-4">
-            Have a question you'd like candidates to address? Submit it through our secure form and it may be selected for the town hall Q&A session.
+            Have a topic you'd like candidates to address? Submit it through our secure form, and it may be incorporated into a panelist question.
           </p>
           
           <Button 
@@ -1120,8 +1119,7 @@ const InteractiveSection = () => {
           <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
             <p className="text-sm text-green-800 flex items-start">
               <IconCheckCircle className="mr-2 mt-0.5 flex-shrink-0" />
-              Volunteer applications are processed through a secure Google Form. 
-              We'll contact you with specific details and training information.
+              We'll contact you with specific details.
             </p>
           </div>
           <p className="text-sm text-slate-600 mb-4">
@@ -1176,8 +1174,7 @@ const KeyInformationSection = () => {
           </div>
           <div>
             <h4 className="font-semibold text-slate-800 mb-2">What to Expect</h4>
-            <p className="text-sm text-slate-600">
-              Free tickets will be available online starting September 2025. The event will be live-streamed 
+            <p className="text-sm text-slate-600">The event will be live-streamed 
               on YouTube for those unable to attend in person. Audience members are expected to maintain 
               respectful behavior during moderated portions.
             </p>
