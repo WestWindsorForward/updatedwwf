@@ -715,7 +715,7 @@ const projectsData = [
         status: "Concept Phase"
       },
       {
-        title: "Art & Cultural Enhancement", 
+        title: "Art & Cultural Enhancement",
         description: "Proposed community murals, and decorative lighting elements",
         status: "Concept Phase"
       },
