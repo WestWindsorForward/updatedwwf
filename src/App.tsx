@@ -377,20 +377,13 @@ const Navbar = ({
   setActivePage,
   activePage,
   selectedProject,
-  setSelectedProject,
 }) => {
   const navItems = ["Home", "About", "Projects", "Events", "Contact"];
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const mobileMenuRef = useRef(null);
 
   const handleNav = (item) => {
-    setSelectedProject(null);
-    setActivePage(item);
-
-    // Scroll to top of page
-    if (typeof window !== "undefined") {
-      window.scrollTo(0, 0);
-    }
+    setActivePage(item); // This will call navigateToPage
   };
 
   const handleMobileNav = (item) => {
@@ -1363,7 +1356,7 @@ const KeyInformationSection = () => {
 };
 
 // HOME PAGE
-const HomePage = ({ setActivePage, setSelectedProject }) => {
+const HomePage = ({ setActivePage }) => {
   return (
     <div className="animate-fadeIn">
       <header className="relative bg-gradient-to-br from-slate-900 via-sky-800 to-indigo-900 text-white py-16 sm:py-20 md:py-28 px-4 text-center rounded-b-2xl shadow-2xl overflow-hidden">
@@ -1388,7 +1381,6 @@ const HomePage = ({ setActivePage, setSelectedProject }) => {
           <div className="space-y-2 sm:space-y-0 sm:space-x-3 flex flex-col sm:flex-row justify-center">
             <Button
               onClick={() => {
-                setSelectedProject(null);
                 setActivePage("About");
               }}
               className="w-full sm:w-auto text-xs sm:text-sm px-5 py-2 sm:px-6 sm:py-2.5"
@@ -1397,7 +1389,6 @@ const HomePage = ({ setActivePage, setSelectedProject }) => {
             </Button>
             <Button
               onClick={() => {
-                setSelectedProject(null);
                 setActivePage("Projects");
               }}
               type="secondary"
@@ -1422,7 +1413,6 @@ const HomePage = ({ setActivePage, setSelectedProject }) => {
           </p>
           <Button
             onClick={() => {
-              setSelectedProject(null);
               setActivePage("About");
             }}
           >
@@ -1451,7 +1441,6 @@ const HomePage = ({ setActivePage, setSelectedProject }) => {
               </p>
               <Button
                 onClick={() => {
-                  setSelectedProject(null);
                   setActivePage("Events");
                 }}
                 type="secondary"
@@ -1473,9 +1462,10 @@ const HomePage = ({ setActivePage, setSelectedProject }) => {
               </p>
               <Button
                 onClick={() => {
-                  const stationProject = projectsData.find((p) => p.id === 2);
-                  setSelectedProject(stationProject);
-                  setActivePage("ProjectDetails");
+                  const stationProject = projectsData.find(
+                    (p) => p.id === 2
+                  );
+                  setActivePage("ProjectDetails", stationProject);
                 }}
                 type="secondary"
                 className="mt-auto w-full sm:w-auto text-xs"
@@ -1500,7 +1490,6 @@ const HomePage = ({ setActivePage, setSelectedProject }) => {
           <div className="space-y-3 sm:space-y-0 sm:space-x-4 flex flex-col sm:flex-row justify-center">
             <Button
               onClick={() => {
-                setSelectedProject(null);
                 setActivePage("Contact");
               }}
               className="w-full sm:w-auto"
@@ -1509,7 +1498,6 @@ const HomePage = ({ setActivePage, setSelectedProject }) => {
             </Button>
             <Button
               onClick={() => {
-                setSelectedProject(null);
                 setActivePage("Contact");
               }}
               type="secondary"
@@ -1655,120 +1643,82 @@ const AboutPage = () => {
 };
 
 // PROJECTS PAGE
-const ProjectCard = ({ project, setActivePage, setSelectedProject }) => {
-  const handleCardClick = (e) => {
-    if (e.target.closest("button")) {
-      return;
-    }
-
+const ProjectCard = ({ project, setActivePage }) => {
+  const handleCardClick = () => {
     if (project.redirectTo) {
-      setSelectedProject(null);
       setActivePage(project.redirectTo);
     } else {
-      setSelectedProject(project);
-      setActivePage("ProjectDetails");
+      setActivePage("ProjectDetails", project);
     }
   };
 
   const handleButtonClick = (e) => {
     e.stopPropagation();
-
-    if (project.redirectTo) {
-      setSelectedProject(null);
-      setActivePage(project.redirectTo);
-    } else {
-      setSelectedProject(project);
-      setActivePage("ProjectDetails");
-    }
+    handleCardClick();
   };
 
   return (
-    <Card className="flex flex-col h-full group" hasDotPattern>
-      <div
-        onClick={handleCardClick}
-        className="flex-grow flex flex-col cursor-pointer h-full"
-      >
-        {/* Fixed height image */}
-        <img
-          src={project.image}
-          alt={project.title}
-          className="w-full h-48 object-cover rounded-t-lg mb-4 transition-transform duration-300 group-hover:scale-105"
-          onError={(e) => {
-            e.target.onerror = null;
-            e.target.src = `https://placehold.co/600x400/CCCCCC/FFFFFF?text=Project+Image&font=Lora`;
-          }}
-        />
-
-        <div className="flex-grow flex flex-col px-2">
-          {/* Fixed height title area */}
-          <div className="h-16 mb-3">
-            <h3 className="text-lg sm:text-xl font-semibold text-sky-700 group-hover:text-sky-600 transition-colors line-clamp-2">
-              {project.title}
-            </h3>
-          </div>
-
-          {/* Fixed height description area */}
-          <div className="h-20 mb-4">
-            <p className="text-sm text-gray-600 line-clamp-3 leading-relaxed">
-              {project.shortGoal}
-            </p>
-          </div>
-
-          {/* Fixed height status area */}
-          <div className="h-8 mb-4 flex items-start">
-            <span className="inline-block text-xs font-medium px-2 py-1 bg-sky-100 text-sky-700 rounded-full">
-              {project.status}
-            </span>
-          </div>
-
-          {/* Fixed height partner area */}
-          <div className="h-16 mb-4">
-            {project.partnerOrganizations &&
-            project.partnerOrganizations.length > 0 ? (
+    <Card
+      onClick={handleCardClick}
+      className="flex flex-col h-full group"
+      hasDotPattern
+    >
+      <img
+        src={project.image}
+        alt={project.title}
+        className="w-full h-48 object-cover rounded-t-lg mb-4 transition-transform duration-300 group-hover:scale-105"
+        onError={(e) => {
+          e.target.onerror = null;
+          e.target.src = `https://placehold.co/600x400/CCCCCC/FFFFFF?text=Project+Image&font=Lora`;
+        }}
+      />
+      <div className="flex-grow flex flex-col px-4 pb-4">
+        <h3 className="text-lg sm:text-xl font-semibold text-sky-700 group-hover:text-sky-600 transition-colors mb-2 min-h-[3.5rem] line-clamp-2">
+          {project.title}
+        </h3>
+        <p className="text-sm text-gray-600 mb-4 line-clamp-3">
+          {project.shortGoal}
+        </p>
+        <div className="mb-4">
+          <span className="inline-block text-xs font-medium px-2 py-1 bg-sky-100 text-sky-700 rounded-full">
+            {project.status}
+          </span>
+        </div>
+        <div className="flex-grow">
+          {project.partnerOrganizations &&
+            project.partnerOrganizations.length > 0 && (
               <>
                 <h4 className="text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">
                   Partners:
                 </h4>
                 <div className="flex flex-wrap gap-1">
-                  {project.partnerOrganizations.slice(0, 1).map((org) => (
+                  {project.partnerOrganizations.map((org) => (
                     <span
                       key={org}
                       className="text-xs bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full"
                     >
-                      {org.length > 25 ? `${org.substring(0, 25)}...` : org}
+                      {org}
                     </span>
                   ))}
-                  {project.partnerOrganizations.length > 1 && (
-                    <span className="text-xs text-slate-500">
-                      +{project.partnerOrganizations.length - 1} more
-                    </span>
-                  )}
                 </div>
               </>
-            ) : (
-              <div className="h-full">
-                {/* Empty space to maintain uniform height */}
-              </div>
             )}
-          </div>
         </div>
-      </div>
-
-      {/* Button at bottom */}
-      <div className="mt-auto pt-4 px-2 pb-2">
-        <Button
-          onClick={handleButtonClick}
-          type="secondary"
-          className="w-full text-xs"
-        >
-          {project.redirectTo ? "View Event Details" : "View Project Details"}
-        </Button>
+        <div className="mt-4">
+          <Button
+            onClick={handleButtonClick}
+            type="secondary"
+            className="w-full text-xs"
+          >
+            {project.redirectTo ? "View Event Details" : "View Project Details"}
+          </Button>
+        </div>
       </div>
     </Card>
   );
 };
 
-const ProjectsPage = ({ setActivePage, setSelectedProject }) => {
+const ProjectsPage = ({ setActivePage }) => {
   return (
     <div className="container mx-auto py-10 sm:py-12 md:py-16 px-4 animate-fadeIn">
       <div className="text-center mb-10 sm:mb-12 md:mb-16">
@@ -1784,14 +1734,12 @@ const ProjectsPage = ({ setActivePage, setSelectedProject }) => {
         </div>
       </div>
       <div className="my-8 sm:my-10 h-1.5 bg-gradient-to-r from-sky-400 via-indigo-500 to-pink-500 rounded-full"></div>
-
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 items-stretch">
         {projectsData.map((project) => (
           <ProjectCard
             key={project.id}
             project={project}
             setActivePage={setActivePage}
-            setSelectedProject={setSelectedProject}
           />
         ))}
       </div>
@@ -1800,14 +1748,13 @@ const ProjectsPage = ({ setActivePage, setSelectedProject }) => {
 };
 
 // PROJECT DETAILS PAGE
-const ProjectDetailPage = ({ project, setActivePage, setSelectedProject }) => {
+const ProjectDetailPage = ({ project, setActivePage }) => {
   if (!project) {
     return (
       <div className="container mx-auto py-12 px-4 text-center">
         <p className="text-xl text-red-500">Project not found.</p>
         <Button
           onClick={() => {
-            setSelectedProject(null);
             setActivePage("Projects");
           }}
           className="mt-4"
@@ -1822,7 +1769,6 @@ const ProjectDetailPage = ({ project, setActivePage, setSelectedProject }) => {
     <div className="container mx-auto py-10 sm:py-12 md:py-16 px-4 animate-fadeIn">
       <Button
         onClick={() => {
-          setSelectedProject(null);
           setActivePage("Projects");
         }}
         type="secondary"
@@ -1884,7 +1830,6 @@ const ProjectDetailPage = ({ project, setActivePage, setSelectedProject }) => {
           </h2>
           <p>{project.description}</p>
 
-          {/* Enhanced Station Project Initiatives */}
           {project.initiatives && (
             <>
               <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-800 border-b-2 border-sky-200 pb-2 mt-6 sm:mt-8 mb-3 sm:mb-4">
@@ -1892,15 +1837,6 @@ const ProjectDetailPage = ({ project, setActivePage, setSelectedProject }) => {
               </h2>
               <div className="grid sm:grid-cols-2 gap-4 mb-6">
                 {project.initiatives.map((initiative, index) => {
-                  const getIcon = (title) => {
-                    if (title.includes("Beautification"))
-                      return <IconLightBulb />;
-                    if (title.includes("Art")) return <IconPaintBrush />;
-                    if (title.includes("Environmental")) return <IconRecycle />;
-                    if (title.includes("Programming")) return <IconUsers />;
-                    return <IconLightBulb />;
-                  };
-
                   return (
                     <div
                       key={index}
@@ -1908,7 +1844,7 @@ const ProjectDetailPage = ({ project, setActivePage, setSelectedProject }) => {
                     >
                       <div className="flex items-center mb-2">
                         <div className="text-sky-600 mr-3 flex justify-center items-center">
-                          {getIcon(initiative.title)}
+                          {initiative.icon}
                         </div>
                         <h3 className="font-semibold text-slate-800 text-sm">
                           {initiative.title}
@@ -2011,7 +1947,6 @@ const ProjectDetailPage = ({ project, setActivePage, setSelectedProject }) => {
             <div className="flex flex-col sm:flex-row gap-3">
               <Button
                 onClick={() => {
-                  setSelectedProject(null);
                   setActivePage("Contact");
                 }}
                 icon={<IconUsers />}
@@ -2040,7 +1975,7 @@ const ProjectDetailPage = ({ project, setActivePage, setSelectedProject }) => {
 };
 
 // EVENTS PAGE (Enhanced Forum Page)
-const EventsPage = ({ setActivePage, setSelectedProject }) => {
+const EventsPage = ({ setActivePage }) => {
   return (
     <div className="min-h-screen bg-slate-100 font-body text-slate-700">
       <ForumHeader />
@@ -2052,7 +1987,6 @@ const EventsPage = ({ setActivePage, setSelectedProject }) => {
         <InteractiveSection />
         <KeyInformationSection />
 
-        {/* Call to Action */}
         <Card className="text-center bg-gradient-to-r from-sky-600 to-indigo-600 text-white">
           <h2 className="text-xl sm:text-2xl font-bold mb-4">
             Be Part of West Windsor's Democratic Process
@@ -2063,7 +1997,12 @@ const EventsPage = ({ setActivePage, setSelectedProject }) => {
             shaping West Windsor's future.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button type="secondary" size="lg" icon={<IconMail />}>
+            <Button
+              onClick={() => setActivePage("Contact")}
+              type="secondary"
+              size="lg"
+              icon={<IconMail />}
+            >
               Contact Us
             </Button>
             <Button
@@ -2071,7 +2010,6 @@ const EventsPage = ({ setActivePage, setSelectedProject }) => {
               size="lg"
               icon={<IconExternalLink />}
               onClick={() => {
-                setSelectedProject(null);
                 setActivePage("About");
               }}
             >
@@ -2306,82 +2244,95 @@ function App() {
   const [activePage, setActivePage] = useState("Home");
   const [selectedProject, setSelectedProject] = useState(null);
 
-  // URL and title management
-  const updateUrlAndTitle = (page, project = null) => {
-    let url = "/";
-    let title = "West Windsor Forward";
-
+  const navigateToPage = (page, project = null) => {
+    setActivePage(page);
+    setSelectedProject(project);
+    
+    let url = '/';
+    let title = 'West Windsor Forward';
+    
     switch (page) {
-      case "Home":
-        url = "/";
-        title = "West Windsor Forward - Building a Better Community";
+      case 'Home':
+        url = '/';
+        title = 'West Windsor Forward - Building a Better Community';
         break;
-      case "About":
-        url = "/about";
-        title = "About Us - West Windsor Forward";
+      case 'About':
+        url = '/about';
+        title = 'About Us - West Windsor Forward';
         break;
-      case "Projects":
-        url = "/projects";
-        title = "Our Initiatives - West Windsor Forward";
+      case 'Projects':
+        url = '/projects';
+        title = 'Our Initiatives - West Windsor Forward';
         break;
-      case "Events":
-        url = "/events";
-        title = "2025 Candidate Forum - West Windsor Forward";
+      case 'Events':
+        url = '/events';
+        title = '2025 Candidate Forum - West Windsor Forward';
         break;
-      case "Contact":
-        url = "/contact";
-        title = "Contact Us - West Windsor Forward";
+      case 'Contact':
+        url = '/contact';
+        title = 'Contact Us - West Windsor Forward';
         break;
-      case "ProjectDetails":
+      case 'ProjectDetails':
         if (project) {
           url = `/projects/${project.slug}`;
           title = `${project.title} - West Windsor Forward`;
         }
         break;
       default:
-        url = "/";
-        title = "West Windsor Forward";
+        url = '/';
+        title = 'West Windsor Forward';
     }
-
-    // Update URL without page reload
-    if (typeof window !== "undefined") {
+    
+    if (typeof window !== 'undefined' && window.location.pathname !== url) {
       window.history.pushState({ page, project }, title, url);
       document.title = title;
     }
-  };
 
-  // Handle browser back/forward navigation
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const handlePopState = (event) => {
-        if (event.state) {
-          setActivePage(event.state.page);
-          setSelectedProject(event.state.project);
-        }
-      };
-
-      window.addEventListener("popstate", handlePopState);
-
-      // Set initial page title
-      updateUrlAndTitle(activePage, selectedProject);
-
-      return () => {
-        window.removeEventListener("popstate", handlePopState);
-      };
-    }
-  }, []);
-
-  // Enhanced navigation functions
-  const navigateToPage = (page, project = null) => {
-    setActivePage(page);
-    setSelectedProject(project);
-    updateUrlAndTitle(page, project);
-
-    // Scroll to top of page
-    if (typeof window !== "undefined") {
+    if (typeof window !== 'undefined') {
       window.scrollTo(0, 0);
     }
   };
+
+  useEffect(() => {
+    const handlePopState = (event) => {
+      if (event.state) {
+        setActivePage(event.state.page);
+        setSelectedProject(event.state.project);
+      }
+    };
+    
+    window.addEventListener('popstate', handlePopState);
+    
+    // NEW: Handle initial page load based on URL
+    const path = window.location.pathname;
+    const parts = path.split('/').filter(Boolean);
+
+    if (parts[0] === 'about') {
+        navigateToPage('About');
+    } else if (parts[0] === 'projects') {
+        if (parts[1]) {
+            const project = projectsData.find(p => p.slug === parts[1]);
+            if (project) {
+                navigateToPage('ProjectDetails', project);
+            } else {
+                navigateToPage('Projects');
+            }
+        } else {
+            navigateToPage('Projects');
+        }
+    } else if (parts[0] === 'events') {
+        navigateToPage('Events');
+    } else if (parts[0] === 'contact') {
+        navigateToPage('Contact');
+    } else if (parts.length === 0) {
+        navigateToPage('Home');
+    }
+    
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
+
 
   const renderPage = () => {
     if (activePage === "ProjectDetails" && selectedProject) {
@@ -2389,43 +2340,22 @@ function App() {
         <ProjectDetailPage
           project={selectedProject}
           setActivePage={navigateToPage}
-          setSelectedProject={setSelectedProject}
         />
       );
     }
     switch (activePage) {
       case "Home":
-        return (
-          <HomePage
-            setActivePage={navigateToPage}
-            setSelectedProject={setSelectedProject}
-          />
-        );
+        return <HomePage setActivePage={navigateToPage} />;
       case "About":
         return <AboutPage />;
       case "Projects":
-        return (
-          <ProjectsPage
-            setActivePage={navigateToPage}
-            setSelectedProject={setSelectedProject}
-          />
-        );
+        return <ProjectsPage setActivePage={navigateToPage} />;
       case "Events":
-        return (
-          <EventsPage
-            setActivePage={navigateToPage}
-            setSelectedProject={setSelectedProject}
-          />
-        );
+        return <EventsPage setActivePage={navigateToPage} />;
       case "Contact":
         return <ContactPage />;
       default:
-        return (
-          <HomePage
-            setActivePage={navigateToPage}
-            setSelectedProject={setSelectedProject}
-          />
-        );
+        return <HomePage setActivePage={navigateToPage} />;
     }
   };
 
@@ -2438,7 +2368,6 @@ function App() {
         setActivePage={navigateToPage}
         activePage={activePage}
         selectedProject={selectedProject}
-        setSelectedProject={setSelectedProject}
       />
       <main className="flex-grow pt-px">{renderPage()}</main>
       <Footer />
