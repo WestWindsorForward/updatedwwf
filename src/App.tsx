@@ -2271,95 +2271,113 @@ function App() {
   const [activePage, setActivePage] = useState("Home");
   const [selectedProject, setSelectedProject] = useState(null);
 
-  const navigateToPage = (page, project = null) => {
-    setActivePage(page);
-    setSelectedProject(project);
-    
-    let url = '/';
-    let title = 'West Windsor Forward';
-    
+  // Helper function to get URL and Title based on the page state
+  const getPageDetails = (page, project = null) => {
+    let url = "/";
+    let title = "West Windsor Forward";
     switch (page) {
-      case 'Home':
-        url = '/';
-        title = 'West Windsor Forward - Building a Better Community';
+      case "Home":
+        url = "/";
+        title = "West Windsor Forward - Building a Better Community";
         break;
-      case 'About':
-        url = '/about';
-        title = 'About Us - West Windsor Forward';
+      case "About":
+        url = "/about";
+        title = "About Us - West Windsor Forward";
         break;
-      case 'Projects':
-        url = '/projects';
-        title = 'Our Initiatives - West Windsor Forward';
+      case "Projects":
+        url = "/projects";
+        title = "Our Initiatives - West Windsor Forward";
         break;
-      case 'Events':
-        url = '/events';
-        title = '2025 Candidate Forum - West Windsor Forward';
+      case "Events":
+        url = "/events";
+        title = "2025 Candidate Forum - West Windsor Forward";
         break;
-      case 'Contact':
-        url = '/contact';
-        title = 'Contact Us - West Windsor Forward';
+      case "Contact":
+        url = "/contact";
+        title = "Contact Us - West Windsor Forward";
         break;
-      case 'ProjectDetails':
+      case "ProjectDetails":
         if (project) {
           url = `/projects/${project.slug}`;
           title = `${project.title} - West Windsor Forward`;
+        } else {
+          // Fallback if no project is provided
+          url = '/projects';
+          title = 'Our Initiatives - West Windsor Forward';
         }
         break;
       default:
-        url = '/';
-        title = 'West Windsor Forward';
+        url = "/";
+        title = "West Windsor Forward";
     }
-    
-    if (typeof window !== 'undefined' && window.location.pathname !== url) {
-      window.history.pushState({ page, project }, title, url);
-    }
-    // Always update title, even on popstate
-    if (typeof window !== 'undefined') {
-        document.title = title;
-        window.scrollTo(0, 0);
-    }
+    return { url, title };
   };
 
-  useEffect(() => {
-    const handlePopState = (event) => {
-      if (event.state) {
-        setActivePage(event.state.page);
-        setSelectedProject(event.state.project);
-      }
-    };
-    
-    window.addEventListener('popstate', handlePopState);
-    
-    // Handle initial page load based on URL
-    const path = window.location.pathname;
-    const parts = path.split('/').filter(Boolean);
+  // Main navigation function for link clicks
+  const navigateToPage = (page, project = null) => {
+    const { url, title } = getPageDetails(page, project);
 
-    if (parts[0] === 'about') {
-        navigateToPage('About');
-    } else if (parts[0] === 'projects') {
-        if (parts[1]) {
-            const project = projectsData.find(p => p.slug === parts[1]);
-            if (project) {
-                navigateToPage('ProjectDetails', project);
-            } else {
-                navigateToPage('Projects');
-            }
-        } else {
-            navigateToPage('Projects');
-        }
-    } else if (parts[0] === 'events') {
-        navigateToPage('Events');
-    } else if (parts[0] === 'contact') {
-        navigateToPage('Contact');
-    } else if (parts.length === 0) {
-        navigateToPage('Home');
+    // Update browser history and title only if the URL is different
+    if (window.location.pathname !== url) {
+      window.history.pushState({ page, project }, title, url);
     }
     
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
-    };
-  }, []);
+    document.title = title;
+    window.scrollTo(0, 0);
 
+    // Update React state to trigger re-render
+    setActivePage(page);
+    setSelectedProject(project);
+  };
+
+  // This useEffect handles initial load and back/forward browser buttons
+  useEffect(() => {
+    // Function to handle browser's back/forward buttons
+    const handlePopState = (event) => {
+      if (event.state) {
+        const { page, project } = event.state;
+        const { title } = getPageDetails(page, project);
+        
+        document.title = title; // Set title on popstate
+        setActivePage(page);
+        setSelectedProject(project);
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    // Handle initial page load by reading the URL
+    const path = window.location.pathname;
+    const parts = path.split("/").filter(Boolean);
+
+    if (parts[0] === "about") {
+      navigateToPage("About");
+    } else if (parts[0] === "projects") {
+      const projectSlug = parts[1];
+      if (projectSlug) {
+        const project = projectsData.find((p) => p.slug === projectSlug);
+        if (project) {
+          navigateToPage("ProjectDetails", project);
+        } else {
+          // If slug is invalid, go to projects page
+          navigateToPage("Projects");
+        }
+      } else {
+        navigateToPage("Projects");
+      }
+    } else if (parts[0] === "events") {
+      navigateToPage("Events");
+    } else if (parts[0] === "contact") {
+      navigateToPage("Contact");
+    } else {
+      navigateToPage("Home");
+    }
+
+    // Cleanup listener on component unmount
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, []); // Empty array ensures this runs only once on mount
 
   const renderPage = () => {
     if (activePage === "ProjectDetails" && selectedProject) {
@@ -2382,6 +2400,7 @@ function App() {
       case "Contact":
         return <ContactPage />;
       default:
+        // Fallback to home page for any unknown state
         return <HomePage setActivePage={navigateToPage} />;
     }
   };
