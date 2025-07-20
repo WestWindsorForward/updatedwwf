@@ -705,7 +705,6 @@ const projectsData = [
       "https://placehold.co/600x400/3B82F6/FFFFFF?text=Princeton+Junction+Station&font=Lora",
     partnerOrganizations: [],
     fundingSources: [],
-    quickActions: [],
     initiatives: [
       {
         title: "Beautification & Maintenance",
@@ -735,6 +734,7 @@ const projectsData = [
         status: "Planning Phase",
       },
     ],
+    // NOTE: No redirectTo property - this project gets its own detail page
   },
 ];
 
@@ -1452,7 +1452,7 @@ const HomePage = ({ setActivePage }) => {
                         <Button
                             onClick={() => {
                             const stationProject = projectsData.find(
-                                (p) => p.id === 2
+                                (p) => p.slug === "princeton-junction-station-improvement"
                             );
                             setActivePage("ProjectDetails", stationProject);
                             }}
@@ -1644,9 +1644,11 @@ const AboutPage = () => {
 // PROJECTS PAGE
 const ProjectCard = ({ project, setActivePage }) => {
     const handleCardClick = (e) => {
+      // Prevent navigation if a link or button inside the card is clicked
       if (e.target.closest('a, button')) {
         return;
       }
+      
       if (project.redirectTo) {
         setActivePage(project.redirectTo);
       } else {
@@ -1655,7 +1657,8 @@ const ProjectCard = ({ project, setActivePage }) => {
     };
   
     const handleButtonClick = (e) => {
-      e.stopPropagation();
+      e.stopPropagation(); // Prevent the card's onClick from firing
+      
       if (project.redirectTo) {
         setActivePage(project.redirectTo);
       } else {
