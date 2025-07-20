@@ -386,6 +386,11 @@ const Navbar = ({
   const handleNav = (item) => {
     setSelectedProject(null);
     setActivePage(item);
+    
+    // Scroll to top of page
+    if (typeof window !== 'undefined') {
+      window.scrollTo(0, 0);
+    }
   };
 
   const handleMobileNav = (item) => {
@@ -659,6 +664,78 @@ const projectsData = [
     partnerOrganizations: ["League of Women Voters of the Greater Princeton Area"],
     redirectTo: "Events"
   },
+  {
+    id: 2,
+    slug: "princeton-junction-station-improvement",
+    title: "Princeton Junction Station Improvement Project",
+    shortGoal: "Revitalizing our key transit hub.",
+    goal: "To transform the Princeton Junction Station into a welcoming, aesthetically appealing, and culturally reflective community hub that serves all users.",
+    status: "Early Planning & Proposal Development",
+    description:
+      "This is a proposed comprehensive project to transform Princeton Junction Station—a vital asset serving over 4,000 NJ TRANSIT passengers daily and 123,000+ Amtrak passengers annually—into a vibrant community hub. We are developing plans for beautification efforts, community art installations, environmental initiatives, and programming to enhance the daily experience for thousands of commuters while fostering community pride and connectivity. Currently in early planning stages with proposals being developed for potential partnerships.",
+    impact:
+      "Enhanced commuter experience for thousands of daily users, strengthened community identity through public art, environmental benefits through recycling and beautification programs, increased community engagement through events and programming, and preserved infrastructure value through maintenance and improvements.",
+    timeline: [
+      {
+        stage: "Completed: Concept Development & Research",
+        details:
+          "Initial research completed on station usage, community needs, and potential improvement opportunities. Concept proposal drafted.",
+        completed: true,
+      },
+      {
+        stage: "In Progress: Stakeholder Outreach & Partnership Development",
+        details:
+          "Reaching out to NJ TRANSIT, West Windsor Parking Authority, and community organizations to gauge interest and explore potential partnerships.",
+        completed: false,
+      },
+      {
+        stage: "Upcoming: Community Input & Proposal Refinement",
+        details:
+          "Gathering community feedback on proposed improvements and refining plans based on resident input and partnership possibilities.",
+        completed: false,
+      },
+      {
+        stage: "Upcoming: Implementation Planning",
+        details:
+          "If partnerships are established, develop detailed implementation timeline and begin coordination with relevant authorities.",
+        completed: false,
+      },
+    ],
+    getInvolved:
+      "Share your ideas for station improvements, express interest in volunteering for future cleanup or beautification efforts, connect us with relevant community organizations, or let us know what would make your commuting experience better.",
+    image:
+      "https://placehold.co/600x400/3B82F6/FFFFFF?text=Princeton+Junction+Station&font=Lora",
+    partnerOrganizations: [],
+    fundingSources: [],
+    quickActions: [],
+    initiatives: [
+      {
+        title: "Beautification & Maintenance",
+        description: "Potential regular cleanup, landscaping, and seasonal decorations",
+        icon: <IconLightBulb />,
+        status: "Concept Phase"
+      },
+      {
+        title: "Art & Cultural Enhancement", 
+        description: "Proposed community murals, and decorative lighting elements",
+        icon: <IconPaintBrush />,
+        status: "Concept Phase"
+      },
+      {
+        title: "Environmental Initiatives",
+        description: "Exploring plastic film recycling programs and sustainable improvements",
+        icon: <IconRecycle />,
+        status: "Concept Phase"
+      },
+      {
+        title: "Community Programming",
+        description: "Ideas for events and community engagement opportunities",
+        icon: <IconUsers />,
+        status: "Concept Phase"
+      }
+    ]
+  },
+];
   {
     id: 2,
     slug: "adopt-a-station-pjc",
@@ -1375,7 +1452,7 @@ const HomePage = ({ setActivePage, setSelectedProject }) => {
             <Card className="flex flex-col transform hover:scale-105 transition-transform duration-300">
               <div className="flex items-center mb-3">
                 <h3 className="text-lg sm:text-xl font-semibold text-sky-700">
-                  Adopt-a-Station: Princeton Junction
+                  Princeton Junction Station Improvement Project
                 </h3>
               </div>
               <p className="text-xs sm:text-sm text-gray-600 mb-3 flex-grow">
@@ -1384,7 +1461,8 @@ const HomePage = ({ setActivePage, setSelectedProject }) => {
               </p>
               <Button
                 onClick={() => {
-                  setSelectedProject(projectsData.find((p) => p.id === 2));
+                  const stationProject = projectsData.find((p) => p.id === 2);
+                  setSelectedProject(stationProject);
                   setActivePage("ProjectDetails");
                 }}
                 type="secondary"
@@ -1596,8 +1674,9 @@ const ProjectCard = ({ project, setActivePage, setSelectedProject }) => {
     <Card className="flex flex-col h-full group" hasDotPattern>
       <div
         onClick={handleCardClick}
-        className="flex-grow flex flex-col cursor-pointer"
+        className="flex-grow flex flex-col cursor-pointer h-full"
       >
+        {/* Fixed height image */}
         <img
           src={project.image}
           alt={project.title}
@@ -1607,42 +1686,60 @@ const ProjectCard = ({ project, setActivePage, setSelectedProject }) => {
             e.target.src = `https://placehold.co/600x400/CCCCCC/FFFFFF?text=Project+Image&font=Lora`;
           }}
         />
+        
         <div className="flex-grow flex flex-col px-2">
-          <h3 className="text-lg sm:text-xl font-semibold text-sky-700 mb-2 group-hover:text-sky-600 transition-colors min-h-[3rem] flex items-start">
-            {project.title}
-          </h3>
-          <p className="text-sm text-gray-600 mb-4 flex-grow line-clamp-3 leading-relaxed">
-            {project.shortGoal}
-          </p>
-          <div className="mb-4">
+          {/* Fixed height title area */}
+          <div className="h-16 mb-3">
+            <h3 className="text-lg sm:text-xl font-semibold text-sky-700 group-hover:text-sky-600 transition-colors line-clamp-2">
+              {project.title}
+            </h3>
+          </div>
+          
+          {/* Fixed height description area */}
+          <div className="h-20 mb-4">
+            <p className="text-sm text-gray-600 line-clamp-3 leading-relaxed">
+              {project.shortGoal}
+            </p>
+          </div>
+          
+          {/* Fixed height status area */}
+          <div className="h-8 mb-4 flex items-start">
             <span className="inline-block text-xs font-medium px-2 py-1 bg-sky-100 text-sky-700 rounded-full">
               {project.status}
             </span>
           </div>
-          {project.partnerOrganizations && project.partnerOrganizations.length > 0 && (
-            <div className="mb-4 min-h-[2rem]">
-              <h4 className="text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">
-                Partners:
-              </h4>
-              <div className="flex flex-wrap gap-1">
-                {project.partnerOrganizations.slice(0, 1).map((org) => (
-                  <span
-                    key={org}
-                    className="text-xs bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full"
-                  >
-                    {org.length > 25 ? `${org.substring(0, 25)}...` : org}
-                  </span>
-                ))}
-                {project.partnerOrganizations.length > 1 && (
-                  <span className="text-xs text-slate-500">
-                    +{project.partnerOrganizations.length - 1} more
-                  </span>
-                )}
-              </div>
-            </div>
-          )}
+          
+          {/* Fixed height partner area */}
+          <div className="h-16 mb-4">
+            {project.partnerOrganizations && project.partnerOrganizations.length > 0 ? (
+              <>
+                <h4 className="text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">
+                  Partners:
+                </h4>
+                <div className="flex flex-wrap gap-1">
+                  {project.partnerOrganizations.slice(0, 1).map((org) => (
+                    <span
+                      key={org}
+                      className="text-xs bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full"
+                    >
+                      {org.length > 25 ? `${org.substring(0, 25)}...` : org}
+                    </span>
+                  ))}
+                  {project.partnerOrganizations.length > 1 && (
+                    <span className="text-xs text-slate-500">
+                      +{project.partnerOrganizations.length - 1} more
+                    </span>
+                  )}
+                </div>
+              </>
+            ) : (
+              <div className="h-full">{/* Empty space to maintain uniform height */}</div>
+            )}
+          </div>
         </div>
       </div>
+      
+      {/* Button at bottom */}
       <div className="mt-auto pt-4 px-2 pb-2">
         <Button
           onClick={handleButtonClick}
@@ -2249,6 +2346,11 @@ function App() {
     setActivePage(page);
     setSelectedProject(project);
     updateUrlAndTitle(page, project);
+    
+    // Scroll to top of page
+    if (typeof window !== 'undefined') {
+      window.scrollTo(0, 0);
+    }
   };
 
   const renderPage = () => {
@@ -2349,6 +2451,13 @@ if (typeof window !== 'undefined') {
       }
       
       /* Line clamp utilities for consistent text truncation */
+      .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      
       .line-clamp-3 {
         display: -webkit-box;
         -webkit-line-clamp: 3;
