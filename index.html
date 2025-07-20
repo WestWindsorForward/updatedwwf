@@ -2,85 +2,12 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" href="public/favicon.ico" />
+    <link rel="icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>West Windsor Forward</title>
-
-    <!-- React Router DOM Script -->
-    <script src="https://unpkg.com/react-router-dom@6/dist/umd/react-router-dom.production.min.js"></script>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-
-    <!-- Add this script to modify your existing App component to support routing -->
-    <script>
-      // Page title management function
-      window.updatePageTitle = function (title) {
-        document.title = title
-          ? `${title} - West Windsor Forward`
-          : "West Windsor Forward";
-      };
-
-      // URL management functions
-      window.updateURL = function (page, projectSlug = null) {
-        const routes = {
-          Home: "/",
-          About: "/about",
-          Projects: "/projects",
-          Events: "/events",
-          Contact: "/contact",
-          ProjectDetails: projectSlug
-            ? `/projects/${projectSlug}`
-            : "/projects",
-        };
-
-        const newURL = routes[page] || "/";
-        if (window.location.pathname !== newURL) {
-          window.history.pushState({ page, projectSlug }, "", newURL);
-        }
-      };
-
-      // Handle browser back/forward buttons
-      window.addEventListener("popstate", function (event) {
-        if (event.state && window.handleRouteChange) {
-          window.handleRouteChange(event.state.page, event.state.projectSlug);
-        }
-      });
-
-      // Parse current URL to determine initial page
-      window.getInitialPageFromURL = function () {
-        const path = window.location.pathname;
-        const projectMatch = path.match(/^\/projects\/(.+)$/);
-
-        if (projectMatch) {
-          return { page: "ProjectDetails", projectSlug: projectMatch[1] };
-        }
-
-        const pageMap = {
-          "/": "Home",
-          "/about": "About",
-          "/projects": "Projects",
-          "/events": "Events",
-          "/contact": "Contact",
-        };
-
-        return { page: pageMap[path] || "Home", projectSlug: null };
-      };
-
-      // Page title mapping
-      window.getPageTitle = function (page, projectTitle = null) {
-        const titles = {
-          Home: null, // Will just be "West Windsor Forward"
-          About: "About Us",
-          Projects: "Projects",
-          Events: "Events",
-          Contact: "Contact",
-          ProjectDetails: projectTitle || "Project Details",
-        };
-
-        return titles[page];
-      };
-    </script>
   </body>
 </html>
