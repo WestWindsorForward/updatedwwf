@@ -728,13 +728,13 @@ const projectsData = [
         description:
           "Exploring recycling programs and sustainable improvements",
         icon: <IconRecycle />,
-        status: "Research Phase",
+        status: "Concept Phase",
       },
       {
         title: "Community Programming",
         description: "Ideas for events and community engagement opportunities",
         icon: <IconUsers />,
-        status: "Planning Phase",
+        status: "Concept Phase",
       },
     ],
   },
