@@ -2301,7 +2301,6 @@ function App() {
           url = `/projects/${project.slug}`;
           title = `${project.title} - West Windsor Forward`;
         } else {
-          // Fallback if no project is provided
           url = '/projects';
           title = 'Our Initiatives - West Windsor Forward';
         }
@@ -2317,28 +2316,27 @@ function App() {
   const navigateToPage = (page, project = null) => {
     const { url, title } = getPageDetails(page, project);
 
-    // Update browser history and title only if the URL is different
+    // Only push a new state if the URL is actually changing
     if (window.location.pathname !== url) {
       window.history.pushState({ page, project }, title, url);
     }
     
+    // Always update the document title and scroll to top
     document.title = title;
     window.scrollTo(0, 0);
 
-    // Update React state to trigger re-render
+    // Update React's state to trigger the component re-render
     setActivePage(page);
     setSelectedProject(project);
   };
 
   // This useEffect handles initial load and back/forward browser buttons
   useEffect(() => {
-    // Function to handle browser's back/forward buttons
     const handlePopState = (event) => {
       if (event.state) {
         const { page, project } = event.state;
         const { title } = getPageDetails(page, project);
-        
-        document.title = title; // Set title on popstate
+        document.title = title;
         setActivePage(page);
         setSelectedProject(project);
       }
@@ -2346,7 +2344,7 @@ function App() {
 
     window.addEventListener("popstate", handlePopState);
 
-    // Handle initial page load by reading the URL
+    // Handle initial page load by reading the URL from the address bar
     const path = window.location.pathname;
     const parts = path.split("/").filter(Boolean);
 
@@ -2356,12 +2354,7 @@ function App() {
       const projectSlug = parts[1];
       if (projectSlug) {
         const project = projectsData.find((p) => p.slug === projectSlug);
-        if (project) {
-          navigateToPage("ProjectDetails", project);
-        } else {
-          // If slug is invalid, go to projects page
-          navigateToPage("Projects");
-        }
+        navigateToPage("ProjectDetails", project);
       } else {
         navigateToPage("Projects");
       }
@@ -2373,11 +2366,10 @@ function App() {
       navigateToPage("Home");
     }
 
-    // Cleanup listener on component unmount
     return () => {
       window.removeEventListener("popstate", handlePopState);
     };
-  }, []); // Empty array ensures this runs only once on mount
+  }, []); // The empty array [] ensures this effect runs only once on initial load
 
   const renderPage = () => {
     if (activePage === "ProjectDetails" && selectedProject) {
@@ -2400,7 +2392,6 @@ function App() {
       case "Contact":
         return <ContactPage />;
       default:
-        // Fallback to home page for any unknown state
         return <HomePage setActivePage={navigateToPage} />;
     }
   };
