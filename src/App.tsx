@@ -196,19 +196,15 @@ const IconRecycle = () => (
   </svg>
 );
 
-const IconPaintBrush = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    className="h-5 w-5"
-    viewBox="0 0 20 20"
-    fill="currentColor"
-  >
-    <path
-      fillRule="evenodd"
-      d="M18 3a1 1 0 00-1.447-.894L8.763 6.632a3 3 0 00-2.134 2.134L2.105 17.553A1 1 0 003 19a1 1 0 00.894-.447l8.787-3.524a3 3 0 002.134-2.134l4.526-7.79A1 1 0 0018 3zm-5 4a1 1 0 11-2 0 1 1 0 012 0z"
-      clipRule="evenodd"
-    />
-  </svg>
+// NEW: A better icon for "Art Installations"
+const IconPhotograph = () => (
+    <svg 
+        xmlns="http://www.w3.org/2000/svg" 
+        className="h-5 w-5" 
+        viewBox="0 0 20 20" 
+        fill="currentColor">
+        <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+    </svg>
 );
 
 const IconInfo = () => (
@@ -313,7 +309,7 @@ const Card = ({
   onClick,
 }) => (
   <div
-    className={`relative bg-white shadow-lg rounded-xl p-4 sm:p-6 md:p-8 mb-6 sm:mb-8 border border-gray-200 ${
+    className={`relative bg-white shadow-lg rounded-xl mb-6 sm:mb-8 border border-gray-200 ${
       hasDotPattern ? "overflow-hidden" : ""
     } ${
       noHoverEffect
@@ -323,7 +319,7 @@ const Card = ({
     onClick={onClick}
   >
     {hasDotPattern && <DotPattern dotColor="text-sky-500 opacity-5" />}
-    <div className="relative z-10">{children}</div>
+    <div className="relative z-10 h-full flex flex-col">{children}</div>
   </div>
 );
 
@@ -724,7 +720,7 @@ const projectsData = [
         title: "Art & Cultural Enhancement",
         description:
           "Proposed community murals, decorative elements, and cultural programming",
-        icon: <IconPaintBrush />,
+        icon: <IconPhotograph />, // UPDATED ICON
         status: "Concept Phase",
       },
       {
@@ -836,43 +832,45 @@ const ForumHeader = () => {
 };
 
 const ProgressSection = () => (
-  <Card className="bg-gradient-to-r from-sky-50 to-indigo-50 border-sky-200">
-    <div className="flex items-center justify-between mb-4">
-      <h2 className="text-xl sm:text-2xl font-bold text-slate-800">
-        Forum Milestones
-      </h2>
-    </div>
+  <Card className="bg-gradient-to-r from-sky-50 to-indigo-50 border-sky-200 p-0">
+    <div className="p-4 sm:p-6 md:p-8">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl sm:text-2xl font-bold text-slate-800">
+          Forum Milestones
+        </h2>
+      </div>
 
-    <div className="grid gap-4">
-      {forumData.milestones.map((milestone) => (
-        <div
-          key={milestone.id}
-          className={`flex items-start p-4 rounded-lg border-l-4 ${
-            milestone.completed
-              ? "border-green-500 bg-green-50"
-              : "border-sky-500 bg-sky-50"
-          }`}
-        >
-          <div className="mr-3 mt-1">
-            {milestone.completed ? (
-              <IconCheckCircle className="h-6 w-6 text-green-600" />
-            ) : (
-              <IconClock className="h-6 w-6 text-sky-600" />
-            )}
+      <div className="grid gap-4">
+        {forumData.milestones.map((milestone) => (
+          <div
+            key={milestone.id}
+            className={`flex items-start p-4 rounded-lg border-l-4 ${
+              milestone.completed
+                ? "border-green-500 bg-green-50"
+                : "border-sky-500 bg-sky-50"
+            }`}
+          >
+            <div className="mr-3 mt-1">
+              {milestone.completed ? (
+                <IconCheckCircle className="h-6 w-6 text-green-600" />
+              ) : (
+                <IconClock className="h-6 w-6 text-sky-600" />
+              )}
+            </div>
+            <div className="flex-1">
+              <h3 className="font-semibold text-slate-800 mb-1">
+                {milestone.title}
+              </h3>
+              <p className="text-sm text-slate-600 mb-2">
+                {milestone.description}
+              </p>
+              <span className="text-xs font-medium text-slate-500">
+                {milestone.date}
+              </span>
+            </div>
           </div>
-          <div className="flex-1">
-            <h3 className="font-semibold text-slate-800 mb-1">
-              {milestone.title}
-            </h3>
-            <p className="text-sm text-slate-600 mb-2">
-              {milestone.description}
-            </p>
-            <span className="text-xs font-medium text-slate-500">
-              {milestone.date}
-            </span>
-          </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   </Card>
 );
@@ -886,51 +884,53 @@ const ForumFormatSection = () => {
   };
 
   return (
-    <Card hasDotPattern>
-      <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-6 text-center">
-        Forum Format & Structure
-      </h2>
+    <Card hasDotPattern className="p-0">
+      <div className="p-4 sm:p-6 md:p-8">
+        <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-6 text-center">
+          Forum Format & Structure
+        </h2>
 
-      <div className="grid md:grid-cols-3 gap-6">
-        {forumData.forumParts.map((part) => (
-          <div
-            key={part.id}
-            className="relative bg-gradient-to-br from-slate-50 to-sky-50 p-6 rounded-xl border border-sky-200 hover:shadow-lg transition-all duration-300"
-          >
-            <div className="flex items-center mb-4">
-              <div className="bg-sky-600 text-white p-2 rounded-lg mr-3 flex justify-center items-center">
-                {getIcon(part.iconType)}
-              </div>
-              <div>
-                <div className="text-xs font-semibold text-sky-600 uppercase tracking-wider">
-                  Part {part.id}
+        <div className="grid md:grid-cols-3 gap-6">
+          {forumData.forumParts.map((part) => (
+            <div
+              key={part.id}
+              className="relative bg-gradient-to-br from-slate-50 to-sky-50 p-6 rounded-xl border border-sky-200 hover:shadow-lg transition-all duration-300"
+            >
+              <div className="flex items-center mb-4">
+                <div className="bg-sky-600 text-white p-2 rounded-lg mr-3 flex justify-center items-center">
+                  {getIcon(part.iconType)}
                 </div>
-                <h3 className="font-semibold text-slate-800">{part.title}</h3>
+                <div>
+                  <div className="text-xs font-semibold text-sky-600 uppercase tracking-wider">
+                    Part {part.id}
+                  </div>
+                  <h3 className="font-semibold text-slate-800">{part.title}</h3>
+                </div>
+              </div>
+
+              <p className="text-sm text-slate-600 mb-3">{part.description}</p>
+
+              <div className="flex items-center text-xs text-slate-500">
+                <IconMapMarker className="h-3 w-3 mr-1" />
+                {part.location}
               </div>
             </div>
+          ))}
+        </div>
 
-            <p className="text-sm text-slate-600 mb-3">{part.description}</p>
-
-            <div className="flex items-center text-xs text-slate-500">
-              <IconMapMarker className="h-3 w-3 mr-1" />
-              {part.location}
-            </div>
+        <div className="mt-8 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+          <h3 className="font-semibold text-amber-800 mb-2 flex items-center">
+            <IconDocument className="h-5 w-5 mr-2" />
+            Forum Requirements
+          </h3>
+          <div className="space-y-2 text-sm text-amber-700">
+            <p>
+              <strong>Council:</strong> {forumData.requirements.council}
+            </p>
+            <p>
+              <strong>Mayor:</strong> {forumData.requirements.mayor}
+            </p>
           </div>
-        ))}
-      </div>
-
-      <div className="mt-8 p-4 bg-amber-50 border border-amber-200 rounded-lg">
-        <h3 className="font-semibold text-amber-800 mb-2 flex items-center">
-          <IconDocument className="h-5 w-5 mr-2" />
-          Forum Requirements
-        </h3>
-        <div className="space-y-2 text-sm text-amber-700">
-          <p>
-            <strong>Council:</strong> {forumData.requirements.council}
-          </p>
-          <p>
-            <strong>Mayor:</strong> {forumData.requirements.mayor}
-          </p>
         </div>
       </div>
     </Card>
@@ -941,80 +941,82 @@ const PanelistSection = () => {
   const [selectedPanelistId, setSelectedPanelistId] = useState(null);
 
   return (
-    <Card>
-      <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-6 text-center">
-        Distinguished Panelists
-      </h2>
+    <Card className="p-0">
+        <div className="p-4 sm:p-6 md:p-8">
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-6 text-center">
+                Distinguished Panelists
+            </h2>
 
-      <div className="grid md:grid-cols-3 gap-6">
-        {forumData.panelists.map((panelist) => (
-          <div key={panelist.id} className="flex flex-col h-full">
-            <div
-              className={`text-center p-6 rounded-xl border transition-all duration-300 cursor-pointer flex flex-col h-full ${
-                selectedPanelistId === panelist.id
-                  ? "border-sky-500 bg-sky-50 shadow-lg"
-                  : "border-gray-200 hover:border-sky-300 hover:shadow-md"
-              }`}
-              onClick={() =>
-                setSelectedPanelistId(
-                  selectedPanelistId === panelist.id ? null : panelist.id
-                )
-              }
-            >
-              <img
-                src={
-                  panelist.imageUrl ||
-                  `https://placehold.co/150x150/E0F2FE/0C4A6E?text=${panelist.name.substring(
-                    0,
-                    1
-                  )}${
-                    panelist.name.split(" ")[1]?.substring(0, 1) || ""
-                  }&font=Lora`
-                }
-                alt={panelist.name}
-                className="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-sky-200 object-cover shadow-sm"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = `https://placehold.co/150x150/CCCCCC/FFFFFF?text=Panelist&font=Lora`;
-                }}
-              />
-              <div className="flex-grow flex flex-col">
-                <h3 className="font-semibold text-sky-700 mb-1 min-h-[1.5rem]">
-                  {panelist.name}
-                </h3>
-                <p className="text-sm text-slate-600 mb-3 flex-grow">
-                  {panelist.title}
-                </p>
-                {panelist.note && (
-                  <p className="text-xs text-amber-600 italic mb-3 min-h-[2.5rem] flex items-center justify-center">
-                    {panelist.note}
-                  </p>
-                )}
-                {!panelist.note && (
-                  <div className="min-h-[2.5rem] mb-3"></div>
-                )}
-              </div>
+            <div className="grid md:grid-cols-3 gap-6">
+                {forumData.panelists.map((panelist) => (
+                <div key={panelist.id} className="flex flex-col">
+                    <div
+                    className={`text-center p-6 rounded-xl border transition-all duration-300 cursor-pointer flex flex-col h-full ${
+                        selectedPanelistId === panelist.id
+                        ? "border-sky-500 bg-sky-50 shadow-lg"
+                        : "border-gray-200 hover:border-sky-300 hover:shadow-md"
+                    }`}
+                    onClick={() =>
+                        setSelectedPanelistId(
+                        selectedPanelistId === panelist.id ? null : panelist.id
+                        )
+                    }
+                    >
+                    <img
+                        src={
+                        panelist.imageUrl ||
+                        `https://placehold.co/150x150/E0F2FE/0C4A6E?text=${panelist.name.substring(
+                            0,
+                            1
+                        )}${
+                            panelist.name.split(" ")[1]?.substring(0, 1) || ""
+                        }&font=Lora`
+                        }
+                        alt={panelist.name}
+                        className="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-sky-200 object-cover shadow-sm"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = `https://placehold.co/150x150/CCCCCC/FFFFFF?text=Panelist&font=Lora`;
+                        }}
+                    />
+                    <div className="flex-grow flex flex-col">
+                        <h3 className="font-semibold text-sky-700 mb-1 min-h-[1.5rem]">
+                        {panelist.name}
+                        </h3>
+                        <p className="text-sm text-slate-600 mb-3 flex-grow">
+                        {panelist.title}
+                        </p>
+                        {panelist.note && (
+                        <p className="text-xs text-amber-600 italic mb-3 min-h-[2.5rem] flex items-center justify-center">
+                            {panelist.note}
+                        </p>
+                        )}
+                        {!panelist.note && (
+                        <div className="min-h-[2.5rem] mb-3"></div>
+                        )}
+                    </div>
 
-              <button className="text-xs text-sky-600 hover:text-sky-700 font-medium flex items-center justify-center mx-auto mt-auto">
-                {selectedPanelistId === panelist.id ? "Hide Bio" : "View Bio"}
-                {selectedPanelistId === panelist.id ? (
-                  <IconChevronUp className="ml-1 h-4 w-4" />
-                ) : (
-                  <IconChevronDown className="ml-1 h-4 w-4" />
-                )}
-              </button>
+                    <button className="text-xs text-sky-600 hover:text-sky-700 font-medium flex items-center justify-center mx-auto mt-auto">
+                        {selectedPanelistId === panelist.id ? "Hide Bio" : "View Bio"}
+                        {selectedPanelistId === panelist.id ? (
+                        <IconChevronUp className="ml-1 h-4 w-4" />
+                        ) : (
+                        <IconChevronDown className="ml-1 h-4 w-4" />
+                        )}
+                    </button>
+                    </div>
+
+                    {selectedPanelistId === panelist.id && (
+                    <div className="bg-white p-4 -mt-2 rounded-b-xl shadow-lg border border-t-0 border-gray-200">
+                        <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
+                        {panelist.bio}
+                        </p>
+                    </div>
+                    )}
+                </div>
+                ))}
             </div>
-
-            {selectedPanelistId === panelist.id && (
-              <div className="bg-white p-4 -mt-2 rounded-b-xl shadow-lg border border-t-0 border-gray-200">
-                <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
-                  {panelist.bio}
-                </p>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
+        </div>
     </Card>
   );
 };
@@ -1025,157 +1027,140 @@ const InteractiveSection = () => {
     email: "",
     question: "",
   });
-  const [volunteerForm, setVolunteerForm] = useState({
-    name: "",
-    email: "",
-    roles: [],
-    message: "",
-  });
   const [activeTab, setActiveTab] = useState("questions");
   const [submitStatus, setSubmitStatus] = useState("");
 
   const handleQuestionSubmit = () => {
-    if (!questionForm.name || !questionForm.email || !questionForm.question) {
-      setSubmitStatus("Please fill in all required fields.");
-      setTimeout(() => setSubmitStatus(""), 3000);
-      return;
-    }
-
     // Open Google Form for questions
-    window.open("https://forms.gle/example-questions-form", "_blank");
+    window.open("https://forms.gle/vPqTJ7HZEFLd7Rk97", "_blank");
     setSubmitStatus("Opening secure Google Form for question submission...");
     setQuestionForm({ name: "", email: "", question: "" });
     setTimeout(() => setSubmitStatus(""), 3000);
   };
 
   const handleVolunteerSubmit = () => {
-    if (!volunteerForm.name || !volunteerForm.email) {
-      setSubmitStatus("Please fill in your name and email address.");
-      setTimeout(() => setSubmitStatus(""), 3000);
-      return;
-    }
-
     // Open Google Form for volunteers
-    window.open("https://forms.gle/example-volunteer-form", "_blank");
+    window.open("https://forms.gle/4m1vDN2FYm6K5g237", "_blank");
     setSubmitStatus("Opening secure Google Form for volunteer application...");
-    setVolunteerForm({ name: "", email: "", roles: [], message: "" });
     setTimeout(() => setSubmitStatus(""), 3000);
   };
 
   return (
-    <Card className="bg-gradient-to-br from-slate-50 to-sky-50">
-      <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-6 text-center">
-        Get Involved
-      </h2>
+    <Card className="bg-gradient-to-br from-slate-50 to-sky-50 p-0">
+      <div className="p-4 sm:p-6 md:p-8">
+        <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-6 text-center">
+            Get Involved
+        </h2>
 
-      <div className="flex flex-col sm:flex-row mb-6 bg-white rounded-lg p-1">
-        <button
-          onClick={() => setActiveTab("questions")}
-          className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors flex items-center justify-center ${
-            activeTab === "questions"
-              ? "bg-sky-600 text-white"
-              : "text-slate-600 hover:text-sky-600"
-          }`}
-        >
-          <IconQuestionMark className="h-4 w-4 mr-2" />
-          Submit Questions
-        </button>
-        <button
-          onClick={() => setActiveTab("volunteer")}
-          className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors flex items-center justify-center ${
-            activeTab === "volunteer"
-              ? "bg-sky-600 text-white"
-              : "text-slate-600 hover:text-sky-600"
-          }`}
-        >
-          <IconUsers className="h-4 w-4 mr-2" />
-          Volunteer
-        </button>
-      </div>
-
-      {submitStatus && (
-        <div className="mb-4 p-3 bg-blue-100 border border-blue-300 text-blue-700 rounded-lg text-sm flex items-center">
-          <IconInfo className="mr-2 flex-shrink-0" />
-          {submitStatus}
+        <div className="flex flex-col sm:flex-row mb-6 bg-white rounded-lg p-1">
+            <button
+            onClick={() => setActiveTab("questions")}
+            className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors flex items-center justify-center ${
+                activeTab === "questions"
+                ? "bg-sky-600 text-white"
+                : "text-slate-600 hover:text-sky-600"
+            }`}
+            >
+            <IconQuestionMark className="h-4 w-4 mr-2" />
+            Submit Questions
+            </button>
+            <button
+            onClick={() => setActiveTab("volunteer")}
+            className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors flex items-center justify-center ${
+                activeTab === "volunteer"
+                ? "bg-sky-600 text-white"
+                : "text-slate-600 hover:text-sky-600"
+            }`}
+            >
+            <IconUsers className="h-4 w-4 mr-2" />
+            Volunteer
+            </button>
         </div>
-      )}
 
-      {activeTab === "questions" && (
-        <div>
-          <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
-            <IconQuestionMark className="mr-2" />
-            Submit Your Question for the Town Hall
-          </h3>
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-            <p className="text-sm text-blue-800 flex items-start">
-              <IconInfo className="mr-2 mt-0.5 flex-shrink-0" />
-              Questions are submitted through a secure Google Form to ensure
-              anonymity and proper handling. Your information will only be used
-              for question attribution if selected.
-            </p>
-          </div>
-          <p className="text-sm text-slate-600 mb-4">
-            Have a question you'd like candidates to address? Submit it through
-            our secure form and it may be selected for the town hall Q&A
-            session.
-          </p>
-
-          <Button
-            type="primary"
-            onClick={handleQuestionSubmit}
-            icon={<IconExternalLink />}
-            className="w-full sm:w-auto"
-          >
-            Open Question Submission Form
-          </Button>
-        </div>
-      )}
-
-      {activeTab === "volunteer" && (
-        <div>
-          <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
-            <IconUsers className="mr-2" />
-            Volunteer for the Forum
-          </h3>
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
-            <p className="text-sm text-green-800 flex items-start">
-              <IconCheckCircle className="mr-2 mt-0.5 flex-shrink-0" />
-              Volunteer applications are processed through a secure Google Form.
-              We'll contact you with specific details and training information.
-            </p>
-          </div>
-          <p className="text-sm text-slate-600 mb-4">
-            Help make this important civic event a success! We need volunteers
-            for various roles throughout the event.
-          </p>
-
-          <div className="mb-4">
-            <h4 className="text-md font-semibold text-slate-700 mb-2">
-              Available Volunteer Roles:
-            </h4>
-            <div className="grid sm:grid-cols-2 gap-2">
-              {forumData.volunteerRoles.map((role) => (
-                <div
-                  key={role}
-                  className="text-sm text-slate-600 flex items-center"
-                >
-                  <IconCheckCircle className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
-                  {role}
-                </div>
-              ))}
+        {submitStatus && (
+            <div className="mb-4 p-3 bg-blue-100 border border-blue-300 text-blue-700 rounded-lg text-sm flex items-center">
+            <IconInfo className="mr-2 flex-shrink-0" />
+            {submitStatus}
             </div>
-          </div>
+        )}
 
-          <Button
-            type="success"
-            onClick={handleVolunteerSubmit}
-            icon={<IconExternalLink />}
-            className="w-full sm:w-auto"
-          >
-            Open Volunteer Application Form
-          </Button>
-        </div>
-      )}
+        {activeTab === "questions" && (
+            <div>
+            <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
+                <IconQuestionMark className="mr-2" />
+                Submit Your Question for the Town Hall
+            </h3>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                <p className="text-sm text-blue-800 flex items-start">
+                <IconInfo className="mr-2 mt-0.5 flex-shrink-0" />
+                Questions are submitted through a secure Google Form to ensure
+                anonymity and proper handling. Your information will only be used
+                for question attribution if selected.
+                </p>
+            </div>
+            <p className="text-sm text-slate-600 mb-4">
+                Have a question you'd like candidates to address? Submit it through
+                our secure form and it may be selected for the town hall Q&A
+                session.
+            </p>
+
+            <Button
+                type="primary"
+                onClick={handleQuestionSubmit}
+                icon={<IconExternalLink />}
+                className="w-full sm:w-auto"
+            >
+                Open Question Submission Form
+            </Button>
+            </div>
+        )}
+
+        {activeTab === "volunteer" && (
+            <div>
+            <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
+                <IconUsers className="mr-2" />
+                Volunteer for the Forum
+            </h3>
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                <p className="text-sm text-green-800 flex items-start">
+                <IconCheckCircle className="mr-2 mt-0.5 flex-shrink-0" />
+                Volunteer applications are processed through a secure Google Form.
+                We'll contact you with specific details and training information.
+                </p>
+            </div>
+            <p className="text-sm text-slate-600 mb-4">
+                Help make this important civic event a success! We need volunteers
+                for various roles throughout the event.
+            </p>
+
+            <div className="mb-4">
+                <h4 className="text-md font-semibold text-slate-700 mb-2">
+                Available Volunteer Roles:
+                </h4>
+                <div className="grid sm:grid-cols-2 gap-2">
+                {forumData.volunteerRoles.map((role) => (
+                    <div
+                    key={role}
+                    className="text-sm text-slate-600 flex items-center"
+                    >
+                    <IconCheckCircle className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
+                    {role}
+                    </div>
+                ))}
+                </div>
+            </div>
+
+            <Button
+                type="success"
+                onClick={handleVolunteerSubmit}
+                icon={<IconExternalLink />}
+                className="w-full sm:w-auto"
+            >
+                Open Volunteer Application Form
+            </Button>
+            </div>
+        )}
+      </div>
     </Card>
   );
 };
@@ -1280,77 +1265,79 @@ const KeyInformationSection = () => {
   ];
 
   return (
-    <Card>
-      <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-6 text-center">
-        Important Information
-      </h2>
+    <Card className="p-0">
+        <div className="p-4 sm:p-6 md:p-8">
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-6 text-center">
+                Important Information
+            </h2>
 
-      <div className="space-y-4">
-        {infoSections.map((section) => (
-          <div
-            key={section.id}
-            className="border border-gray-200 rounded-lg overflow-hidden"
-          >
-            <button
-              onClick={() =>
-                setExpandedSection(
-                  expandedSection === section.id ? null : section.id
-                )
-              }
-              className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 transition-colors"
-            >
-              <div className="flex items-center">
-                <div className="text-sky-600 mr-3">{section.icon}</div>
-                <span className="font-semibold text-slate-800">
-                  {section.title}
-                </span>
-              </div>
-              {expandedSection === section.id ? (
-                <IconChevronUp className="text-gray-400" />
-              ) : (
-                <IconChevronDown className="text-gray-400" />
-              )}
-            </button>
+            <div className="space-y-4">
+                {infoSections.map((section) => (
+                <div
+                    key={section.id}
+                    className="border border-gray-200 rounded-lg overflow-hidden"
+                >
+                    <button
+                    onClick={() =>
+                        setExpandedSection(
+                        expandedSection === section.id ? null : section.id
+                        )
+                    }
+                    className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 transition-colors"
+                    >
+                    <div className="flex items-center">
+                        <div className="text-sky-600 mr-3">{section.icon}</div>
+                        <span className="font-semibold text-slate-800">
+                        {section.title}
+                        </span>
+                    </div>
+                    {expandedSection === section.id ? (
+                        <IconChevronUp className="text-gray-400" />
+                    ) : (
+                        <IconChevronDown className="text-gray-400" />
+                    )}
+                    </button>
 
-            {expandedSection === section.id && (
-              <div className="px-4 pb-4 border-t border-gray-100">
-                {section.content}
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
+                    {expandedSection === section.id && (
+                    <div className="px-4 pb-4 border-t border-gray-100">
+                        {section.content}
+                    </div>
+                    )}
+                </div>
+                ))}
+            </div>
 
-      <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-        <h3 className="font-semibold text-blue-800 mb-2 flex items-center">
-          <IconExternalLink className="h-4 w-4 mr-2" />
-          Complete Documentation
-        </h3>
-        <p className="text-sm text-blue-700 mb-3">
-          For complete ground rules, candidate agreements, and detailed
-          guidelines, view our official documents.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-2">
-          <Button
-            type="secondary"
-            size="sm"
-            onClick={() =>
-              window.open("/WWF_Candidate_Forum_Public_Release.pdf", "_blank")
-            }
-            icon={<IconDocument />}
-          >
-            Public Release PDF
-          </Button>
-          <Button
-            type="secondary"
-            size="sm"
-            onClick={() => window.open("/candidate-agreement.pdf", "_blank")}
-            icon={<IconDocument />}
-          >
-            Candidate Agreement
-          </Button>
+            <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <h3 className="font-semibold text-blue-800 mb-2 flex items-center">
+                <IconExternalLink className="h-4 w-4 mr-2" />
+                Complete Documentation
+                </h3>
+                <p className="text-sm text-blue-700 mb-3">
+                For complete ground rules, candidate agreements, and detailed
+                guidelines, view our official documents.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-2">
+                <Button
+                    type="secondary"
+                    size="sm"
+                    onClick={() =>
+                    window.open("/WWF_Candidate_Forum_Public_Release.pdf", "_blank")
+                    }
+                    icon={<IconDocument />}
+                >
+                    Public Release PDF
+                </Button>
+                <Button
+                    type="secondary"
+                    size="sm"
+                    onClick={() => window.open("/candidate-agreement.pdf", "_blank")}
+                    icon={<IconDocument />}
+                >
+                    Candidate Agreement
+                </Button>
+                </div>
+            </div>
         </div>
-      </div>
     </Card>
   );
 };
@@ -1402,109 +1389,119 @@ const HomePage = ({ setActivePage }) => {
 
       <section className="py-10 md:py-12 px-4 bg-white">
         <div className="container mx-auto text-center">
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 mb-4">
-            Igniting Progress in West Windsor
-          </h2>
-          <p className="text-sm sm:text-md text-gray-700 max-w-3xl mx-auto mb-6 leading-relaxed">
-            West Windsor Forward is committed to empowering our neighbors,
-            advocating for impactful projects, and injecting fresh energy into
-            our community. We believe in responsive, accountable, and
-            transparent leadership.
-          </p>
-          <Button
-            onClick={() => {
-              setActivePage("About");
-            }}
-          >
-            Learn About Our Approach
-          </Button>
+            <div className="p-4 sm:p-6 md:p-8">
+                <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 mb-4">
+                    Igniting Progress in West Windsor
+                </h2>
+                <p className="text-sm sm:text-md text-gray-700 max-w-3xl mx-auto mb-6 leading-relaxed">
+                    West Windsor Forward is committed to empowering our neighbors,
+                    advocating for impactful projects, and injecting fresh energy into
+                    our community. We believe in responsive, accountable, and
+                    transparent leadership.
+                </p>
+                <Button
+                    onClick={() => {
+                    setActivePage("About");
+                    }}
+                >
+                    Learn About Our Approach
+                </Button>
+            </div>
         </div>
       </section>
 
       <section className="bg-slate-100 py-10 md:py-12 px-4 relative overflow-hidden">
         <DotPattern dotColor="text-sky-500 opacity-5" rows={10} cols={12} />
         <div className="container mx-auto relative z-10">
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 mb-8 text-center">
-            Key Initiatives
-          </h2>
-          <div className="grid md:grid-cols-2 gap-4 md:gap-6 lg:gap-8">
-            <Card className="flex flex-col transform hover:scale-105 transition-transform duration-300">
-              <div className="flex items-center mb-3">
-                <h3 className="text-lg sm:text-xl font-semibold text-sky-700">
-                  2025 Candidate Forum
-                </h3>
-              </div>
-              <p className="text-xs sm:text-sm text-gray-600 mb-3 flex-grow">
-                Providing a non-partisan platform for Mayoral and Council
-                candidates to engage with residents, ensuring informed
-                participation in our local democracy.
-              </p>
-              <Button
-                onClick={() => {
-                  setActivePage("Events");
-                }}
-                type="secondary"
-                className="mt-auto w-full sm:w-auto text-xs"
-              >
-                Event Details
-              </Button>
-            </Card>
-            <Card className="flex flex-col transform hover:scale-105 transition-transform duration-300">
-              <div className="flex items-center mb-3">
-                <h3 className="text-lg sm:text-xl font-semibold text-sky-700">
-                  Princeton Junction Station Improvement Project
-                </h3>
-              </div>
-              <p className="text-xs sm:text-sm text-gray-600 mb-3 flex-grow">
-                Transforming our vital transit hub into a welcoming, beautiful,
-                and vibrant community space through beautification, art, and
-                programming.
-              </p>
-              <Button
-                onClick={() => {
-                  const stationProject = projectsData.find(
-                    (p) => p.id === 2
-                  );
-                  setActivePage("ProjectDetails", stationProject);
-                }}
-                type="secondary"
-                className="mt-auto w-full sm:w-auto text-xs"
-              >
-                Project Information
-              </Button>
-            </Card>
+          <div className="p-4 sm:p-6 md:p-8">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 mb-8 text-center">
+                Key Initiatives
+            </h2>
+            <div className="grid md:grid-cols-2 gap-4 md:gap-6 lg:gap-8">
+                <Card className="flex flex-col transform hover:scale-105 transition-transform duration-300 p-0">
+                    <div className="p-4 sm:p-6 md:p-8">
+                        <div className="flex items-center mb-3">
+                            <h3 className="text-lg sm:text-xl font-semibold text-sky-700">
+                            2025 Candidate Forum
+                            </h3>
+                        </div>
+                        <p className="text-xs sm:text-sm text-gray-600 mb-3 flex-grow">
+                            Providing a non-partisan platform for Mayoral and Council
+                            candidates to engage with residents, ensuring informed
+                            participation in our local democracy.
+                        </p>
+                        <Button
+                            onClick={() => {
+                            setActivePage("Events");
+                            }}
+                            type="secondary"
+                            className="mt-auto w-full sm:w-auto text-xs"
+                        >
+                            Event Details
+                        </Button>
+                    </div>
+                </Card>
+                <Card className="flex flex-col transform hover:scale-105 transition-transform duration-300 p-0">
+                    <div className="p-4 sm:p-6 md:p-8">
+                        <div className="flex items-center mb-3">
+                            <h3 className="text-lg sm:text-xl font-semibold text-sky-700">
+                            Princeton Junction Station Improvement Project
+                            </h3>
+                        </div>
+                        <p className="text-xs sm:text-sm text-gray-600 mb-3 flex-grow">
+                            Transforming our vital transit hub into a welcoming, beautiful,
+                            and vibrant community space through beautification, art, and
+                            programming.
+                        </p>
+                        <Button
+                            onClick={() => {
+                            const stationProject = projectsData.find(
+                                (p) => p.id === 2
+                            );
+                            setActivePage("ProjectDetails", stationProject);
+                            }}
+                            type="secondary"
+                            className="mt-auto w-full sm:w-auto text-xs"
+                        >
+                            Project Information
+                        </Button>
+                    </div>
+                </Card>
+            </div>
           </div>
         </div>
       </section>
 
       <section className="py-10 md:py-12 px-4 bg-white">
         <div className="container mx-auto text-center">
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 mb-4">
-            Get Involved & Make an Impact
-          </h2>
-          <p className="text-sm sm:text-md text-gray-700 max-w-2xl mx-auto mb-6 leading-relaxed">
-            Your participation is crucial. Join us in mobilizing residents,
-            organizations, and resources to create a West Windsor where every
-            resident can thrive.
-          </p>
-          <div className="space-y-3 sm:space-y-0 sm:space-x-4 flex flex-col sm:flex-row justify-center">
-            <Button
-              onClick={() => {
-                setActivePage("Contact");
-              }}
-              className="w-full sm:w-auto"
-            >
-              Volunteer With Us
-            </Button>
-            <Button
-              onClick={() => {
-                setActivePage("Contact");
-              }}
-              type="secondary"
-              className="w-full sm:w-auto"
-            >
-              Contact & Support
-            </Button>
+          <div className="p-4 sm:p-6 md:p-8">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 mb-4">
+                Get Involved & Make an Impact
+            </h2>
+            <p className="text-sm sm:text-md text-gray-700 max-w-2xl mx-auto mb-6 leading-relaxed">
+                Your participation is crucial. Join us in mobilizing residents,
+                organizations, and resources to create a West Windsor where every
+                resident can thrive.
+            </p>
+            <div className="space-y-3 sm:space-y-0 sm:space-x-4 flex flex-col sm:flex-row justify-center">
+                <Button
+                onClick={() => {
+                    setActivePage("Contact");
+                }}
+                className="w-full sm:w-auto"
+                >
+                Volunteer With Us
+                </Button>
+                <Button
+                onClick={() => {
+                    setActivePage("Contact");
+                }}
+                type="secondary"
+                className="w-full sm:w-auto"
+                >
+                Contact & Support
+                </Button>
+            </div>
           </div>
         </div>
       </section>
@@ -1533,160 +1530,180 @@ const AboutPage = () => {
       <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-800 mb-8 sm:mb-10 md:mb-12 text-center">
         About West Windsor Forward
       </h1>
-      <Card className="bg-slate-50" hasDotPattern>
-        <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-sky-700 mb-3 sm:mb-4">
-          About Us
-        </h2>
-        <p className="text-gray-700 leading-relaxed mb-3 sm:mb-4 text-sm sm:text-md md:text-lg">
-          West Windsor Forward was founded by Parth Gupta and Darshan
-          Chidambaram, dedicated West Windsor residents and students at the
-          Lawrenceville School. Driven by a shared belief that our community can
-          achieve even greater progress, they established this coalition to
-          ignite positive change and work collaboratively towards a better
-          future for all.
-        </p>
-        <p className="text-gray-700 leading-relaxed text-sm sm:text-md md:text-lg">
-          We are committed to empowering our neighbors, advocating for impactful
-          projects, and injecting fresh energy and innovation into community
-          initiatives. Our approach is rooted in demanding responsiveness,
-          accountability, and transparency from local leaders, and in fostering
-          strong partnerships to maximize our collective impact.
-        </p>
-      </Card>
-      <Card>
-        <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-sky-700 mb-6 sm:mb-8 text-center">
-          Meet the Founders
-        </h2>
-        <div className="grid md:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
-          {teamMembers.map((member) => (
-            <div
-              key={member.name}
-              className="bg-slate-50 p-4 sm:p-6 rounded-xl shadow-md text-center transition-all duration-300 hover:shadow-lg hover:scale-105"
-            >
-              <img
-                src={member.image}
-                alt={member.name}
-                className="w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full mx-auto mb-4 sm:mb-5 border-4 border-sky-500 shadow-sm"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = `https://placehold.co/150x150/E0F2FE/0C4A6E?text=${member.name.substring(
-                    0,
-                    1
-                  )}${
-                    member.name.split(" ")[1]
-                      ? member.name.split(" ")[1].substring(0, 1)
-                      : ""
-                  }&font=Lora`;
-                }}
-              />
-              <h3 className="text-md sm:text-lg md:text-xl font-semibold text-slate-800">
-                {member.name}
-              </h3>
-              <p className="text-sky-600 font-medium mb-2 sm:mb-3 text-xs sm:text-sm md:text-base">
-                {member.role}
-              </p>
-              <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
-                {member.bio}
-              </p>
-            </div>
-          ))}
+      <Card className="bg-slate-50 p-0" hasDotPattern>
+        <div className="p-4 sm:p-6 md:p-8">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-sky-700 mb-3 sm:mb-4">
+            About Us
+            </h2>
+            <p className="text-gray-700 leading-relaxed mb-3 sm:mb-4 text-sm sm:text-md md:text-lg">
+            West Windsor Forward was founded by Parth Gupta and Darshan
+            Chidambaram, dedicated West Windsor residents and students at the
+            Lawrenceville School. Driven by a shared belief that our community can
+            achieve even greater progress, they established this coalition to
+            ignite positive change and work collaboratively towards a better
+            future for all.
+            </p>
+            <p className="text-gray-700 leading-relaxed text-sm sm:text-md md:text-lg">
+            We are committed to empowering our neighbors, advocating for impactful
+            projects, and injecting fresh energy and innovation into community
+            initiatives. Our approach is rooted in demanding responsiveness,
+            accountability, and transparency from local leaders, and in fostering
+            strong partnerships to maximize our collective impact.
+            </p>
         </div>
       </Card>
-      <Card className="bg-slate-50" hasDotPattern>
-        <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-sky-700 mb-4 sm:mb-6">
-          Our Guiding Principles
-        </h2>
-        <p className="text-sm sm:text-md md:text-lg text-gray-700 leading-relaxed mb-4 sm:mb-6">
-          Our work is driven by an unwavering passion to create a West Windsor
-          where every resident has the opportunity to thrive, where voices are
-          valued, and where tangible progress can be observed. This is reflected
-          in our core commitments:
-        </p>
-        <ul className="grid md:grid-cols-1 gap-y-3 sm:gap-y-4 text-gray-700 text-sm sm:text-md md:text-lg leading-relaxed">
-          {[
-            {
-              title: "Empowering Neighbors",
-              detail:
-                "Providing tools, knowledge, and opportunities for active participation in shaping our community's future.",
-            },
-            {
-              title: "Impactful Advocacy",
-              detail:
-                "Championing projects that improve quality of life, build community, and foster growth, while demanding responsive leadership.",
-            },
-            {
-              title: "Innovation & Energy",
-              detail:
-                "Addressing long-neglected needs and enhancing civic engagement through targeted, fresh initiatives.",
-            },
-            {
-              title: "Strategic Mobilization",
-              detail:
-                "Uniting residents, organizations, and resources for sustainable, far-reaching collective impact through strong partnerships.",
-            },
-            {
-              title: "Non-Partisanship & Inclusivity",
-              detail:
-                "Operating independently and ensuring all voices are valued in our pursuit of a better West Windsor.",
-            },
-          ].map((value) => (
-            <li key={value.title} className="flex">
-              <span>
-                <strong>{value.title}:</strong> {value.detail}
-              </span>
-            </li>
-          ))}
-        </ul>
+      <Card className="p-0">
+        <div className="p-4 sm:p-6 md:p-8">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-sky-700 mb-6 sm:mb-8 text-center">
+            Meet the Founders
+            </h2>
+            <div className="grid md:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
+            {teamMembers.map((member) => (
+                <div
+                key={member.name}
+                className="bg-slate-50 p-4 sm:p-6 rounded-xl shadow-md text-center transition-all duration-300 hover:shadow-lg hover:scale-105"
+                >
+                <img
+                    src={member.image}
+                    alt={member.name}
+                    className="w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full mx-auto mb-4 sm:mb-5 border-4 border-sky-500 shadow-sm"
+                    onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = `https://placehold.co/150x150/E0F2FE/0C4A6E?text=${member.name.substring(
+                        0,
+                        1
+                    )}${
+                        member.name.split(" ")[1]
+                        ? member.name.split(" ")[1].substring(0, 1)
+                        : ""
+                    }&font=Lora`;
+                    }}
+                />
+                <h3 className="text-md sm:text-lg md:text-xl font-semibold text-slate-800">
+                    {member.name}
+                </h3>
+                <p className="text-sky-600 font-medium mb-2 sm:mb-3 text-xs sm:text-sm md:text-base">
+                    {member.role}
+                </p>
+                <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
+                    {member.bio}
+                </p>
+                </div>
+            ))}
+            </div>
+        </div>
+      </Card>
+      <Card className="bg-slate-50 p-0" hasDotPattern>
+        <div className="p-4 sm:p-6 md:p-8">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-sky-700 mb-4 sm:mb-6">
+            Our Guiding Principles
+            </h2>
+            <p className="text-sm sm:text-md md:text-lg text-gray-700 leading-relaxed mb-4 sm:mb-6">
+            Our work is driven by an unwavering passion to create a West Windsor
+            where every resident has the opportunity to thrive, where voices are
+            valued, and where tangible progress can be observed. This is reflected
+            in our core commitments:
+            </p>
+            <ul className="grid md:grid-cols-1 gap-y-3 sm:gap-y-4 text-gray-700 text-sm sm:text-md md:text-lg leading-relaxed">
+            {[
+                {
+                title: "Empowering Neighbors",
+                detail:
+                    "Providing tools, knowledge, and opportunities for active participation in shaping our community's future.",
+                },
+                {
+                title: "Impactful Advocacy",
+                detail:
+                    "Championing projects that improve quality of life, build community, and foster growth, while demanding responsive leadership.",
+                },
+                {
+                title: "Innovation & Energy",
+                detail:
+                    "Addressing long-neglected needs and enhancing civic engagement through targeted, fresh initiatives.",
+                },
+                {
+                title: "Strategic Mobilization",
+                detail:
+                    "Uniting residents, organizations, and resources for sustainable, far-reaching collective impact through strong partnerships.",
+                },
+                {
+                title: "Non-Partisanship & Inclusivity",
+                detail:
+                    "Operating independently and ensuring all voices are valued in our pursuit of a better West Windsor.",
+                },
+            ].map((value) => (
+                <li key={value.title} className="flex">
+                <span>
+                    <strong>{value.title}:</strong> {value.detail}
+                </span>
+                </li>
+            ))}
+            </ul>
+        </div>
       </Card>
     </div>
   );
 };
 
 // PROJECTS PAGE
+// UPDATED: This component now aligns the buttons correctly.
 const ProjectCard = ({ project, setActivePage }) => {
-  const handleCardClick = () => {
-    if (project.redirectTo) {
-      setActivePage(project.redirectTo);
-    } else {
-      setActivePage("ProjectDetails", project);
-    }
-  };
-
-  const handleButtonClick = (e) => {
-    e.stopPropagation();
-    handleCardClick();
-  };
-
-  return (
-    <Card
-      onClick={handleCardClick}
-      className="flex flex-col h-full group"
-      hasDotPattern
-    >
-      <img
-        src={project.image}
-        alt={project.title}
-        className="w-full h-48 object-cover rounded-t-lg mb-4 transition-transform duration-300 group-hover:scale-105"
-        onError={(e) => {
-          e.target.onerror = null;
-          e.target.src = `https://placehold.co/600x400/CCCCCC/FFFFFF?text=Project+Image&font=Lora`;
-        }}
-      />
-      <div className="flex-grow flex flex-col px-4 pb-4">
-        <h3 className="text-lg sm:text-xl font-semibold text-sky-700 group-hover:text-sky-600 transition-colors mb-2 min-h-[3.5rem] line-clamp-2">
-          {project.title}
-        </h3>
-        <p className="text-sm text-gray-600 mb-4 line-clamp-3">
-          {project.shortGoal}
-        </p>
-        <div className="mb-4">
-          <span className="inline-block text-xs font-medium px-2 py-1 bg-sky-100 text-sky-700 rounded-full">
-            {project.status}
-          </span>
-        </div>
-        <div className="flex-grow">
-          {project.partnerOrganizations &&
-            project.partnerOrganizations.length > 0 && (
+    const handleCardClick = (e) => {
+      // Prevent navigation if a link or button inside the card is clicked.
+      if (e.target.closest('a, button')) {
+        return;
+      }
+      if (project.redirectTo) {
+        setActivePage(project.redirectTo);
+      } else {
+        setActivePage("ProjectDetails", project);
+      }
+    };
+  
+    const handleButtonClick = (e) => {
+      e.stopPropagation(); // Prevent the card's onClick from firing.
+      if (project.redirectTo) {
+        setActivePage(project.redirectTo);
+      } else {
+        setActivePage("ProjectDetails", project);
+      }
+    };
+  
+    return (
+      <Card
+        onClick={handleCardClick}
+        className="flex flex-col h-full group p-0" // Set padding to 0 on the outer card
+        hasDotPattern
+      >
+        <img
+          src={project.image}
+          alt={project.title}
+          className="w-full h-48 object-cover rounded-t-lg transition-transform duration-300 group-hover:scale-105"
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = `https://placehold.co/600x400/CCCCCC/FFFFFF?text=Project+Image&font=Lora`;
+          }}
+        />
+        
+        {/* This div contains all content and grows to push the button down */}
+        <div className="flex-grow flex flex-col p-4 sm:p-6">
+          <h3 className="text-lg sm:text-xl font-semibold text-sky-700 group-hover:text-sky-600 transition-colors mb-2 min-h-[3.5rem] line-clamp-2">
+            {project.title}
+          </h3>
+  
+          <p className="text-sm text-gray-600 mb-4 line-clamp-3">
+            {project.shortGoal}
+          </p>
+  
+          <div className="mb-4">
+            <span className="inline-block text-xs font-medium px-2 py-1 bg-sky-100 text-sky-700 rounded-full">
+              {project.status}
+            </span>
+          </div>
+  
+          {/* This div will grow to take up remaining space if partners exist */}
+          <div className="flex-grow">
+            {project.partnerOrganizations && project.partnerOrganizations.length > 0 && (
               <>
                 <h4 className="text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">
                   Partners:
@@ -1703,8 +1720,11 @@ const ProjectCard = ({ project, setActivePage }) => {
                 </div>
               </>
             )}
+          </div>
         </div>
-        <div className="mt-4">
+        
+        {/* Button container is the last item, pushed to the bottom */}
+        <div className="px-4 sm:px-6 pb-4 sm:pb-6 mt-auto">
           <Button
             onClick={handleButtonClick}
             type="secondary"
@@ -1713,10 +1733,9 @@ const ProjectCard = ({ project, setActivePage }) => {
             {project.redirectTo ? "View Event Details" : "View Project Details"}
           </Button>
         </div>
-      </div>
-    </Card>
-  );
-};
+      </Card>
+    );
+  };
 
 const ProjectsPage = ({ setActivePage }) => {
   return (
@@ -1791,183 +1810,185 @@ const ProjectDetailPage = ({ project, setActivePage }) => {
         Back to All Projects
       </Button>
 
-      <Card noHoverEffect className="overflow-visible">
-        <div className="lg:flex lg:space-x-6 md:space-x-8">
-          <div className="lg:w-2/5 mb-6 lg:mb-0">
-            <img
-              src={project.image}
-              alt={project.title}
-              className="rounded-lg shadow-md w-full h-auto object-cover aspect-video"
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = `https://placehold.co/600x338/CCCCCC/FFFFFF?text=Project+Image&font=Lora`;
-              }}
-            />
-          </div>
-          <div className="lg:w-3/5">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-sky-700 mb-2">
-              {project.title}
-            </h1>
-            <div className="flex items-center text-xs sm:text-sm md:text-md text-gray-500 mb-2">
-              {project.status.toLowerCase().includes("upcoming") ? (
-                <IconClock className="mr-2 text-amber-600 h-5 w-5 flex-shrink-0" />
-              ) : (
-                <IconCheckCircle className="mr-2 text-green-600 h-5 w-5 flex-shrink-0" />
-              )}
-              <span>
-                <strong>Status:</strong> {project.status}
-              </span>
+      <Card noHoverEffect className="overflow-visible p-0">
+        <div className="p-4 sm:p-6 md:p-8">
+            <div className="lg:flex lg:space-x-6 md:space-x-8">
+            <div className="lg:w-2/5 mb-6 lg:mb-0">
+                <img
+                src={project.image}
+                alt={project.title}
+                className="rounded-lg shadow-md w-full h-auto object-cover aspect-video"
+                onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = `https://placehold.co/600x338/CCCCCC/FFFFFF?text=Project+Image&font=Lora`;
+                }}
+                />
             </div>
-            <p className="text-xs sm:text-sm md:text-md text-gray-600 mb-4">
-              <strong>Goal:</strong> {project.goal}
-            </p>
-          </div>
-        </div>
-
-        <div className="prose max-w-none mt-6 sm:mt-8 text-gray-700 leading-relaxed text-xs sm:text-sm md:text-base">
-          <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-800 border-b-2 border-sky-200 pb-2 mb-3 sm:mb-4">
-            Project Overview
-          </h2>
-          <p>{project.description}</p>
-
-          {project.initiatives && (
-            <>
-              <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-800 border-b-2 border-sky-200 pb-2 mt-6 sm:mt-8 mb-3 sm:mb-4">
-                Project Initiatives
-              </h2>
-              <div className="grid sm:grid-cols-2 gap-4 mb-6">
-                {project.initiatives.map((initiative, index) => {
-                  return (
-                    <div
-                      key={index}
-                      className="bg-gradient-to-br from-sky-50 to-slate-50 p-4 rounded-lg border border-sky-200"
-                    >
-                      <div className="flex items-center mb-2">
-                        <div className="text-sky-600 mr-3 flex justify-center items-center">
-                          {initiative.icon}
-                        </div>
-                        <h3 className="font-semibold text-slate-800 text-sm">
-                          {initiative.title}
-                        </h3>
-                      </div>
-                      <p className="text-xs text-slate-600 mb-2">
-                        {initiative.description}
-                      </p>
-                      <span className="text-xs font-medium px-2 py-1 bg-sky-100 text-sky-700 rounded">
-                        {initiative.status}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </>
-          )}
-
-          <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-800 border-b-2 border-sky-200 pb-2 mt-6 sm:mt-8 mb-3 sm:mb-4">
-            Project Timeline & Milestones
-          </h2>
-          <div className="space-y-3 sm:space-y-4">
-            {project.timeline.map((item, index) => (
-              <div
-                key={index}
-                className={`flex items-start p-2.5 sm:p-3 md:p-4 rounded-lg border-l-4 ${
-                  item.completed
-                    ? "border-green-500 bg-green-50 text-green-800"
-                    : "border-sky-500 bg-sky-50 text-sky-800"
-                }`}
-              >
-                <div className="mr-2 sm:mr-3 mt-0.5 sm:mt-1 flex-shrink-0">
-                  {item.completed ? (
-                    <IconCheckCircle className="text-green-500 h-5 w-5 sm:h-6 sm:w-6" />
-                  ) : (
-                    <IconClock className="text-sky-500 h-5 w-5 sm:h-6 sm:w-6" />
-                  )}
+            <div className="lg:w-3/5">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-sky-700 mb-2">
+                {project.title}
+                </h1>
+                <div className="flex items-center text-xs sm:text-sm md:text-md text-gray-500 mb-2">
+                {project.status.toLowerCase().includes("upcoming") ? (
+                    <IconClock className="mr-2 text-amber-600 h-5 w-5 flex-shrink-0" />
+                ) : (
+                    <IconCheckCircle className="mr-2 text-green-600 h-5 w-5 flex-shrink-0" />
+                )}
+                <span>
+                    <strong>Status:</strong> {project.status}
+                </span>
                 </div>
-                <div>
-                  <h4 className="font-semibold text-sm sm:text-md md:text-lg">
-                    {item.stage}
-                  </h4>
-                  <p className="text-xs sm:text-sm opacity-90">
-                    {item.details}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
+                <p className="text-xs sm:text-sm md:text-md text-gray-600 mb-4">
+                <strong>Goal:</strong> {project.goal}
+                </p>
+            </div>
+            </div>
 
-          <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-800 border-b-2 border-sky-200 pb-2 mt-6 sm:mt-8 mb-3 sm:mb-4">
-            Envisioned Impact
-          </h2>
-          <p>{project.impact}</p>
+            <div className="prose max-w-none mt-6 sm:mt-8 text-gray-700 leading-relaxed text-xs sm:text-sm md:text-base">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-800 border-b-2 border-sky-200 pb-2 mb-3 sm:mb-4">
+                Project Overview
+            </h2>
+            <p>{project.description}</p>
 
-          {project.partnerOrganizations &&
-            project.partnerOrganizations.length > 0 && (
-              <>
+            {project.initiatives && (
+                <>
                 <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-800 border-b-2 border-sky-200 pb-2 mt-6 sm:mt-8 mb-3 sm:mb-4">
-                  Our Partners
+                    Project Initiatives
+                </h2>
+                <div className="grid sm:grid-cols-2 gap-4 mb-6">
+                    {project.initiatives.map((initiative, index) => {
+                    return (
+                        <div
+                        key={index}
+                        className="bg-gradient-to-br from-sky-50 to-slate-50 p-4 rounded-lg border border-sky-200"
+                        >
+                        <div className="flex items-center mb-2">
+                            <div className="text-sky-600 mr-3 flex justify-center items-center">
+                            {initiative.icon}
+                            </div>
+                            <h3 className="font-semibold text-slate-800 text-sm">
+                            {initiative.title}
+                            </h3>
+                        </div>
+                        <p className="text-xs text-slate-600 mb-2">
+                            {initiative.description}
+                        </p>
+                        <span className="text-xs font-medium px-2 py-1 bg-sky-100 text-sky-700 rounded">
+                            {initiative.status}
+                        </span>
+                        </div>
+                    );
+                    })}
+                </div>
+                </>
+            )}
+
+            <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-800 border-b-2 border-sky-200 pb-2 mt-6 sm:mt-8 mb-3 sm:mb-4">
+                Project Timeline & Milestones
+            </h2>
+            <div className="space-y-3 sm:space-y-4">
+                {project.timeline.map((item, index) => (
+                <div
+                    key={index}
+                    className={`flex items-start p-2.5 sm:p-3 md:p-4 rounded-lg border-l-4 ${
+                    item.completed
+                        ? "border-green-500 bg-green-50 text-green-800"
+                        : "border-sky-500 bg-sky-50 text-sky-800"
+                    }`}
+                >
+                    <div className="mr-2 sm:mr-3 mt-0.5 sm:mt-1 flex-shrink-0">
+                    {item.completed ? (
+                        <IconCheckCircle className="text-green-500 h-5 w-5 sm:h-6 sm:w-6" />
+                    ) : (
+                        <IconClock className="text-sky-500 h-5 w-5 sm:h-6 sm:w-6" />
+                    )}
+                    </div>
+                    <div>
+                    <h4 className="font-semibold text-sm sm:text-md md:text-lg">
+                        {item.stage}
+                    </h4>
+                    <p className="text-xs sm:text-sm opacity-90">
+                        {item.details}
+                    </p>
+                    </div>
+                </div>
+                ))}
+            </div>
+
+            <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-800 border-b-2 border-sky-200 pb-2 mt-6 sm:mt-8 mb-3 sm:mb-4">
+                Envisioned Impact
+            </h2>
+            <p>{project.impact}</p>
+
+            {project.partnerOrganizations &&
+                project.partnerOrganizations.length > 0 && (
+                <>
+                    <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-800 border-b-2 border-sky-200 pb-2 mt-6 sm:mt-8 mb-3 sm:mb-4">
+                    Our Partners
+                    </h2>
+                    <ul className="list-none p-0 flex flex-wrap gap-2 sm:gap-3">
+                    {project.partnerOrganizations.map((org) => (
+                        <li
+                        key={org}
+                        className="bg-slate-100 text-slate-700 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full text-xs sm:text-sm shadow-sm flex items-center"
+                        >
+                        {org}
+                        </li>
+                    ))}
+                    </ul>
+                </>
+                )}
+            {project.fundingSources && project.fundingSources.length > 0 && (
+                <>
+                <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-800 border-b-2 border-sky-200 pb-2 mt-6 sm:mt-8 mb-3 sm:mb-4">
+                    Funding & Support
                 </h2>
                 <ul className="list-none p-0 flex flex-wrap gap-2 sm:gap-3">
-                  {project.partnerOrganizations.map((org) => (
+                    {project.fundingSources.map((source) => (
                     <li
-                      key={org}
-                      className="bg-slate-100 text-slate-700 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full text-xs sm:text-sm shadow-sm flex items-center"
+                        key={source}
+                        className="bg-emerald-50 text-emerald-700 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full text-xs sm:text-sm shadow-sm flex items-center"
                     >
-                      {org}
+                        {source}
                     </li>
-                  ))}
+                    ))}
                 </ul>
-              </>
+                </>
             )}
-          {project.fundingSources && project.fundingSources.length > 0 && (
-            <>
-              <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-800 border-b-2 border-sky-200 pb-2 mt-6 sm:mt-8 mb-3 sm:mb-4">
-                Funding & Support
-              </h2>
-              <ul className="list-none p-0 flex flex-wrap gap-2 sm:gap-3">
-                {project.fundingSources.map((source) => (
-                  <li
-                    key={source}
-                    className="bg-emerald-50 text-emerald-700 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full text-xs sm:text-sm shadow-sm flex items-center"
-                  >
-                    {source}
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
 
-          <div className="mt-8 sm:mt-10 p-4 sm:p-6 bg-sky-50 rounded-lg border border-sky-200">
-            <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-sky-700 mb-3 flex items-center">
-              <IconUsers className="mr-2" />
-              How You Can Contribute
-            </h2>
-            <p className="text-gray-700 leading-relaxed mb-4 text-xs sm:text-sm md:text-base">
-              {project.getInvolved}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Button
-                onClick={() => {
-                  setActivePage("Contact");
-                }}
-                icon={<IconUsers />}
-                className="text-xs sm:text-sm"
-              >
-                Volunteer or Offer Support
-              </Button>
-              {project.id === 2 && (
+            <div className="mt-8 sm:mt-10 p-4 sm:p-6 bg-sky-50 rounded-lg border border-sky-200">
+                {/* UPDATED: Removed the icon from this heading */}
+                <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-sky-700 mb-3">
+                How You Can Contribute
+                </h2>
+                <p className="text-gray-700 leading-relaxed mb-4 text-xs sm:text-sm md:text-base">
+                {project.getInvolved}
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3">
                 <Button
-                  onClick={() =>
-                    window.open("/WWF_Station_Proposal.pdf", "_blank")
-                  }
-                  type="secondary"
-                  icon={<IconDocument />}
-                  className="text-xs sm:text-sm"
+                    onClick={() => {
+                    setActivePage("Contact");
+                    }}
+                    icon={<IconUsers />}
+                    className="text-xs sm:text-sm"
                 >
-                  Read Full Proposal
+                    Volunteer or Offer Support
                 </Button>
-              )}
+                {project.id === 2 && (
+                    <Button
+                    onClick={() =>
+                        window.open("/WWF_Station_Proposal.pdf", "_blank")
+                    }
+                    type="secondary"
+                    icon={<IconDocument />}
+                    className="text-xs sm:text-sm"
+                    >
+                    Read Full Proposal
+                    </Button>
+                )}
+                </div>
             </div>
-          </div>
+            </div>
         </div>
       </Card>
     </div>
@@ -1987,34 +2008,36 @@ const EventsPage = ({ setActivePage }) => {
         <InteractiveSection />
         <KeyInformationSection />
 
-        <Card className="text-center bg-gradient-to-r from-sky-600 to-indigo-600 text-white">
-          <h2 className="text-xl sm:text-2xl font-bold mb-4">
-            Be Part of West Windsor's Democratic Process
-          </h2>
-          <p className="text-sky-100 mb-6 max-w-2xl mx-auto">
-            Your participation makes our community stronger. Whether as an
-            attendee, volunteer, or question submitter, your voice matters in
-            shaping West Windsor's future.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button
-              onClick={() => setActivePage("Contact")}
-              type="secondary"
-              size="lg"
-              icon={<IconMail />}
-            >
-              Contact Us
-            </Button>
-            <Button
-              type="secondary"
-              size="lg"
-              icon={<IconExternalLink />}
-              onClick={() => {
-                setActivePage("About");
-              }}
-            >
-              Learn More About Us
-            </Button>
+        <Card className="text-center bg-gradient-to-r from-sky-600 to-indigo-600 text-white p-0">
+          <div className="p-4 sm:p-6 md:p-8">
+            <h2 className="text-xl sm:text-2xl font-bold mb-4">
+                Be Part of West Windsor's Democratic Process
+            </h2>
+            <p className="text-sky-100 mb-6 max-w-2xl mx-auto">
+                Your participation makes our community stronger. Whether as an
+                attendee, volunteer, or question submitter, your voice matters in
+                shaping West Windsor's future.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <Button
+                onClick={() => setActivePage("Contact")}
+                type="secondary"
+                size="lg"
+                icon={<IconMail />}
+                >
+                Contact Us
+                </Button>
+                <Button
+                type="secondary"
+                size="lg"
+                icon={<IconExternalLink />}
+                onClick={() => {
+                    setActivePage("About");
+                }}
+                >
+                Learn More About Us
+                </Button>
+            </div>
           </div>
         </Card>
       </div>
@@ -2095,144 +2118,148 @@ const ContactPage = () => {
         Contact Us
       </h1>
       <div className="grid md:grid-cols-2 gap-6 md:gap-8 lg:gap-10">
-        <Card className="bg-slate-50 border-slate-200" hasDotPattern>
-          <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-sky-700 mb-4 sm:mb-6">
-            Contact Information
-          </h2>
-          <p className="text-gray-700 leading-relaxed mb-4 sm:mb-6 text-xs sm:text-sm md:text-lg">
-            We welcome your questions and ideas! Reach out to learn more or
-            support our initiatives.
-          </p>
-          <div className="space-y-4 sm:space-y-5">
-            <div className="flex items-start">
-              <IconMail className="text-sky-600 mr-2 sm:mr-3 mt-0.5 sm:mt-1 flex-shrink-0 h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6" />
-              <div>
-                <strong className="text-slate-700 text-xs sm:text-sm md:text-base">
-                  Email:
-                </strong>
-                <ul className="list-none text-gray-600 mt-1 space-y-1 text-2xs sm:text-xs md:text-sm">
-                  <li>
-                    <a
-                      href="mailto:contact@westwindsorforward.org"
-                      className="hover:text-sky-500 transition-colors"
-                    >
-                      contact@westwindsorforward.org
-                    </a>
-                  </li>
-                </ul>
-              </div>
+        <Card className="bg-slate-50 border-slate-200 p-0" hasDotPattern>
+          <div className="p-4 sm:p-6 md:p-8">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-sky-700 mb-4 sm:mb-6">
+                Contact Information
+            </h2>
+            <p className="text-gray-700 leading-relaxed mb-4 sm:mb-6 text-xs sm:text-sm md:text-lg">
+                We welcome your questions and ideas! Reach out to learn more or
+                support our initiatives.
+            </p>
+            <div className="space-y-4 sm:space-y-5">
+                <div className="flex items-start">
+                <IconMail className="text-sky-600 mr-2 sm:mr-3 mt-0.5 sm:mt-1 flex-shrink-0 h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6" />
+                <div>
+                    <strong className="text-slate-700 text-xs sm:text-sm md:text-base">
+                    Email:
+                    </strong>
+                    <ul className="list-none text-gray-600 mt-1 space-y-1 text-2xs sm:text-xs md:text-sm">
+                    <li>
+                        <a
+                        href="mailto:contact@westwindsorforward.org"
+                        className="hover:text-sky-500 transition-colors"
+                        >
+                        contact@westwindsorforward.org
+                        </a>
+                    </li>
+                    </ul>
+                </div>
+                </div>
             </div>
-          </div>
-          <p className="text-gray-700 mt-6 sm:mt-8 text-xs sm:text-sm md:text-lg">
-            Stay connected! Follow us on social media for the latest news and
-            ways to engage.
-          </p>
-          <div className="mt-4">
-            <a
-              href="https://www.facebook.com/profile.php?id=61575121893868"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center text-sky-600 hover:text-sky-700 transition-colors text-sm"
-            >
-              <IconFacebook />
-              <span className="ml-2">Follow us on Facebook</span>
-            </a>
+            <p className="text-gray-700 mt-6 sm:mt-8 text-xs sm:text-sm md:text-lg">
+                Stay connected! Follow us on social media for the latest news and
+                ways to engage.
+            </p>
+            <div className="mt-4">
+                <a
+                href="https://www.facebook.com/profile.php?id=61575121893868"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center text-sky-600 hover:text-sky-700 transition-colors text-sm"
+                >
+                <IconFacebook />
+                <span className="ml-2">Follow us on Facebook</span>
+                </a>
+            </div>
           </div>
         </Card>
-        <Card hasDotPattern>
-          <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-sky-700 mb-4 sm:mb-6">
-            Send Us a Message
-          </h2>
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-            <p className="text-sm text-blue-800 flex items-start">
-              <IconInfo className="mr-2 mt-0.5 flex-shrink-0" />
-              This form is powered by Web3Forms, a secure third-party service
-              that ensures your data privacy and message delivery.
-            </p>
+        <Card hasDotPattern className="p-0">
+          <div className="p-4 sm:p-6 md:p-8">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-sky-700 mb-4 sm:mb-6">
+                Send Us a Message
+            </h2>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                <p className="text-sm text-blue-800 flex items-start">
+                <IconInfo className="mr-2 mt-0.5 flex-shrink-0" />
+                This form is powered by Web3Forms, a secure third-party service
+                that ensures your data privacy and message delivery.
+                </p>
+            </div>
+            {result && (
+                <div
+                className={`mb-3 sm:mb-4 p-2.5 sm:p-3 rounded-md border text-xs sm:text-sm ${
+                    result === "Form Submitted Successfully"
+                    ? "bg-green-100 text-green-700 border-green-300"
+                    : result === "Sending...."
+                    ? "bg-blue-100 text-blue-700 border-blue-300"
+                    : "bg-red-100 text-red-700 border-red-300"
+                }`}
+                >
+                {result}
+                </div>
+            )}
+            <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
+                <div>
+                <label
+                    htmlFor="name"
+                    className="block text-2xs sm:text-xs font-medium text-gray-700 mb-0.5 sm:mb-1"
+                >
+                    Full Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                    type="text"
+                    name="name"
+                    id="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    className="mt-1 block w-full px-2.5 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-xs sm:text-sm"
+                    required
+                />
+                </div>
+                <div>
+                <label
+                    htmlFor="email"
+                    className="block text-2xs sm:text-xs font-medium text-gray-700 mb-0.5 sm:mb-1"
+                >
+                    Email Address <span className="text-red-500">*</span>
+                </label>
+                <input
+                    type="email"
+                    name="email"
+                    id="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="mt-1 block w-full px-2.5 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-xs sm:text-sm"
+                    required
+                />
+                </div>
+                <div>
+                <label
+                    htmlFor="message"
+                    className="block text-2xs sm:text-xs font-medium text-gray-700 mb-0.5 sm:mb-1"
+                >
+                    Message <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                    name="message"
+                    id="message"
+                    rows={4}
+                    value={formData.message}
+                    onChange={handleChange}
+                    className="mt-1 block w-full px-2.5 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-xs sm:text-sm"
+                    required
+                ></textarea>
+                </div>
+                <div>
+                <Button
+                    isSubmit
+                    type="primary"
+                    className="w-full text-xs sm:text-sm md:text-base py-2 sm:py-2.5"
+                    disabled={result === "Sending...."}
+                    icon={
+                    result === "Sending...." ? (
+                        <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-white"></div>
+                    ) : (
+                        <IconMail />
+                    )
+                    }
+                >
+                    {result === "Sending...." ? "Sending..." : "Send Message"}
+                </Button>
+                </div>
+            </form>
           </div>
-          {result && (
-            <div
-              className={`mb-3 sm:mb-4 p-2.5 sm:p-3 rounded-md border text-xs sm:text-sm ${
-                result === "Form Submitted Successfully"
-                  ? "bg-green-100 text-green-700 border-green-300"
-                  : result === "Sending...."
-                  ? "bg-blue-100 text-blue-700 border-blue-300"
-                  : "bg-red-100 text-red-700 border-red-300"
-              }`}
-            >
-              {result}
-            </div>
-          )}
-          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
-            <div>
-              <label
-                htmlFor="name"
-                className="block text-2xs sm:text-xs font-medium text-gray-700 mb-0.5 sm:mb-1"
-              >
-                Full Name <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                name="name"
-                id="name"
-                value={formData.name}
-                onChange={handleChange}
-                className="mt-1 block w-full px-2.5 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-xs sm:text-sm"
-                required
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-2xs sm:text-xs font-medium text-gray-700 mb-0.5 sm:mb-1"
-              >
-                Email Address <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="email"
-                name="email"
-                id="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="mt-1 block w-full px-2.5 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-xs sm:text-sm"
-                required
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="message"
-                className="block text-2xs sm:text-xs font-medium text-gray-700 mb-0.5 sm:mb-1"
-              >
-                Message <span className="text-red-500">*</span>
-              </label>
-              <textarea
-                name="message"
-                id="message"
-                rows={4}
-                value={formData.message}
-                onChange={handleChange}
-                className="mt-1 block w-full px-2.5 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-xs sm:text-sm"
-                required
-              ></textarea>
-            </div>
-            <div>
-              <Button
-                isSubmit
-                type="primary"
-                className="w-full text-xs sm:text-sm md:text-base py-2 sm:py-2.5"
-                disabled={result === "Sending...."}
-                icon={
-                  result === "Sending...." ? (
-                    <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-white"></div>
-                  ) : (
-                    <IconMail />
-                  )
-                }
-              >
-                {result === "Sending...." ? "Sending..." : "Send Message"}
-              </Button>
-            </div>
-          </form>
         </Card>
       </div>
     </div>
@@ -2285,11 +2312,11 @@ function App() {
     
     if (typeof window !== 'undefined' && window.location.pathname !== url) {
       window.history.pushState({ page, project }, title, url);
-      document.title = title;
     }
-
+    // Always update title, even on popstate
     if (typeof window !== 'undefined') {
-      window.scrollTo(0, 0);
+        document.title = title;
+        window.scrollTo(0, 0);
     }
   };
 
@@ -2303,7 +2330,7 @@ function App() {
     
     window.addEventListener('popstate', handlePopState);
     
-    // NEW: Handle initial page load based on URL
+    // Handle initial page load based on URL
     const path = window.location.pathname;
     const parts = path.split('/').filter(Boolean);
 
@@ -2369,7 +2396,7 @@ function App() {
         activePage={activePage}
         selectedProject={selectedProject}
       />
-      <main className="flex-grow pt-px">{renderPage()}</main>
+      <main className="flex-grow">{renderPage()}</main>
       <Footer />
     </div>
   );
