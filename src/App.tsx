@@ -196,12 +196,11 @@ const IconRecycle = () => (
   </svg>
 );
 
-// NEW: A better icon for "Art Installations"
 const IconPhotograph = () => (
-    <svg 
-        xmlns="http://www.w3.org/2000/svg" 
-        className="h-5 w-5" 
-        viewBox="0 0 20 20" 
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-5 w-5"
+        viewBox="0 0 20 20"
         fill="currentColor">
         <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
     </svg>
@@ -379,7 +378,7 @@ const Navbar = ({
   const mobileMenuRef = useRef(null);
 
   const handleNav = (item) => {
-    setActivePage(item); // This will call navigateToPage
+    setActivePage(item);
   };
 
   const handleMobileNav = (item) => {
@@ -444,11 +443,11 @@ const Navbar = ({
               <button
                 onClick={() => handleNav(item)}
                 className={`px-3 py-2 md:px-4 md:py-2 rounded-md text-sm font-medium transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-sky-400 focus:ring-opacity-75
-                                        ${
-                                          activePage === item && !selectedProject
-                                            ? "bg-sky-500 text-white shadow-md"
-                                            : "text-gray-300 hover:bg-sky-700 hover:text-white"
-                                        }`}
+                    ${
+                      activePage === item && !selectedProject
+                        ? "bg-sky-500 text-white shadow-md"
+                        : "text-gray-300 hover:bg-sky-700 hover:text-white"
+                    }`}
               >
                 {item}
               </button>
@@ -468,12 +467,11 @@ const Navbar = ({
                 <button
                   onClick={() => handleMobileNav(item)}
                   className={`w-full text-left px-3 py-2.5 rounded-md text-sm font-medium transition-all duration-150 ease-in-out
-                                            ${
-                                              activePage === item &&
-                                              !selectedProject
-                                                ? "bg-sky-500 text-white"
-                                                : "text-gray-300 hover:bg-sky-600 hover:text-white"
-                                            }`}
+                        ${
+                          activePage === item && !selectedProject
+                            ? "bg-sky-500 text-white"
+                            : "text-gray-300 hover:bg-sky-600 hover:text-white"
+                        }`}
                 >
                   {item}
                 </button>
@@ -720,7 +718,7 @@ const projectsData = [
         title: "Art & Cultural Enhancement",
         description:
           "Proposed community murals, decorative elements, and cultural programming",
-        icon: <IconPhotograph />, // UPDATED ICON
+        icon: <IconPhotograph />,
         status: "Concept Phase",
       },
       {
@@ -1568,15 +1566,15 @@ const AboutPage = () => {
                     alt={member.name}
                     className="w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full mx-auto mb-4 sm:mb-5 border-4 border-sky-500 shadow-sm"
                     onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = `https://placehold.co/150x150/E0F2FE/0C4A6E?text=${member.name.substring(
+                      e.target.onerror = null;
+                      e.target.src = `https://placehold.co/150x150/E0F2FE/0C4A6E?text=${member.name.substring(
                         0,
                         1
-                    )}${
+                      )}${
                         member.name.split(" ")[1]
                         ? member.name.split(" ")[1].substring(0, 1)
                         : ""
-                    }&font=Lora`;
+                      }&font=Lora`;
                     }}
                 />
                 <h3 className="text-md sm:text-lg md:text-xl font-semibold text-slate-800">
@@ -1646,96 +1644,86 @@ const AboutPage = () => {
 };
 
 // PROJECTS PAGE
-// UPDATED: This component now aligns the buttons correctly.
 const ProjectCard = ({ project, setActivePage }) => {
-    const handleCardClick = (e) => {
-      // Prevent navigation if a link or button inside the card is clicked.
-      if (e.target.closest('a, button')) {
-        return;
-      }
-      if (project.redirectTo) {
-        setActivePage(project.redirectTo);
-      } else {
-        setActivePage("ProjectDetails", project);
-      }
-    };
-  
-    const handleButtonClick = (e) => {
-      e.stopPropagation(); // Prevent the card's onClick from firing.
-      if (project.redirectTo) {
-        setActivePage(project.redirectTo);
-      } else {
-        setActivePage("ProjectDetails", project);
-      }
-    };
-  
-    return (
-      <Card
-        onClick={handleCardClick}
-        className="flex flex-col h-full group p-0" // Set padding to 0 on the outer card
-        hasDotPattern
-      >
-        <img
-          src={project.image}
-          alt={project.title}
-          className="w-full h-48 object-cover rounded-t-lg transition-transform duration-300 group-hover:scale-105"
-          onError={(e) => {
-            e.target.onerror = null;
-            e.target.src = `https://placehold.co/600x400/CCCCCC/FFFFFF?text=Project+Image&font=Lora`;
-          }}
-        />
-        
-        {/* This div contains all content and grows to push the button down */}
-        <div className="flex-grow flex flex-col p-4 sm:p-6">
-          <h3 className="text-lg sm:text-xl font-semibold text-sky-700 group-hover:text-sky-600 transition-colors mb-2 min-h-[3.5rem] line-clamp-2">
-            {project.title}
-          </h3>
-  
-          <p className="text-sm text-gray-600 mb-4 line-clamp-3">
-            {project.shortGoal}
-          </p>
-  
-          <div className="mb-4">
-            <span className="inline-block text-xs font-medium px-2 py-1 bg-sky-100 text-sky-700 rounded-full">
-              {project.status}
-            </span>
-          </div>
-  
-          {/* This div will grow to take up remaining space if partners exist */}
-          <div className="flex-grow">
-            {project.partnerOrganizations && project.partnerOrganizations.length > 0 && (
-              <>
-                <h4 className="text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">
-                  Partners:
-                </h4>
-                <div className="flex flex-wrap gap-1">
-                  {project.partnerOrganizations.map((org) => (
-                    <span
-                      key={org}
-                      className="text-xs bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full"
-                    >
-                      {org}
-                    </span>
-                  ))}
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-        
-        {/* Button container is the last item, pushed to the bottom */}
-        <div className="px-4 sm:px-6 pb-4 sm:pb-6 mt-auto">
-          <Button
-            onClick={handleButtonClick}
-            type="secondary"
-            className="w-full text-xs"
-          >
-            {project.redirectTo ? "View Event Details" : "View Project Details"}
-          </Button>
-        </div>
-      </Card>
-    );
+  const handleCardClick = (e) => {
+    if (e.target.closest('a, button')) {
+      return;
+    }
+    if (project.redirectTo) {
+      setActivePage(project.redirectTo);
+    } else {
+      setActivePage("ProjectDetails", project);
+    }
   };
+
+  const handleButtonClick = (e) => {
+    e.stopPropagation();
+    if (project.redirectTo) {
+      setActivePage(project.redirectTo);
+    } else {
+      setActivePage("ProjectDetails", project);
+    }
+  };
+
+  return (
+    <Card
+      onClick={handleCardClick}
+      className="flex flex-col h-full group p-0"
+      hasDotPattern
+    >
+      <img
+        src={project.image}
+        alt={project.title}
+        className="w-full h-48 object-cover rounded-t-lg transition-transform duration-300 group-hover:scale-105"
+        onError={(e) => {
+          e.target.onerror = null;
+          e.target.src = `https://placehold.co/600x400/CCCCCC/FFFFFF?text=Project+Image&font=Lora`;
+        }}
+      />
+      <div className="flex-grow flex flex-col p-4 sm:p-6">
+        <h3 className="text-lg sm:text-xl font-semibold text-sky-700 group-hover:text-sky-600 transition-colors mb-2 min-h-[3.5rem] line-clamp-2">
+          {project.title}
+        </h3>
+        <p className="text-sm text-gray-600 mb-4 line-clamp-3">
+          {project.shortGoal}
+        </p>
+        <div className="mb-4">
+          <span className="inline-block text-xs font-medium px-2 py-1 bg-sky-100 text-sky-700 rounded-full">
+            {project.status}
+          </span>
+        </div>
+        <div className="flex-grow">
+          {project.partnerOrganizations && project.partnerOrganizations.length > 0 && (
+            <>
+              <h4 className="text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">
+                Partners:
+              </h4>
+              <div className="flex flex-wrap gap-1">
+                {project.partnerOrganizations.map((org) => (
+                  <span
+                    key={org}
+                    className="text-xs bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full"
+                  >
+                    {org}
+                  </span>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+      <div className="px-4 sm:px-6 pb-4 sm:pb-6 mt-auto">
+        <Button
+          onClick={handleButtonClick}
+          type="secondary"
+          className="w-full text-xs"
+        >
+          {project.redirectTo ? "View Event Details" : "View Project Details"}
+        </Button>
+      </div>
+    </Card>
+  );
+};
 
 const ProjectsPage = ({ setActivePage }) => {
   return (
@@ -1771,14 +1759,15 @@ const ProjectDetailPage = ({ project, setActivePage }) => {
   if (!project) {
     return (
       <div className="container mx-auto py-12 px-4 text-center">
-        <p className="text-xl text-red-500">Project not found.</p>
+        <h2 className="text-2xl font-bold text-slate-700 mb-4">Project Not Found</h2>
+        <p className="text-gray-600 mb-6">The project you're looking for doesn't seem to exist.</p>
         <Button
           onClick={() => {
             setActivePage("Projects");
           }}
           className="mt-4"
         >
-          Back to Projects
+          Back to All Projects
         </Button>
       </div>
     );
@@ -1850,7 +1839,7 @@ const ProjectDetailPage = ({ project, setActivePage }) => {
             </h2>
             <p>{project.description}</p>
 
-            {project.initiatives && (
+            {project.initiatives && project.initiatives.length > 0 && (
                 <>
                 <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-800 border-b-2 border-sky-200 pb-2 mt-6 sm:mt-8 mb-3 sm:mb-4">
                     Project Initiatives
@@ -1883,37 +1872,42 @@ const ProjectDetailPage = ({ project, setActivePage }) => {
                 </>
             )}
 
-            <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-800 border-b-2 border-sky-200 pb-2 mt-6 sm:mt-8 mb-3 sm:mb-4">
-                Project Timeline & Milestones
-            </h2>
-            <div className="space-y-3 sm:space-y-4">
-                {project.timeline.map((item, index) => (
-                <div
-                    key={index}
-                    className={`flex items-start p-2.5 sm:p-3 md:p-4 rounded-lg border-l-4 ${
-                    item.completed
-                        ? "border-green-500 bg-green-50 text-green-800"
-                        : "border-sky-500 bg-sky-50 text-sky-800"
-                    }`}
-                >
-                    <div className="mr-2 sm:mr-3 mt-0.5 sm:mt-1 flex-shrink-0">
-                    {item.completed ? (
-                        <IconCheckCircle className="text-green-500 h-5 w-5 sm:h-6 sm:w-6" />
-                    ) : (
-                        <IconClock className="text-sky-500 h-5 w-5 sm:h-6 sm:w-6" />
-                    )}
+            {project.timeline && project.timeline.length > 0 && (
+                <>
+                    <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-800 border-b-2 border-sky-200 pb-2 mt-6 sm:mt-8 mb-3 sm:mb-4">
+                        Project Timeline & Milestones
+                    </h2>
+                    <div className="space-y-3 sm:space-y-4">
+                        {project.timeline.map((item, index) => (
+                        <div
+                            key={index}
+                            className={`flex items-start p-2.5 sm:p-3 md:p-4 rounded-lg border-l-4 ${
+                            item.completed
+                                ? "border-green-500 bg-green-50 text-green-800"
+                                : "border-sky-500 bg-sky-50 text-sky-800"
+                            }`}
+                        >
+                            <div className="mr-2 sm:mr-3 mt-0.5 sm:mt-1 flex-shrink-0">
+                            {item.completed ? (
+                                <IconCheckCircle className="text-green-500 h-5 w-5 sm:h-6 sm:w-6" />
+                            ) : (
+                                <IconClock className="text-sky-500 h-5 w-5 sm:h-6 sm:w-6" />
+                            )}
+                            </div>
+                            <div>
+                            <h4 className="font-semibold text-sm sm:text-md md:text-lg">
+                                {item.stage}
+                            </h4>
+                            <p className="text-xs sm:text-sm opacity-90">
+                                {item.details}
+                            </p>
+                            </div>
+                        </div>
+                        ))}
                     </div>
-                    <div>
-                    <h4 className="font-semibold text-sm sm:text-md md:text-lg">
-                        {item.stage}
-                    </h4>
-                    <p className="text-xs sm:text-sm opacity-90">
-                        {item.details}
-                    </p>
-                    </div>
-                </div>
-                ))}
-            </div>
+                </>
+            )}
+
 
             <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-800 border-b-2 border-sky-200 pb-2 mt-6 sm:mt-8 mb-3 sm:mb-4">
                 Envisioned Impact
@@ -1957,7 +1951,6 @@ const ProjectDetailPage = ({ project, setActivePage }) => {
             )}
 
             <div className="mt-8 sm:mt-10 p-4 sm:p-6 bg-sky-50 rounded-lg border border-sky-200">
-                {/* UPDATED: Removed the icon from this heading */}
                 <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-sky-700 mb-3">
                 How You Can Contribute
                 </h2>
@@ -2271,19 +2264,15 @@ function App() {
   const [activePage, setActivePage] = useState("Home");
   const [selectedProject, setSelectedProject] = useState(null);
 
-  // This is now the ONLY function that changes the page state.
   const navigateToPage = (page, project = null) => {
-    // If the target is the same as the current page, scroll to top but don't re-navigate
     if (page === activePage && project?.id === selectedProject?.id) {
-        window.scrollTo(0, 0);
-        return;
+      window.scrollTo(0, 0);
+      return;
     }
     setActivePage(page);
     setSelectedProject(project);
   };
 
-  // This useEffect hook is for side-effects: updating the URL and title
-  // It runs whenever the activePage or selectedProject state changes.
   useEffect(() => {
     const getPageDetails = (page, project = null) => {
       let url = "/";
@@ -2328,14 +2317,12 @@ function App() {
     const { url, title } = getPageDetails(activePage, selectedProject);
 
     document.title = title;
-    // Push a new state to history only if the URL is different from the current one
     if (window.location.pathname !== url) {
       window.history.pushState({ page: activePage, project: selectedProject }, title, url);
     }
     window.scrollTo(0, 0);
-  }, [activePage, selectedProject]); // This effect depends on these state variables
+  }, [activePage, selectedProject]);
 
-  // This useEffect hook handles the browser's back/forward buttons and initial load
   useEffect(() => {
     const handlePopState = (event) => {
       if (event.state) {
@@ -2346,12 +2333,13 @@ function App() {
 
     window.addEventListener("popstate", handlePopState);
 
-    // Initial load logic
     const path = window.location.pathname;
     const parts = path.split("/").filter(Boolean);
 
+    let navigated = false;
     if (parts[0] === "about") {
       navigateToPage("About");
+      navigated = true;
     } else if (parts[0] === "projects") {
       const projectSlug = parts[1];
       if (projectSlug) {
@@ -2360,27 +2348,39 @@ function App() {
       } else {
         navigateToPage("Projects");
       }
+      navigated = true;
     } else if (parts[0] === "events") {
       navigateToPage("Events");
+      navigated = true;
     } else if (parts[0] === "contact") {
       navigateToPage("Contact");
-    } else {
-      navigateToPage("Home");
+      navigated = true;
     }
+
+    if (!navigated && path !== '/') {
+        navigateToPage("Home");
+    }
+
 
     return () => {
       window.removeEventListener("popstate", handlePopState);
     };
-  }, []); // Runs only once on mount
+  }, []);
 
   const renderPage = () => {
-    if (activePage === "ProjectDetails" && selectedProject) {
-      return (
-        <ProjectDetailPage
-          project={selectedProject}
-          setActivePage={navigateToPage}
-        />
-      );
+    if (activePage === "ProjectDetails") {
+        if (selectedProject) {
+            return (
+                <ProjectDetailPage
+                project={selectedProject}
+                setActivePage={navigateToPage}
+                />
+            );
+        }
+        // This handles the case where the URL is for a project but it's not found
+        // or during the initial render before the project is loaded by useEffect.
+        // Returning null or a loading spinner avoids rendering a page with errors.
+        return null;
     }
     switch (activePage) {
       case "Home":
@@ -2469,6 +2469,6 @@ if (typeof window !== "undefined") {
   const fontLinkLora = document.createElement("link");
   fontLinkLora.rel = "stylesheet";
   fontLinkLora.href =
-    "https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap";
+    "https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,0,600;0,700;1,400;1,500;1,600;1,700&display=swap";
   document.head.appendChild(fontLinkLora);
 }
