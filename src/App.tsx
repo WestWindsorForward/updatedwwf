@@ -929,25 +929,22 @@ const ProgressSection = () => (
   </Card>
 );
 
-const ForumFormatSection = () => (
-  <Card hasDotPattern>
-    <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-6 text-center">
-      Forum Format & Structure
-    </h2>
-    
-    <div className="grid md:grid-cols-3 gap-6">
-      {forumData.forumParts.map((part, index) => {
-        // Define icons based on iconType
-        const getIcon = (iconType) => {
-          switch(iconType) {
-            case "microphone": return <IconMicrophone />;
-            case "users": return <IconUsers />;
-            case "lightbulb": return <IconLightBulb />;
-            default: return <IconLightBulb />;
-          }
-        };
+const ForumFormatSection = () => {
+  const getIcon = (iconType) => {
+    if (iconType === "microphone") return <IconMicrophone />;
+    if (iconType === "users") return <IconUsers />;
+    if (iconType === "lightbulb") return <IconLightBulb />;
+    return <IconLightBulb />;
+  };
 
-        return (
+  return (
+    <Card hasDotPattern>
+      <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-6 text-center">
+        Forum Format & Structure
+      </h2>
+      
+      <div className="grid md:grid-cols-3 gap-6">
+        {forumData.forumParts.map((part) => (
           <div 
             key={part.id}
             className="relative bg-gradient-to-br from-slate-50 to-sky-50 p-6 rounded-xl border border-sky-200 hover:shadow-lg transition-all duration-300"
@@ -971,22 +968,22 @@ const ForumFormatSection = () => (
               {part.location}
             </div>
           </div>
-        );
-      })}
-    </div>
-    
-    <div className="mt-8 p-4 bg-amber-50 border border-amber-200 rounded-lg">
-      <h3 className="font-semibold text-amber-800 mb-2 flex items-center">
-        <IconDocument className="h-5 w-5 mr-2" />
-        Forum Requirements
-      </h3>
-      <div className="space-y-2 text-sm text-amber-700">
-        <p><strong>Council:</strong> {forumData.requirements.council}</p>
-        <p><strong>Mayor:</strong> {forumData.requirements.mayor}</p>
+        ))}
       </div>
-    </div>
-  </Card>
-);
+      
+      <div className="mt-8 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+        <h3 className="font-semibold text-amber-800 mb-2 flex items-center">
+          <IconDocument className="h-5 w-5 mr-2" />
+          Forum Requirements
+        </h3>
+        <div className="space-y-2 text-sm text-amber-700">
+          <p><strong>Council:</strong> {forumData.requirements.council}</p>
+          <p><strong>Mayor:</strong> {forumData.requirements.mayor}</p>
+        </div>
+      </div>
+    </Card>
+  );
+};
 
 const PanelistSection = () => {
   const [selectedPanelistId, setSelectedPanelistId] = useState(null);
@@ -1885,7 +1882,6 @@ const ProjectDetailPage = ({ project, setActivePage, setSelectedProject }) => {
               </h2>
               <div className="grid sm:grid-cols-2 gap-4 mb-6">
                 {project.initiatives.map((initiative, index) => {
-                  // Define icons based on title
                   const getIcon = (title) => {
                     if (title.includes("Beautification")) return <IconLightBulb />;
                     if (title.includes("Art")) return <IconPaintBrush />;
@@ -2437,6 +2433,7 @@ function App() {
 
 export default App;
 
+// Style injection for browser environment
 if (typeof window !== 'undefined') {
     const styleSheet = document.createElement("style");
     styleSheet.type = "text/css";
