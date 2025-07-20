@@ -712,25 +712,21 @@ const projectsData = [
       {
         title: "Beautification & Maintenance",
         description: "Potential regular cleanup, landscaping, and seasonal decorations",
-        icon: <IconLightBulb />,
         status: "Concept Phase"
       },
       {
         title: "Art & Cultural Enhancement", 
         description: "Proposed community murals, and decorative lighting elements",
-        icon: <IconPaintBrush />,
         status: "Concept Phase"
       },
       {
         title: "Environmental Initiatives",
         description: "Exploring plastic film recycling programs and sustainable improvements",
-        icon: <IconRecycle />,
         status: "Concept Phase"
       },
       {
         title: "Community Programming",
         description: "Ideas for events and community engagement opportunities",
-        icon: <IconUsers />,
         status: "Concept Phase"
       }
     ]
@@ -1770,7 +1766,7 @@ const ProjectsPage = ({ setActivePage, setSelectedProject }) => {
       </div>
       <div className="my-8 sm:my-10 h-1.5 bg-gradient-to-r from-sky-400 via-indigo-500 to-pink-500 rounded-full"></div>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 items-stretch">
         {projectsData.map((project) => (
           <ProjectCard
             key={project.id}
