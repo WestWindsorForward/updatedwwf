@@ -647,7 +647,7 @@ const forumData = {
   ],
 };
 
-// Project Data
+// FIXED: Project Data with proper structure
 const projectsData = [
   {
     id: 1,
@@ -660,7 +660,7 @@ const projectsData = [
     image:
       "https://placehold.co/600x400/0A2342/FFFFFF?text=Candidate+Forum&font=Lora",
     partnerOrganizations: ["League of Women Voters of the Greater Princeton Area"],
-    redirectTo: "Events", // Candidate forum redirects to Events page
+    redirectTo: "Events", // This project redirects to Events page
   },
   {
     id: 2,
@@ -734,7 +734,7 @@ const projectsData = [
         status: "Planning Phase",
       },
     ],
-    // NOTE: No redirectTo property - this project gets its own detail page
+    // IMPORTANT: This project DOES NOT have redirectTo property, so it gets its own detail page
   },
 ];
 
@@ -1641,7 +1641,7 @@ const AboutPage = () => {
   );
 };
 
-// PROJECTS PAGE
+// FIXED: ProjectCard component with proper logic
 const ProjectCard = ({ project, setActivePage }) => {
     const handleCardClick = (e) => {
       // Prevent navigation if a link or button inside the card is clicked
@@ -1649,9 +1649,11 @@ const ProjectCard = ({ project, setActivePage }) => {
         return;
       }
       
+      // Check if project has redirectTo property
       if (project.redirectTo) {
         setActivePage(project.redirectTo);
       } else {
+        // Go to project detail page
         setActivePage("ProjectDetails", project);
       }
     };
@@ -1659,9 +1661,11 @@ const ProjectCard = ({ project, setActivePage }) => {
     const handleButtonClick = (e) => {
       e.stopPropagation(); // Prevent the card's onClick from firing
       
+      // Check if project has redirectTo property
       if (project.redirectTo) {
         setActivePage(project.redirectTo);
       } else {
+        // Go to project detail page
         setActivePage("ProjectDetails", project);
       }
     };
@@ -2376,3 +2380,61 @@ function App() {
 }
 
 export default App;
+
+// FIXED: Style injection with proper Lora font loading
+if (typeof window !== "undefined") {
+  const styleSheet = document.createElement("style");
+  styleSheet.type = "text/css";
+  styleSheet.innerText = `
+      body { font-family: 'Lora', Georgia, serif !important; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+      .font-body { font-family: 'Lora', Georgia, serif !important; }
+      h1, h2, h3, h4, h5, h6 { font-family: 'Lora', Georgia, serif !important; }
+      .prose { font-family: 'Lora', Georgia, serif !important; }
+      .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 { margin-bottom: 0.5em; margin-top: 1em; }
+      .prose p { margin-bottom: 1em; line-height: 1.7; }
+      .prose ul, .prose ol { margin-left: 1.5em; margin-bottom: 1em; }
+      .prose li { margin-bottom: 0.25em; }
+
+      @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+      .animate-fadeIn { animation: fadeIn 0.6s ease-out forwards; }
+
+      @keyframes slideDown {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .animate-slideDown { animation: slideDown 0.3s ease-out forwards; }
+
+      .group:hover .dot-pattern-animated div div { transform: scale(1.5); opacity: 0.5; }
+
+      @keyframes pulse-slow {
+        0%, 100% { opacity: 0.05; }
+        50% { opacity: 0.15; }
+      }
+      .animate-pulse-slow {
+        animation: pulse-slow 5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      }
+      
+      /* Line clamp utilities for consistent text truncation */
+      .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      
+      .line-clamp-3 {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+    `;
+  document.head.appendChild(styleSheet);
+
+  // Load Lora font with all weights
+  const fontLinkLora = document.createElement("link");
+  fontLinkLora.rel = "stylesheet";
+  fontLinkLora.href =
+    "https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap";
+  document.head.appendChild(fontLinkLora);
+}
