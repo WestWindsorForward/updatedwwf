@@ -340,13 +340,13 @@ const Button = ({
   const baseStyle = `inline-flex items-center justify-center rounded-lg font-semibold transition-all duration-200 ease-in-out transform hover:scale-103 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-opacity-75 shadow-md hover:shadow-lg ${
     disabled ? "opacity-50 cursor-not-allowed" : ""
   }`;
-  
+
   const sizeStyles = {
     sm: "px-3 py-1.5 text-xs",
     md: "px-4 py-2 sm:px-5 sm:py-2.5 text-xs sm:text-sm",
-    lg: "px-6 py-3 text-sm sm:text-base"
+    lg: "px-6 py-3 text-sm sm:text-base",
   };
-  
+
   const typeStyle =
     type === "primary"
       ? "bg-sky-600 hover:bg-sky-700 text-white focus:ring-sky-500"
@@ -354,10 +354,10 @@ const Button = ({
       ? "bg-slate-200 hover:bg-slate-300 text-slate-800 focus:ring-slate-400"
       : type === "success"
       ? "bg-green-600 hover:bg-green-700 text-white focus:ring-green-500"
-      : type === "warning" 
+      : type === "warning"
       ? "bg-amber-600 hover:bg-amber-700 text-white focus:ring-amber-500"
       : "bg-slate-200 hover:bg-slate-300 text-slate-800 focus:ring-slate-400";
-      
+
   return (
     <button
       type={isSubmit ? "submit" : "button"}
@@ -386,9 +386,9 @@ const Navbar = ({
   const handleNav = (item) => {
     setSelectedProject(null);
     setActivePage(item);
-    
+
     // Scroll to top of page
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       window.scrollTo(0, 0);
     }
   };
@@ -455,11 +455,11 @@ const Navbar = ({
               <button
                 onClick={() => handleNav(item)}
                 className={`px-3 py-2 md:px-4 md:py-2 rounded-md text-sm font-medium transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-sky-400 focus:ring-opacity-75
-                                ${
-                                  activePage === item && !selectedProject
-                                    ? "bg-sky-500 text-white shadow-md"
-                                    : "text-gray-300 hover:bg-sky-700 hover:text-white"
-                                }`}
+                                        ${
+                                          activePage === item && !selectedProject
+                                            ? "bg-sky-500 text-white shadow-md"
+                                            : "text-gray-300 hover:bg-sky-700 hover:text-white"
+                                        }`}
               >
                 {item}
               </button>
@@ -479,11 +479,12 @@ const Navbar = ({
                 <button
                   onClick={() => handleMobileNav(item)}
                   className={`w-full text-left px-3 py-2.5 rounded-md text-sm font-medium transition-all duration-150 ease-in-out
-                                        ${
-                                          activePage === item && !selectedProject
-                                            ? "bg-sky-500 text-white"
-                                            : "text-gray-300 hover:bg-sky-600 hover:text-white"
-                                        }`}
+                                            ${
+                                              activePage === item &&
+                                              !selectedProject
+                                                ? "bg-sky-500 text-white"
+                                                : "text-gray-300 hover:bg-sky-600 hover:text-white"
+                                            }`}
                 >
                   {item}
                 </button>
@@ -552,103 +553,111 @@ const forumData = {
   location: "Kelsey Theatre @ Mercer County Community College",
   positions: [
     "Mayor of West Windsor Township",
-    "2 seats on West Windsor Township Council"
+    "2 seats on West Windsor Township Council",
   ],
   status: "upcoming",
-  
+
   panelists: [
     {
-      id: 'micah-rasmussen',
+      id: "micah-rasmussen",
       name: "Micah Rasmussen",
       title: "Director, Rebovich Institute for NJ Politics",
       imageUrl: "/micah.png",
-      bio: "Micah Rasmussen is the director of the Rebovich Institute for New Jersey Politics at Rider University. He has worked in the New Jersey General Assembly and managed several political campaigns. After completing his undergraduate studies at Rider under his mentor David Rebovich, the namesake of the institute he now leads, Rasmussen earned his Master of Arts in Political Science from the Eagleton Institute of Politics at Rutgers University. Rasmussen is a panelist for the state's biggest political debates-- twice so far this year in the race to elect New Jersey's next governor, and in the only debate last year between now Senator Andy Kim and First Lady Tammy Murphy. He is regularly included on New Jersey's political power and higher education influencer lists. One called him \"the go-to guy for the media to comment on what's happening in New Jersey politics-- and what it means\".",
-      note: "Contributing questions remotely due to scheduling conflict"
+      bio: 'Micah Rasmussen is the director of the Rebovich Institute for New Jersey Politics at Rider University. He has worked in the New Jersey General Assembly and managed several political campaigns. After completing his undergraduate studies at Rider under his mentor David Rebovich, the namesake of the institute he now leads, Rasmussen earned his Master of Arts in Political Science from the Eagleton Institute of Politics at Rutgers University. Rasmussen is a panelist for the state\'s biggest political debates-- twice so far this year in the race to elect New Jersey\'s next governor, and in the only debate last year between now Senator Andy Kim and First Lady Tammy Murphy. He is regularly included on New Jersey\'s political power and higher education influencer lists. One called him "the go-to guy for the media to comment on what\'s happening in New Jersey politics-- and what it means".',
+      note: "Contributing questions remotely due to scheduling conflict",
     },
     {
-      id: 'david-matthau',
+      id: "david-matthau",
       name: "David Matthau",
       title: "WHYY NJ Reporter",
       imageUrl: "/matthau.png",
-      bio: "David Matthau is a WHYY New Jersey reporter covering the Statehouse and general assignments in the Garden State. Prior to joining WHYY, David was lead investigative reporter for NJ 101.5 News, winning multiple Associated Press and Society of Professional Journalists awards, the National Association of Broadcasters Service to Community Award, and contributed to the National Edward R. Murrow Best Newscast award. David is a graduate of the University of Southern California."
+      bio: "David Matthau is a WHYY New Jersey reporter covering the Statehouse and general assignments in the Garden State. Prior to joining WHYY, David was lead investigative reporter for NJ 101.5 News, winning multiple Associated Press and Society of Professional Journalists awards, the National Association of Broadcasters Service to Community Award, and contributed to the National Edward R. Murrow Best Newscast award. David is a graduate of the University of Southern California.",
     },
     {
-      id: 'rhea-biswas',
+      id: "rhea-biswas",
       name: "Rhea Biswas",
       title: "West Windsor HS Student & Journalist",
       imageUrl: "/rhea.png",
-      bio: "Rhea Biswas is a West Windsor high school student passionate about politics and social justice, with hopes of pursuing a career in law. She regularly competes in debate competitions and Model Congress conferences, as well as writes for her school newspaper and a local newspaper, The West Windsor Voice. She is committed to transparent debate and honest discussion in order to better advocate for meaningful change in her community."
+      bio: "Rhea Biswas is a West Windsor high school student passionate about politics and social justice, with hopes of pursuing a career in law. She regularly competes in debate competitions and Model Congress conferences, as well as writes for her school newspaper and a local newspaper, The West Windsor Voice. She is committed to transparent debate and honest discussion in order to better advocate for meaningful change in her community.",
     },
   ],
-  
+
   forumParts: [
     {
       id: 1,
       title: "Panelist Q&A Sessions",
-      description: "Equal time Q&A sessions for Mayoral and Council candidates with questions from our distinguished panelists",
+      description:
+        "Equal time Q&A sessions for Mayoral and Council candidates with questions from our distinguished panelists",
       location: "Main Theatre",
-      iconType: "microphone"
+      iconType: "microphone",
     },
     {
       id: 2,
       title: "Town Hall Q&A",
-      description: "Community-driven Q&A where residents can submit questions for candidates to address",
-      location: "Main Theatre", 
-      iconType: "users"
+      description:
+        "Community-driven Q&A where residents can submit questions for candidates to address",
+      location: "Main Theatre",
+      iconType: "users",
     },
     {
       id: 3,
       title: "Meet & Greet",
-      description: "Informal conversations between candidates and voters, plus community organization tables",
+      description:
+        "Informal conversations between candidates and voters, plus community organization tables",
       location: "Theatre Lobby",
-      iconType: "lightbulb"
-    }
+      iconType: "lightbulb",
+    },
   ],
-  
+
   milestones: [
     {
       id: 1,
       title: "Venue & Panelists Secured",
-      description: "Kelsey Theatre confirmed, distinguished panelists recruited, partnerships established",
+      description:
+        "Kelsey Theatre confirmed, distinguished panelists recruited, partnerships established",
       completed: true,
-      date: "Completed"
+      date: "Completed",
     },
     {
       id: 2,
       title: "Candidate Invitations & Agreements",
-      description: "Formal invitations sent to all declared candidates, agreements being collected",
+      description:
+        "Formal invitations sent to all declared candidates, agreements being collected",
       completed: false,
-      date: "In Progress"
+      date: "In Progress",
     },
     {
       id: 3,
       title: "Community Engagement & Promotion",
-      description: "Public awareness campaign, ticket distribution, volunteer recruitment",
+      description:
+        "Public awareness campaign, ticket distribution, volunteer recruitment",
       completed: false,
-      date: "August - September 2025"
+      date: "August - September 2025",
     },
     {
       id: 4,
       title: "Forum Event Day",
-      description: "Live forum with streaming, Q&A sessions, and community engagement",
+      description:
+        "Live forum with streaming, Q&A sessions, and community engagement",
       completed: false,
-      date: "September 25, 2025"
-    }
+      date: "September 25, 2025",
+    },
   ],
-  
+
   requirements: {
-    council: "At least 3 council candidates participating OR candidates from at least 2 different tickets with minimum 3 total candidates running",
-    mayor: "At least 2 mayoral candidates participating"
+    council:
+      "At least 3 council candidates participating OR candidates from at least 2 different tickets with minimum 3 total candidates running",
+    mayor: "At least 2 mayoral candidates participating",
   },
-  
+
   volunteerRoles: [
     "Event Setup & Logistics",
-    "Attendee Greeting & Check-in", 
+    "Attendee Greeting & Check-in",
     "Camera & Live Stream Operation",
     "Question Collection & Management",
     "Community Organization Coordination",
-    "Post-Event Cleanup"
-  ]
+    "Post-Event Cleanup",
+  ],
 };
 
 // Project Data
@@ -659,10 +668,12 @@ const projectsData = [
     title: "2025 Candidate Forum",
     shortGoal: "Fostering informed civic participation.",
     status: "Upcoming: September 25, 2025",
-    description: "Providing a non-partisan platform for Mayoral and Council candidates to engage with residents, ensuring informed participation in our local democracy.",
-    image: "https://placehold.co/600x400/0A2342/FFFFFF?text=Candidate+Forum&font=Lora",
+    description:
+      "Providing a non-partisan platform for Mayoral and Council candidates to engage with residents, ensuring informed participation in our local democracy.",
+    image:
+      "https://placehold.co/600x400/0A2342/FFFFFF?text=Candidate+Forum&font=Lora",
     partnerOrganizations: ["League of Women Voters of the Greater Princeton Area"],
-    redirectTo: "Events"
+    redirectTo: "Events",
   },
   {
     id: 2,
@@ -711,98 +722,32 @@ const projectsData = [
     initiatives: [
       {
         title: "Beautification & Maintenance",
-        description: "Potential regular cleanup, landscaping, and seasonal decorations",
-        status: "Concept Phase"
+        description:
+          "Potential regular cleanup, landscaping, and seasonal decorations",
+        icon: <IconLightBulb />,
+        status: "Concept Phase",
       },
       {
         title: "Art & Cultural Enhancement",
-        description: "Proposed community murals, and decorative lighting elements",
-        status: "Concept Phase"
-      },
-      {
-        title: "Environmental Initiatives",
-        description: "Exploring plastic film recycling programs and sustainable improvements",
-        status: "Concept Phase"
-      },
-      {
-        title: "Community Programming",
-        description: "Ideas for events and community engagement opportunities",
-        status: "Concept Phase"
-      }
-    ]
-  },
-];
-  {
-    id: 2,
-    slug: "adopt-a-station-pjc",
-    title: "Adopt-a-Station: Princeton Junction",
-    titleImage: null,
-    shortGoal: "Revitalizing our key transit hub.",
-    goal: "To transform the Princeton Junction Station into a welcoming, aesthetically appealing, and culturally reflective community hub that serves all users.",
-    status: "Early Planning & Proposal Development",
-    description:
-      "This is a proposed comprehensive project to transform Princeton Junction Station—a vital asset serving over 4,000 NJ TRANSIT passengers daily and 123,000+ Amtrak passengers annually—into a vibrant community hub. We are developing plans for beautification efforts, community art installations, environmental initiatives, and programming to enhance the daily experience for thousands of commuters while fostering community pride and connectivity. Currently in early planning stages with proposals being developed for potential partnerships.",
-    impact:
-      "Enhanced commuter experience for thousands of daily users, strengthened community identity through public art, environmental benefits through recycling and beautification programs, increased community engagement through events and programming, and preserved infrastructure value through maintenance and improvements.",
-    timeline: [
-      {
-        stage: "Concept Development & Research",
-        details:
-          "Initial research completed on station usage, community needs, and potential improvement opportunities. Concept proposal drafted.",
-        completed: true,
-      },
-      {
-        stage: "Stakeholder Outreach & Partnership Development",
-        details:
-          "Reaching out to NJ TRANSIT, West Windsor Parking Authority, and community organizations to gauge interest and explore potential partnerships.",
-        completed: false,
-      },
-      {
-        stage: "Community Input & Proposal Refinement",
-        details:
-          "Gathering community feedback on proposed improvements and refining plans based on resident input and partnership possibilities.",
-        completed: false,
-      },
-      {
-        stage: "Implementation Planning",
-        details:
-          "If partnerships are established, develop detailed implementation timeline and begin coordination with relevant authorities.",
-        completed: false,
-      },
-    ],
-    getInvolved:
-      "Share your ideas for station improvements, express interest in volunteering for future cleanup or beautification efforts, connect us with relevant community organizations, or let us know what would make your commuting experience better.",
-    image:
-      "https://placehold.co/600x400/3B82F6/FFFFFF?text=Princeton+Junction+Station&font=Lora",
-    partnerOrganizations: [],
-    fundingSources: [],
-    quickActions: [],
-    initiatives: [
-      {
-        title: "Beautification & Maintenance",
-        description: "Potential regular cleanup, landscaping, and seasonal decorations",
-        icon: <IconLightBulb />,
-        status: "Concept Phase"
-      },
-      {
-        title: "Art & Cultural Enhancement", 
-        description: "Proposed community murals, decorative elements, and cultural programming",
+        description:
+          "Proposed community murals, decorative elements, and cultural programming",
         icon: <IconPaintBrush />,
-        status: "Concept Phase"
+        status: "Concept Phase",
       },
       {
         title: "Environmental Initiatives",
-        description: "Exploring recycling programs and sustainable improvements",
+        description:
+          "Exploring recycling programs and sustainable improvements",
         icon: <IconRecycle />,
-        status: "Research Phase"
+        status: "Research Phase",
       },
       {
         title: "Community Programming",
         description: "Ideas for events and community engagement opportunities",
         icon: <IconUsers />,
-        status: "Planning Phase"
-      }
-    ]
+        status: "Planning Phase",
+      },
+    ],
   },
 ];
 
@@ -812,14 +757,17 @@ const ForumHeader = () => {
     const startDate = "20250925T190000";
     const endDate = "20250925T211500";
     const timezone = "America/New_York";
-    
+
     const icsData = [
       "BEGIN:VCALENDAR",
-      "VERSION:2.0", 
+      "VERSION:2.0",
       "PRODID:-//WestWindsorForward//WWF Events//EN",
       "BEGIN:VEVENT",
       `UID:wwf-forum-2025@westwindsorforward.org`,
-      `DTSTAMP:${new Date().toISOString().replace(/[-:.]/g, "").substring(0, 15)}Z`,
+      `DTSTAMP:${new Date()
+        .toISOString()
+        .replace(/[-:.]/g, "")
+        .substring(0, 15)}Z`,
       `DTSTART;TZID=${timezone}:${startDate}`,
       `DTEND;TZID=${timezone}:${endDate}`,
       `SUMMARY:West Windsor Forward 2025 Candidate Forum`,
@@ -828,7 +776,7 @@ const ForumHeader = () => {
       "END:VEVENT",
       "END:VCALENDAR",
     ].join("\r\n");
-    
+
     const blob = new Blob([icsData], { type: "text/calendar;charset=utf-8" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
@@ -847,45 +795,44 @@ const ForumHeader = () => {
           <span className="inline-block w-2 h-2 bg-white rounded-full mr-2"></span>
           UPCOMING EVENT
         </div>
-        
+
         <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 leading-tight">
           2025 Candidate Forum
         </h1>
-        
+
         <p className="text-lg sm:text-xl md:text-2xl text-sky-200 mb-6 max-w-3xl mx-auto">
-          Empowering West Windsor voters with direct access to candidates for Mayor and Township Council
+          Empowering West Windsor voters with direct access to candidates for
+          Mayor and Township Council
         </p>
-        
+
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8 max-w-4xl mx-auto">
           <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4">
             <div className="font-semibold">{forumData.date}</div>
             <div className="text-sm text-sky-200">{forumData.time}</div>
           </div>
-          
+
           <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4">
             <div className="font-semibold">Kelsey Theatre</div>
             <div className="text-sm text-sky-200">@ MCCC West Windsor</div>
           </div>
-          
+
           <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4">
             <div className="font-semibold">Live Streamed</div>
             <div className="text-sm text-sky-200">YouTube & Recording</div>
           </div>
         </div>
-        
+
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Button 
-            onClick={generateICSData}
-            size="lg"
-            icon={<IconCalendar />}
-          >
+          <Button onClick={generateICSData} size="lg" icon={<IconCalendar />}>
             Add to Calendar
           </Button>
-          <Button 
+          <Button
             type="secondary"
             size="lg"
             icon={<IconDocument />}
-            onClick={() => window.open("/WWF_Candidate_Forum_Public_Release.pdf", "_blank")}
+            onClick={() =>
+              window.open("/WWF_Candidate_Forum_Public_Release.pdf", "_blank")
+            }
           >
             View Official Release
           </Button>
@@ -898,16 +845,18 @@ const ForumHeader = () => {
 const ProgressSection = () => (
   <Card className="bg-gradient-to-r from-sky-50 to-indigo-50 border-sky-200">
     <div className="flex items-center justify-between mb-4">
-      <h2 className="text-xl sm:text-2xl font-bold text-slate-800">Forum Milestones</h2>
+      <h2 className="text-xl sm:text-2xl font-bold text-slate-800">
+        Forum Milestones
+      </h2>
     </div>
-    
+
     <div className="grid gap-4">
       {forumData.milestones.map((milestone) => (
-        <div 
+        <div
           key={milestone.id}
           className={`flex items-start p-4 rounded-lg border-l-4 ${
-            milestone.completed 
-              ? "border-green-500 bg-green-50" 
+            milestone.completed
+              ? "border-green-500 bg-green-50"
               : "border-sky-500 bg-sky-50"
           }`}
         >
@@ -919,9 +868,15 @@ const ProgressSection = () => (
             )}
           </div>
           <div className="flex-1">
-            <h3 className="font-semibold text-slate-800 mb-1">{milestone.title}</h3>
-            <p className="text-sm text-slate-600 mb-2">{milestone.description}</p>
-            <span className="text-xs font-medium text-slate-500">{milestone.date}</span>
+            <h3 className="font-semibold text-slate-800 mb-1">
+              {milestone.title}
+            </h3>
+            <p className="text-sm text-slate-600 mb-2">
+              {milestone.description}
+            </p>
+            <span className="text-xs font-medium text-slate-500">
+              {milestone.date}
+            </span>
           </div>
         </div>
       ))}
@@ -942,10 +897,10 @@ const ForumFormatSection = () => {
       <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-6 text-center">
         Forum Format & Structure
       </h2>
-      
+
       <div className="grid md:grid-cols-3 gap-6">
         {forumData.forumParts.map((part) => (
-          <div 
+          <div
             key={part.id}
             className="relative bg-gradient-to-br from-slate-50 to-sky-50 p-6 rounded-xl border border-sky-200 hover:shadow-lg transition-all duration-300"
           >
@@ -960,9 +915,9 @@ const ForumFormatSection = () => {
                 <h3 className="font-semibold text-slate-800">{part.title}</h3>
               </div>
             </div>
-            
+
             <p className="text-sm text-slate-600 mb-3">{part.description}</p>
-            
+
             <div className="flex items-center text-xs text-slate-500">
               <IconMapMarker className="h-3 w-3 mr-1" />
               {part.location}
@@ -970,15 +925,19 @@ const ForumFormatSection = () => {
           </div>
         ))}
       </div>
-      
+
       <div className="mt-8 p-4 bg-amber-50 border border-amber-200 rounded-lg">
         <h3 className="font-semibold text-amber-800 mb-2 flex items-center">
           <IconDocument className="h-5 w-5 mr-2" />
           Forum Requirements
         </h3>
         <div className="space-y-2 text-sm text-amber-700">
-          <p><strong>Council:</strong> {forumData.requirements.council}</p>
-          <p><strong>Mayor:</strong> {forumData.requirements.mayor}</p>
+          <p>
+            <strong>Council:</strong> {forumData.requirements.council}
+          </p>
+          <p>
+            <strong>Mayor:</strong> {forumData.requirements.mayor}
+          </p>
         </div>
       </div>
     </Card>
@@ -993,20 +952,32 @@ const PanelistSection = () => {
       <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-6 text-center">
         Distinguished Panelists
       </h2>
-      
+
       <div className="grid md:grid-cols-3 gap-6">
         {forumData.panelists.map((panelist) => (
           <div key={panelist.id} className="flex flex-col h-full">
-            <div 
+            <div
               className={`text-center p-6 rounded-xl border transition-all duration-300 cursor-pointer flex flex-col h-full ${
-                selectedPanelistId === panelist.id 
-                  ? 'border-sky-500 bg-sky-50 shadow-lg' 
-                  : 'border-gray-200 hover:border-sky-300 hover:shadow-md'
+                selectedPanelistId === panelist.id
+                  ? "border-sky-500 bg-sky-50 shadow-lg"
+                  : "border-gray-200 hover:border-sky-300 hover:shadow-md"
               }`}
-              onClick={() => setSelectedPanelistId(selectedPanelistId === panelist.id ? null : panelist.id)}
+              onClick={() =>
+                setSelectedPanelistId(
+                  selectedPanelistId === panelist.id ? null : panelist.id
+                )
+              }
             >
               <img
-                src={panelist.imageUrl || `https://placehold.co/150x150/E0F2FE/0C4A6E?text=${panelist.name.substring(0,1)}${panelist.name.split(' ')[1]?.substring(0,1) || ''}&font=Lora`}
+                src={
+                  panelist.imageUrl ||
+                  `https://placehold.co/150x150/E0F2FE/0C4A6E?text=${panelist.name.substring(
+                    0,
+                    1
+                  )}${
+                    panelist.name.split(" ")[1]?.substring(0, 1) || ""
+                  }&font=Lora`
+                }
                 alt={panelist.name}
                 className="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-sky-200 object-cover shadow-sm"
                 onError={(e) => {
@@ -1015,8 +986,12 @@ const PanelistSection = () => {
                 }}
               />
               <div className="flex-grow flex flex-col">
-                <h3 className="font-semibold text-sky-700 mb-1 min-h-[1.5rem]">{panelist.name}</h3>
-                <p className="text-sm text-slate-600 mb-3 flex-grow">{panelist.title}</p>
+                <h3 className="font-semibold text-sky-700 mb-1 min-h-[1.5rem]">
+                  {panelist.name}
+                </h3>
+                <p className="text-sm text-slate-600 mb-3 flex-grow">
+                  {panelist.title}
+                </p>
                 {panelist.note && (
                   <p className="text-xs text-amber-600 italic mb-3 min-h-[2.5rem] flex items-center justify-center">
                     {panelist.note}
@@ -1026,9 +1001,9 @@ const PanelistSection = () => {
                   <div className="min-h-[2.5rem] mb-3"></div>
                 )}
               </div>
-              
+
               <button className="text-xs text-sky-600 hover:text-sky-700 font-medium flex items-center justify-center mx-auto mt-auto">
-                {selectedPanelistId === panelist.id ? 'Hide Bio' : 'View Bio'}
+                {selectedPanelistId === panelist.id ? "Hide Bio" : "View Bio"}
                 {selectedPanelistId === panelist.id ? (
                   <IconChevronUp className="ml-1 h-4 w-4" />
                 ) : (
@@ -1036,7 +1011,7 @@ const PanelistSection = () => {
                 )}
               </button>
             </div>
-            
+
             {selectedPanelistId === panelist.id && (
               <div className="bg-white p-4 -mt-2 rounded-b-xl shadow-lg border border-t-0 border-gray-200">
                 <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
@@ -1052,46 +1027,46 @@ const PanelistSection = () => {
 };
 
 const InteractiveSection = () => {
-  const [questionForm, setQuestionForm] = useState({ name: '', email: '', question: '' });
-  const [volunteerForm, setVolunteerForm] = useState({ name: '', email: '', roles: [], message: '' });
-  const [activeTab, setActiveTab] = useState('questions');
-  const [submitStatus, setSubmitStatus] = useState('');
+  const [questionForm, setQuestionForm] = useState({
+    name: "",
+    email: "",
+    question: "",
+  });
+  const [volunteerForm, setVolunteerForm] = useState({
+    name: "",
+    email: "",
+    roles: [],
+    message: "",
+  });
+  const [activeTab, setActiveTab] = useState("questions");
+  const [submitStatus, setSubmitStatus] = useState("");
 
   const handleQuestionSubmit = () => {
     if (!questionForm.name || !questionForm.email || !questionForm.question) {
-      setSubmitStatus('Please fill in all required fields.');
-      setTimeout(() => setSubmitStatus(''), 3000);
+      setSubmitStatus("Please fill in all required fields.");
+      setTimeout(() => setSubmitStatus(""), 3000);
       return;
     }
-    
+
     // Open Google Form for questions
-    window.open('https://forms.gle/example-questions-form', '_blank');
-    setSubmitStatus('Opening secure Google Form for question submission...');
-    setQuestionForm({ name: '', email: '', question: '' });
-    setTimeout(() => setSubmitStatus(''), 3000);
+    window.open("https://forms.gle/example-questions-form", "_blank");
+    setSubmitStatus("Opening secure Google Form for question submission...");
+    setQuestionForm({ name: "", email: "", question: "" });
+    setTimeout(() => setSubmitStatus(""), 3000);
   };
 
   const handleVolunteerSubmit = () => {
     if (!volunteerForm.name || !volunteerForm.email) {
-      setSubmitStatus('Please fill in your name and email address.');
-      setTimeout(() => setSubmitStatus(''), 3000);
+      setSubmitStatus("Please fill in your name and email address.");
+      setTimeout(() => setSubmitStatus(""), 3000);
       return;
     }
-    
-    // Open Google Form for volunteers
-    window.open('https://forms.gle/example-volunteer-form', '_blank');
-    setSubmitStatus('Opening secure Google Form for volunteer application...');
-    setVolunteerForm({ name: '', email: '', roles: [], message: '' });
-    setTimeout(() => setSubmitStatus(''), 3000);
-  };
 
-  const handleRoleToggle = (role) => {
-    setVolunteerForm(prev => ({
-      ...prev,
-      roles: prev.roles.includes(role) 
-        ? prev.roles.filter(r => r !== role)
-        : [...prev.roles, role]
-    }));
+    // Open Google Form for volunteers
+    window.open("https://forms.gle/example-volunteer-form", "_blank");
+    setSubmitStatus("Opening secure Google Form for volunteer application...");
+    setVolunteerForm({ name: "", email: "", roles: [], message: "" });
+    setTimeout(() => setSubmitStatus(""), 3000);
   };
 
   return (
@@ -1099,25 +1074,25 @@ const InteractiveSection = () => {
       <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-6 text-center">
         Get Involved
       </h2>
-      
+
       <div className="flex flex-col sm:flex-row mb-6 bg-white rounded-lg p-1">
         <button
-          onClick={() => setActiveTab('questions')}
+          onClick={() => setActiveTab("questions")}
           className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors flex items-center justify-center ${
-            activeTab === 'questions' 
-              ? 'bg-sky-600 text-white' 
-              : 'text-slate-600 hover:text-sky-600'
+            activeTab === "questions"
+              ? "bg-sky-600 text-white"
+              : "text-slate-600 hover:text-sky-600"
           }`}
         >
           <IconQuestionMark className="h-4 w-4 mr-2" />
           Submit Questions
         </button>
         <button
-          onClick={() => setActiveTab('volunteer')}
+          onClick={() => setActiveTab("volunteer")}
           className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors flex items-center justify-center ${
-            activeTab === 'volunteer' 
-              ? 'bg-sky-600 text-white' 
-              : 'text-slate-600 hover:text-sky-600'
+            activeTab === "volunteer"
+              ? "bg-sky-600 text-white"
+              : "text-slate-600 hover:text-sky-600"
           }`}
         >
           <IconUsers className="h-4 w-4 mr-2" />
@@ -1132,7 +1107,7 @@ const InteractiveSection = () => {
         </div>
       )}
 
-      {activeTab === 'questions' && (
+      {activeTab === "questions" && (
         <div>
           <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
             <IconQuestionMark className="mr-2" />
@@ -1141,17 +1116,20 @@ const InteractiveSection = () => {
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
             <p className="text-sm text-blue-800 flex items-start">
               <IconInfo className="mr-2 mt-0.5 flex-shrink-0" />
-              Questions are submitted through a secure Google Form to ensure anonymity and proper handling. 
-              Your information will only be used for question attribution if selected.
+              Questions are submitted through a secure Google Form to ensure
+              anonymity and proper handling. Your information will only be used
+              for question attribution if selected.
             </p>
           </div>
           <p className="text-sm text-slate-600 mb-4">
-            Have a question you'd like candidates to address? Submit it through our secure form and it may be selected for the town hall Q&A session.
+            Have a question you'd like candidates to address? Submit it through
+            our secure form and it may be selected for the town hall Q&A
+            session.
           </p>
-          
-          <Button 
-            type="primary" 
-            onClick={handleQuestionSubmit} 
+
+          <Button
+            type="primary"
+            onClick={handleQuestionSubmit}
             icon={<IconExternalLink />}
             className="w-full sm:w-auto"
           >
@@ -1160,7 +1138,7 @@ const InteractiveSection = () => {
         </div>
       )}
 
-      {activeTab === 'volunteer' && (
+      {activeTab === "volunteer" && (
         <div>
           <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
             <IconUsers className="mr-2" />
@@ -1169,29 +1147,35 @@ const InteractiveSection = () => {
           <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
             <p className="text-sm text-green-800 flex items-start">
               <IconCheckCircle className="mr-2 mt-0.5 flex-shrink-0" />
-              Volunteer applications are processed through a secure Google Form. 
+              Volunteer applications are processed through a secure Google Form.
               We'll contact you with specific details and training information.
             </p>
           </div>
           <p className="text-sm text-slate-600 mb-4">
-            Help make this important civic event a success! We need volunteers for various roles throughout the event.
+            Help make this important civic event a success! We need volunteers
+            for various roles throughout the event.
           </p>
-          
+
           <div className="mb-4">
-            <h4 className="text-md font-semibold text-slate-700 mb-2">Available Volunteer Roles:</h4>
+            <h4 className="text-md font-semibold text-slate-700 mb-2">
+              Available Volunteer Roles:
+            </h4>
             <div className="grid sm:grid-cols-2 gap-2">
               {forumData.volunteerRoles.map((role) => (
-                <div key={role} className="text-sm text-slate-600 flex items-center">
+                <div
+                  key={role}
+                  className="text-sm text-slate-600 flex items-center"
+                >
                   <IconCheckCircle className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
                   {role}
                 </div>
               ))}
             </div>
           </div>
-          
-          <Button 
-            type="success" 
-            onClick={handleVolunteerSubmit} 
+
+          <Button
+            type="success"
+            onClick={handleVolunteerSubmit}
             icon={<IconExternalLink />}
             className="w-full sm:w-auto"
           >
@@ -1208,8 +1192,8 @@ const KeyInformationSection = () => {
 
   const infoSections = [
     {
-      id: 'attendance',
-      title: 'For Attendees',
+      id: "attendance",
+      title: "For Attendees",
       icon: <IconUsers />,
       content: (
         <div className="space-y-4">
@@ -1217,31 +1201,38 @@ const KeyInformationSection = () => {
             <h4 className="font-semibold text-slate-800 mb-2">Why Attend?</h4>
             <ul className="space-y-2 text-sm text-slate-600">
               <li>• Hear directly from candidates beyond campaign materials</li>
-              <li>• Get answers to community questions during town hall session</li>
+              <li>
+                • Get answers to community questions during town hall session
+              </li>
               <li>• Engage with fellow residents on important local issues</li>
               <li>• Meet candidates personally during informal session</li>
               <li>• Connect with local community organizations</li>
             </ul>
           </div>
           <div>
-            <h4 className="font-semibold text-slate-800 mb-2">What to Expect</h4>
+            <h4 className="font-semibold text-slate-800 mb-2">
+              What to Expect
+            </h4>
             <p className="text-sm text-slate-600">
-              Free tickets will be available online starting September 2025. The event will be live-streamed 
-              on YouTube for those unable to attend in person. Audience members are expected to maintain 
-              respectful behavior during moderated portions.
+              Free tickets will be available online starting September 2025. The
+              event will be live-streamed on YouTube for those unable to attend
+              in person. Audience members are expected to maintain respectful
+              behavior during moderated portions.
             </p>
           </div>
         </div>
-      )
+      ),
     },
     {
-      id: 'candidates',
-      title: 'For Candidates',
+      id: "candidates",
+      title: "For Candidates",
       icon: <IconMicrophone />,
       content: (
         <div className="space-y-4">
           <div>
-            <h4 className="font-semibold text-slate-800 mb-2">Participation Benefits</h4>
+            <h4 className="font-semibold text-slate-800 mb-2">
+              Participation Benefits
+            </h4>
             <ul className="space-y-2 text-sm text-slate-600">
               <li>• Present your platform to engaged community audience</li>
               <li>• Reach broader audience through live streaming</li>
@@ -1252,21 +1243,24 @@ const KeyInformationSection = () => {
           <div>
             <h4 className="font-semibold text-slate-800 mb-2">Requirements</h4>
             <p className="text-sm text-slate-600">
-              Candidates must arrive by 6:30 PM for briefing, agree to ground rules including 
-              professional conduct and time limits, and sign participation agreement by September 10th, 2025.
+              Candidates must arrive by 6:30 PM for briefing, agree to ground
+              rules including professional conduct and time limits, and sign
+              participation agreement by September 10th, 2025.
             </p>
           </div>
         </div>
-      )
+      ),
     },
     {
-      id: 'rules',
-      title: 'Ground Rules & Guidelines',
+      id: "rules",
+      title: "Ground Rules & Guidelines",
       icon: <IconDocument />,
       content: (
         <div className="space-y-4">
           <div>
-            <h4 className="font-semibold text-slate-800 mb-2">Candidate Conduct</h4>
+            <h4 className="font-semibold text-slate-800 mb-2">
+              Candidate Conduct
+            </h4>
             <ul className="space-y-2 text-sm text-slate-600">
               <li>• Strict time limits enforced by moderator</li>
               <li>• Equal speaking opportunities for all candidates</li>
@@ -1277,7 +1271,9 @@ const KeyInformationSection = () => {
             </ul>
           </div>
           <div>
-            <h4 className="font-semibold text-slate-800 mb-2">Audience Guidelines</h4>
+            <h4 className="font-semibold text-slate-800 mb-2">
+              Audience Guidelines
+            </h4>
             <ul className="space-y-2 text-sm text-slate-600">
               <li>• Silent observation during moderated portions</li>
               <li>• Questions submitted in writing only</li>
@@ -1286,8 +1282,8 @@ const KeyInformationSection = () => {
             </ul>
           </div>
         </div>
-      )
-    }
+      ),
+    },
   ];
 
   return (
@@ -1295,19 +1291,26 @@ const KeyInformationSection = () => {
       <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-6 text-center">
         Important Information
       </h2>
-      
+
       <div className="space-y-4">
         {infoSections.map((section) => (
-          <div key={section.id} className="border border-gray-200 rounded-lg overflow-hidden">
+          <div
+            key={section.id}
+            className="border border-gray-200 rounded-lg overflow-hidden"
+          >
             <button
-              onClick={() => setExpandedSection(expandedSection === section.id ? null : section.id)}
+              onClick={() =>
+                setExpandedSection(
+                  expandedSection === section.id ? null : section.id
+                )
+              }
               className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 transition-colors"
             >
               <div className="flex items-center">
-                <div className="text-sky-600 mr-3">
-                  {section.icon}
-                </div>
-                <span className="font-semibold text-slate-800">{section.title}</span>
+                <div className="text-sky-600 mr-3">{section.icon}</div>
+                <span className="font-semibold text-slate-800">
+                  {section.title}
+                </span>
               </div>
               {expandedSection === section.id ? (
                 <IconChevronUp className="text-gray-400" />
@@ -1315,7 +1318,7 @@ const KeyInformationSection = () => {
                 <IconChevronDown className="text-gray-400" />
               )}
             </button>
-            
+
             {expandedSection === section.id && (
               <div className="px-4 pb-4 border-t border-gray-100">
                 {section.content}
@@ -1324,26 +1327,29 @@ const KeyInformationSection = () => {
           </div>
         ))}
       </div>
-      
+
       <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
         <h3 className="font-semibold text-blue-800 mb-2 flex items-center">
           <IconExternalLink className="h-4 w-4 mr-2" />
           Complete Documentation
         </h3>
         <p className="text-sm text-blue-700 mb-3">
-          For complete ground rules, candidate agreements, and detailed guidelines, view our official documents.
+          For complete ground rules, candidate agreements, and detailed
+          guidelines, view our official documents.
         </p>
         <div className="flex flex-col sm:flex-row gap-2">
-          <Button 
-            type="secondary" 
+          <Button
+            type="secondary"
             size="sm"
-            onClick={() => window.open("/WWF_Candidate_Forum_Public_Release.pdf", "_blank")}
+            onClick={() =>
+              window.open("/WWF_Candidate_Forum_Public_Release.pdf", "_blank")
+            }
             icon={<IconDocument />}
           >
             Public Release PDF
           </Button>
-          <Button 
-            type="secondary" 
+          <Button
+            type="secondary"
             size="sm"
             onClick={() => window.open("/candidate-agreement.pdf", "_blank")}
             icon={<IconDocument />}
@@ -1461,8 +1467,9 @@ const HomePage = ({ setActivePage, setSelectedProject }) => {
                 </h3>
               </div>
               <p className="text-xs sm:text-sm text-gray-600 mb-3 flex-grow">
-                Transforming our vital transit hub into a welcoming, beautiful, and 
-                vibrant community space through beautification, art, and programming.
+                Transforming our vital transit hub into a welcoming, beautiful,
+                and vibrant community space through beautification, art, and
+                programming.
               </p>
               <Button
                 onClick={() => {
@@ -1653,7 +1660,7 @@ const ProjectCard = ({ project, setActivePage, setSelectedProject }) => {
     if (e.target.closest("button")) {
       return;
     }
-    
+
     if (project.redirectTo) {
       setSelectedProject(null);
       setActivePage(project.redirectTo);
@@ -1665,7 +1672,7 @@ const ProjectCard = ({ project, setActivePage, setSelectedProject }) => {
 
   const handleButtonClick = (e) => {
     e.stopPropagation();
-    
+
     if (project.redirectTo) {
       setSelectedProject(null);
       setActivePage(project.redirectTo);
@@ -1691,7 +1698,7 @@ const ProjectCard = ({ project, setActivePage, setSelectedProject }) => {
             e.target.src = `https://placehold.co/600x400/CCCCCC/FFFFFF?text=Project+Image&font=Lora`;
           }}
         />
-        
+
         <div className="flex-grow flex flex-col px-2">
           {/* Fixed height title area */}
           <div className="h-16 mb-3">
@@ -1699,24 +1706,25 @@ const ProjectCard = ({ project, setActivePage, setSelectedProject }) => {
               {project.title}
             </h3>
           </div>
-          
+
           {/* Fixed height description area */}
           <div className="h-20 mb-4">
             <p className="text-sm text-gray-600 line-clamp-3 leading-relaxed">
               {project.shortGoal}
             </p>
           </div>
-          
+
           {/* Fixed height status area */}
           <div className="h-8 mb-4 flex items-start">
             <span className="inline-block text-xs font-medium px-2 py-1 bg-sky-100 text-sky-700 rounded-full">
               {project.status}
             </span>
           </div>
-          
+
           {/* Fixed height partner area */}
           <div className="h-16 mb-4">
-            {project.partnerOrganizations && project.partnerOrganizations.length > 0 ? (
+            {project.partnerOrganizations &&
+            project.partnerOrganizations.length > 0 ? (
               <>
                 <h4 className="text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">
                   Partners:
@@ -1738,12 +1746,14 @@ const ProjectCard = ({ project, setActivePage, setSelectedProject }) => {
                 </div>
               </>
             ) : (
-              <div className="h-full">{/* Empty space to maintain uniform height */}</div>
+              <div className="h-full">
+                {/* Empty space to maintain uniform height */}
+              </div>
             )}
           </div>
         </div>
       </div>
-      
+
       {/* Button at bottom */}
       <div className="mt-auto pt-4 px-2 pb-2">
         <Button
@@ -1883,7 +1893,8 @@ const ProjectDetailPage = ({ project, setActivePage, setSelectedProject }) => {
               <div className="grid sm:grid-cols-2 gap-4 mb-6">
                 {project.initiatives.map((initiative, index) => {
                   const getIcon = (title) => {
-                    if (title.includes("Beautification")) return <IconLightBulb />;
+                    if (title.includes("Beautification"))
+                      return <IconLightBulb />;
                     if (title.includes("Art")) return <IconPaintBrush />;
                     if (title.includes("Environmental")) return <IconRecycle />;
                     if (title.includes("Programming")) return <IconUsers />;
@@ -2010,7 +2021,9 @@ const ProjectDetailPage = ({ project, setActivePage, setSelectedProject }) => {
               </Button>
               {project.id === 2 && (
                 <Button
-                  onClick={() => window.open("/WWF_Station_Proposal.pdf", "_blank")}
+                  onClick={() =>
+                    window.open("/WWF_Station_Proposal.pdf", "_blank")
+                  }
                   type="secondary"
                   icon={<IconDocument />}
                   className="text-xs sm:text-sm"
@@ -2031,30 +2044,31 @@ const EventsPage = ({ setActivePage, setSelectedProject }) => {
   return (
     <div className="min-h-screen bg-slate-100 font-body text-slate-700">
       <ForumHeader />
-      
+
       <div className="container mx-auto px-4 py-8 space-y-8">
         <ProgressSection />
         <ForumFormatSection />
         <PanelistSection />
         <InteractiveSection />
         <KeyInformationSection />
-        
+
         {/* Call to Action */}
         <Card className="text-center bg-gradient-to-r from-sky-600 to-indigo-600 text-white">
           <h2 className="text-xl sm:text-2xl font-bold mb-4">
             Be Part of West Windsor's Democratic Process
           </h2>
           <p className="text-sky-100 mb-6 max-w-2xl mx-auto">
-            Your participation makes our community stronger. Whether as an attendee, volunteer, or 
-            question submitter, your voice matters in shaping West Windsor's future.
+            Your participation makes our community stronger. Whether as an
+            attendee, volunteer, or question submitter, your voice matters in
+            shaping West Windsor's future.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Button type="secondary" size="lg" icon={<IconMail />}>
               Contact Us
             </Button>
-            <Button 
-              type="secondary" 
-              size="lg" 
+            <Button
+              type="secondary"
+              size="lg"
               icon={<IconExternalLink />}
               onClick={() => {
                 setSelectedProject(null);
@@ -2194,7 +2208,8 @@ const ContactPage = () => {
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
             <p className="text-sm text-blue-800 flex items-start">
               <IconInfo className="mr-2 mt-0.5 flex-shrink-0" />
-              This form is powered by Web3Forms, a secure third-party service that ensures your data privacy and message delivery.
+              This form is powered by Web3Forms, a secure third-party service
+              that ensures your data privacy and message delivery.
             </p>
           </div>
           {result && (
@@ -2293,43 +2308,43 @@ function App() {
 
   // URL and title management
   const updateUrlAndTitle = (page, project = null) => {
-    let url = '/';
-    let title = 'West Windsor Forward';
-    
+    let url = "/";
+    let title = "West Windsor Forward";
+
     switch (page) {
-      case 'Home':
-        url = '/';
-        title = 'West Windsor Forward - Building a Better Community';
+      case "Home":
+        url = "/";
+        title = "West Windsor Forward - Building a Better Community";
         break;
-      case 'About':
-        url = '/about';
-        title = 'About Us - West Windsor Forward';
+      case "About":
+        url = "/about";
+        title = "About Us - West Windsor Forward";
         break;
-      case 'Projects':
-        url = '/projects';
-        title = 'Our Initiatives - West Windsor Forward';
+      case "Projects":
+        url = "/projects";
+        title = "Our Initiatives - West Windsor Forward";
         break;
-      case 'Events':
-        url = '/events';
-        title = '2025 Candidate Forum - West Windsor Forward';
+      case "Events":
+        url = "/events";
+        title = "2025 Candidate Forum - West Windsor Forward";
         break;
-      case 'Contact':
-        url = '/contact';
-        title = 'Contact Us - West Windsor Forward';
+      case "Contact":
+        url = "/contact";
+        title = "Contact Us - West Windsor Forward";
         break;
-      case 'ProjectDetails':
+      case "ProjectDetails":
         if (project) {
           url = `/projects/${project.slug}`;
           title = `${project.title} - West Windsor Forward`;
         }
         break;
       default:
-        url = '/';
-        title = 'West Windsor Forward';
+        url = "/";
+        title = "West Windsor Forward";
     }
-    
+
     // Update URL without page reload
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       window.history.pushState({ page, project }, title, url);
       document.title = title;
     }
@@ -2337,21 +2352,21 @@ function App() {
 
   // Handle browser back/forward navigation
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const handlePopState = (event) => {
         if (event.state) {
           setActivePage(event.state.page);
           setSelectedProject(event.state.project);
         }
       };
-      
-      window.addEventListener('popstate', handlePopState);
-      
+
+      window.addEventListener("popstate", handlePopState);
+
       // Set initial page title
       updateUrlAndTitle(activePage, selectedProject);
-      
+
       return () => {
-        window.removeEventListener('popstate', handlePopState);
+        window.removeEventListener("popstate", handlePopState);
       };
     }
   }, []);
@@ -2361,9 +2376,9 @@ function App() {
     setActivePage(page);
     setSelectedProject(project);
     updateUrlAndTitle(page, project);
-    
+
     // Scroll to top of page
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       window.scrollTo(0, 0);
     }
   };
@@ -2434,10 +2449,10 @@ function App() {
 export default App;
 
 // Style injection for browser environment
-if (typeof window !== 'undefined') {
-    const styleSheet = document.createElement("style");
-    styleSheet.type = "text/css";
-    styleSheet.innerText = `
+if (typeof window !== "undefined") {
+  const styleSheet = document.createElement("style");
+  styleSheet.type = "text/css";
+  styleSheet.innerText = `
       body { font-family: 'Lora', Georgia, serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
       .font-body { font-family: 'Lora', Georgia, serif; }
       h1, h2, h3, h4, h5, h6 { font-family: 'Lora', Georgia, serif; }
@@ -2481,11 +2496,11 @@ if (typeof window !== 'undefined') {
         overflow: hidden;
       }
     `;
-    document.head.appendChild(styleSheet);
+  document.head.appendChild(styleSheet);
 
-    const fontLinkLora = document.createElement("link");
-    fontLinkLora.rel = "stylesheet";
-    fontLinkLora.href =
-      "https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap";
-    document.head.appendChild(fontLinkLora);
+  const fontLinkLora = document.createElement("link");
+  fontLinkLora.rel = "stylesheet";
+  fontLinkLora.href =
+    "https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap";
+  document.head.appendChild(fontLinkLora);
 }
