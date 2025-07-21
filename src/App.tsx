@@ -23,6 +23,8 @@ const IconInfo: FC<{className?: string}> = ({className}) => ( <svg xmlns="http:/
 const IconFacebook: FC = () => ( <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"> <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" /> </svg> );
 const IconMenu: FC = () => ( <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}> <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" /> </svg> );
 const IconClose: FC = () => ( <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}> <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /> </svg> );
+const IconSpeakerPhone: FC = () => ( <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"> <path fillRule="evenodd" d="M18 3a1 1 0 00-1.447-.894L8.763 6H5a3 3 0 000 6h.28l1.771 5.316A1 1 0 008 18h1a1 1 0 001-1v-4.382l6.553 3.894A1 1 0 0018 16V3z" clipRule="evenodd" /> </svg> );
+const IconArrowRight: FC<{className?: string}> = ({className}) => ( <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 ${className}`} viewBox="0 0 20 20" fill="currentColor"> <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" /> </svg> );
 
 // --- Type Definitions ---
 interface DotPatternProps { className?: string; dotColor?: string; rows?: number; cols?: number; }
@@ -34,6 +36,7 @@ interface NavbarProps { setActivePage: (page: PageName, project?: Project | null
 interface PageProps { setActivePage: (page: PageName, project?: Project | null) => void; }
 interface ProjectCardProps { project: Project; setActivePage: (page: PageName, project?: Project | null) => void; }
 interface ProjectDetailPageProps { project: Project | null; setActivePage: (page: PageName, project?: Project | null) => void; }
+interface AnnouncementBarProps { onNavigateToEvents: () => void; }
 
 // --- Helper Components ---
 const DotPattern: FC<DotPatternProps> = ({ className = "", dotColor = "text-sky-200 opacity-5", rows = 6, cols = 8 }) => (
@@ -65,11 +68,140 @@ const Button: FC<ButtonProps> = ({ children, onClick, type = "primary", classNam
     const sizeStyles = { sm: "px-3 py-1.5 text-xs", md: "px-4 py-2 sm:px-5 sm:py-2.5 text-xs sm:text-sm", lg: "px-6 py-3 text-sm sm:text-base" };
     const typeStyle = type === "primary" ? "bg-sky-600 hover:bg-sky-700 text-white focus:ring-sky-500" : type === "secondary" ? "bg-slate-200 hover:bg-slate-300 text-slate-800 focus:ring-slate-400" : type === "success" ? "bg-green-600 hover:bg-green-700 text-white focus:ring-green-500" : type === "warning" ? "bg-amber-600 hover:bg-amber-700 text-white focus:ring-amber-500" : "bg-slate-200 hover:bg-slate-300 text-slate-800 focus:ring-slate-400";
     return (
-        <button type={isSubmit ? "submit" : "button"} onClick={onClick} className={`${baseStyle} ${typeStyle} ${sizeStyles[size]} ${className}`} disabled={disabled}>
+        <button onClick={onClick} className={`${baseStyle} ${typeStyle} ${sizeStyles[size]} ${className}`} disabled={disabled}>
             {icon && !children && <span>{icon}</span>}
             {icon && children && <span className="mr-2">{icon}</span>}
             {children}
         </button>
+    );
+};
+
+// --- Announcement Bar Component ---
+const AnnouncementBar: FC<AnnouncementBarProps> = ({ onNavigateToEvents }) => {
+    const [isDismissed, setIsDismissed] = useState(false);
+    const [isVisible, setIsVisible] = useState(false);
+
+    useEffect(() => {
+        // Check if user has dismissed the bar in this session
+        const dismissed = sessionStorage.getItem('announcementDismissed');
+        if (!dismissed) {
+            // Animate in after a short delay
+            const timer = setTimeout(() => setIsVisible(true), 500);
+            return () => clearTimeout(timer);
+        } else {
+            setIsDismissed(true);
+        }
+    }, []);
+
+    const handleDismiss = () => {
+        setIsVisible(false);
+        setTimeout(() => {
+            setIsDismissed(true);
+            sessionStorage.setItem('announcementDismissed', 'true');
+        }, 300);
+    };
+
+    if (isDismissed) return null;
+
+    return (
+        <div className={`relative bg-gradient-to-r from-sky-600 via-sky-700 to-indigo-700 text-white shadow-lg border-b border-sky-500 overflow-hidden transition-all duration-500 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full'}`}>
+            {/* Animated background pattern */}
+            <div className="absolute inset-0 bg-gradient-to-r from-sky-600 via-sky-700 to-indigo-700">
+                <div className="absolute inset-0 bg-white bg-opacity-5">
+                    <div className="absolute inset-0 animate-pulse-slow">
+                        {Array.from({ length: 12 }).map((_, i) => (
+                            <div
+                                key={i}
+                                className="absolute w-1 h-1 bg-white rounded-full opacity-20"
+                                style={{
+                                    left: `${(i * 8.33) + Math.random() * 5}%`,
+                                    top: `${20 + Math.random() * 60}%`,
+                                    animationDelay: `${i * 0.2}s`
+                                }}
+                            ></div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            <div className="relative z-10 container mx-auto px-4 py-3">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3 flex-1 min-w-0">
+                        {/* Animated pulse dot */}
+                        <div className="flex-shrink-0">
+                            <div className="relative">
+                                <div className="w-3 h-3 bg-red-400 rounded-full animate-ping"></div>
+                                <div className="absolute inset-0 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                            </div>
+                        </div>
+
+                        {/* Content - responsive layout */}
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 flex-1 min-w-0">
+                            <div className="flex items-center space-x-2 mb-1 sm:mb-0">
+                                <IconSpeakerPhone />
+                                <span className="font-semibold text-sm sm:text-base">
+                                    <span className="hidden sm:inline">Join us for the </span>
+                                    2025 Candidate Forum
+                                </span>
+                            </div>
+                            
+                            <div className="flex items-center text-xs sm:text-sm text-sky-100 space-x-3">
+                                <div className="flex items-center space-x-1">
+                                    <IconCalendar className="h-4 w-4" />
+                                    <span>Sept 25th</span>
+                                </div>
+                                <div className="flex items-center space-x-1">
+                                    <IconClock className="h-4 w-4" />
+                                    <span>7:00 PM</span>
+                                </div>
+                                <div className="hidden md:flex items-center space-x-1">
+                                    <IconMapMarker className="h-4 w-4" />
+                                    <span>Kelsey Theatre</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Action buttons */}
+                    <div className="flex items-center space-x-2 ml-3">
+                        <button
+                            onClick={onNavigateToEvents}
+                            className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-md font-medium text-xs sm:text-sm transition-all duration-200 transform hover:scale-105 flex items-center space-x-1 group"
+                        >
+                            <span className="hidden sm:inline">Learn More</span>
+                            <span className="sm:hidden">Details</span>
+                            <IconArrowRight className="h-3 w-3 sm:h-4 sm:w-4 group-hover:translate-x-1 transition-transform" />
+                        </button>
+                        
+                        <button
+                            onClick={handleDismiss}
+                            className="text-sky-200 hover:text-white p-1 rounded-md transition-colors hover:bg-white hover:bg-opacity-20"
+                            aria-label="Dismiss announcement"
+                        >
+                            <IconClose className="h-4 w-4" />
+                        </button>
+                    </div>
+                </div>
+
+                {/* Secondary info line for larger screens */}
+                <div className="hidden lg:flex items-center justify-center mt-2 pt-2 border-t border-sky-500 border-opacity-30">
+                    <div className="text-xs text-sky-100 flex items-center space-x-6">
+                        <span className="flex items-center space-x-1">
+                            <IconUsers className="h-4 w-4" />
+                            <span>Meet mayoral & council candidates</span>
+                        </span>
+                        <span className="flex items-center space-x-1">
+                            <IconMicrophone className="h-4 w-4" />
+                            <span>Q&A with community questions</span>
+                        </span>
+                        <span className="flex items-center space-x-1">
+                            <IconDocument className="h-4 w-4" />
+                            <span>Free admission & live stream available</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 };
 
@@ -108,8 +240,7 @@ const GoogleFormComponent: FC<GoogleFormComponentProps> = ({ formUrl, fieldMappi
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     
     if (fieldMapping.positionsOfInterest && (!formData.positionsOfInterest || (formData.positionsOfInterest as string[]).length === 0)) {
         setStatus('Please select at least one position of interest.');
@@ -155,24 +286,24 @@ const GoogleFormComponent: FC<GoogleFormComponentProps> = ({ formUrl, fieldMappi
 
   const childrenWithProps = React.Children.map(children, child => {
     if (React.isValidElement<FormFieldsProps>(child)) {
-      return React.cloneElement(child, { handleChange, formData, status });
+      return React.cloneElement(child, { handleChange, formData, status, handleSubmit });
     }
     return child;
   });
 
   return (
-    <form onSubmit={handleSubmit}>
+    <div>
       {status && (
         <div className={`mb-4 p-3 rounded-md text-sm ${status.includes('successfully') ? 'bg-green-100 text-green-700 border border-green-200' : status.includes('Please select') ? 'bg-amber-100 text-amber-700 border border-amber-200' : 'bg-blue-100 text-blue-700 border border-blue-200'}`}>
           {status}
         </div>
       )}
       {childrenWithProps}
-    </form>
+    </div>
   );
 };
 
-const CandidateQuestionForm: FC<FormFieldsProps> = ({ handleChange, formData }) => {
+const CandidateQuestionForm: FC<FormFieldsProps & {handleSubmit?: () => void}> = ({ handleChange, formData, handleSubmit }) => {
   const positionOptions = [ "Mayor of West Windsor Township", "West Windsor Township Council", "Both Mayoral and Council Candidates" ];
   return (
     <>
@@ -206,58 +337,11 @@ const CandidateQuestionForm: FC<FormFieldsProps> = ({ handleChange, formData }) 
           <label htmlFor="comment" className="block text-sm font-medium text-gray-700 mb-1"> Would you like to provide any additional comments regarding your suggestions? (Optional) </label>
           <textarea name="comment" id="comment" rows={2} value={formData.comment as string || ''} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-md shadow-sm"></textarea>
         </div>
-        <Button isSubmit type="primary" className="w-full sm:w-auto"> Submit Question </Button>
+        <Button onClick={handleSubmit} type="primary" className="w-full sm:w-auto"> Submit Question </Button>
       </div>
     </>
   );
 };
-
-const VolunteerForm: FC<FormFieldsProps> = ({ handleChange, formData }) => (
-    <>
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-          <p className="text-sm text-blue-800 flex items-start">
-              <IconInfo className="mr-2 mt-0.5 flex-shrink-0" />
-              Your submission is processed securely through a Google Form.
-          </p>
-      </div>
-      <div className="space-y-4 mt-6">
-        <div>
-          <label htmlFor="v-name" className="block text-sm font-medium text-gray-700 mb-1"> Full Name <span className="text-red-500">*</span> </label>
-          <input type="text" name="name" id="v-name" value={formData.name as string || ''} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-md shadow-sm" required />
-        </div>
-        <div>
-          <label htmlFor="v-email" className="block text-sm font-medium text-gray-700 mb-1"> Email Address <span className="text-red-500">*</span> </label>
-          <input type="email" name="email" id="v-email" value={formData.email as string || ''} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-md shadow-sm" required />
-        </div>
-        <div>
-          <label htmlFor="v-phone" className="block text-sm font-medium text-gray-700 mb-1"> Phone Number <span className="text-red-500">*</span> </label>
-          <input type="tel" name="phone" id="v-phone" value={formData.phone as string || ''} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-md shadow-sm" placeholder="(123) 456-7890" required/>
-        </div>
-        <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2"> Positions of Interest <span className="text-red-500">*</span></label>
-            <div className="space-y-2">
-                {forumData.volunteerRoles.map(role => (
-                    <div key={role} className="flex items-center">
-                        <input
-                            type="checkbox"
-                            id={`role-${role.replace(/\s+/g, '-')}`}
-                            name="positionsOfInterest"
-                            value={role}
-                            checked={(formData.positionsOfInterest as string[] | undefined)?.includes(role) || false}
-                            onChange={handleChange}
-                            className="h-4 w-4 text-sky-600 border-gray-300 rounded focus:ring-sky-500"
-                        />
-                        <label htmlFor={`role-${role.replace(/\s+/g, '-')}`} className="ml-3 block text-sm text-gray-700">
-                            {role}
-                        </label>
-                    </div>
-                ))}
-            </div>
-        </div>
-        <Button isSubmit type="success" className="w-full sm:w-auto"> Sign Up to Volunteer </Button>
-      </div>
-    </>
-);
 
 // --- Data ---
 const forumData = {
@@ -871,7 +955,7 @@ const ContactPage: FC = () => {
                                 <textarea name="message" id="message" rows={4} value={formData.message} onChange={handleChange} className="mt-1 block w-full px-2.5 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-xs sm:text-sm" required></textarea>
                             </div>
                             <div>
-                                <Button isSubmit type="primary" className="w-full text-xs sm:text-sm md:text-base py-2 sm:py-2.5" disabled={result === "Sending...."} icon={result === "Sending...." ? <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-white"></div> : <IconMail />}> {result === "Sending...." ? "Sending..." : "Send Message"} </Button>
+                                <Button onClick={() => handleSubmit} type="primary" className="w-full text-xs sm:text-sm md:text-base py-2 sm:py-2.5" disabled={result === "Sending...."} icon={result === "Sending...." ? <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-white"></div> : <IconMail />}> {result === "Sending...." ? "Sending..." : "Send Message"} </Button>
                             </div>
                         </form>
                     </div>
@@ -881,7 +965,7 @@ const ContactPage: FC = () => {
     );
 };
 
-// --- Main App Component (Moved to the end to fix reference errors) ---
+// --- Main App Component ---
 function App() {
     const [activePage, setActivePage] = useState<PageName>("Home");
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
@@ -948,6 +1032,7 @@ function App() {
     return (
         <div id="app" className="flex flex-col min-h-screen bg-slate-100 font-body text-slate-700">
             <Navbar setActivePage={navigateToPage} activePage={activePage} selectedProject={selectedProject} />
+            <AnnouncementBar onNavigateToEvents={() => navigateToPage("Events")} />
             <main className="flex-grow">{renderPage()}</main>
             <Footer />
         </div>
