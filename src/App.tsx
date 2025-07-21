@@ -702,7 +702,7 @@ const projectsData = [
     getInvolved:
       "Share your ideas for station improvements, express interest in volunteering for future cleanup or beautification efforts, connect us with relevant community organizations, or let us know what would make your commuting experience better.",
     image:
-      "https://placehold.co/600x400/3B82F6/FFFFFF?text=Princeton+Junction+Station&font=Lora",
+      "https://www.westwindsorhistory.com/uploads/1/2/3/1/123111196/2018-12-08-pj-train-station-ticket-building_orig.jpg",
     partnerOrganizations: [],
     fundingSources: [],
     initiatives: [
