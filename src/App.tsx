@@ -628,8 +628,6 @@ const Footer: FC<FooterProps> = memo(({ setActivePage }) => {
 
                     {/* Column 3: Stay Informed */}
                     <div className="md:col-span-2 lg:col-span-2">
-                         <h3 className="text-md font-semibold text-white uppercase tracking-wider mb-4">Reach out!</h3>
-                         <p className="text-sm text-slate-400 mb-4">Connect with us via Email.</p>
                          <Button 
                             onClick={() => setActivePage('Contact')} 
                             type="primary" 
