@@ -83,15 +83,9 @@ const AnnouncementBar: FC<AnnouncementBarProps> = ({ onNavigateToEvents }) => {
     const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
-        // Check if user has dismissed the bar in this session
-        const dismissed = sessionStorage.getItem('announcementDismissed');
-        if (!dismissed) {
-            // Animate in after a short delay
-            const timer = setTimeout(() => setIsVisible(true), 500);
-            return () => clearTimeout(timer);
-        } else {
-            setIsDismissed(true);
-        }
+        // Animate in after a short delay
+        const timer = setTimeout(() => setIsVisible(true), 500);
+        return () => clearTimeout(timer);
     }, []);
 
     useEffect(() => {
@@ -105,7 +99,6 @@ const AnnouncementBar: FC<AnnouncementBarProps> = ({ onNavigateToEvents }) => {
         setIsVisible(false);
         setTimeout(() => {
             setIsDismissed(true);
-            sessionStorage.setItem('announcementDismissed', 'true');
         }, 300);
     };
 
@@ -1045,7 +1038,7 @@ const ContactPage: FC = () => {
                                     {/* Response Time */}
                                     <div className="mt-6 sm:mt-8 p-3 sm:p-4 bg-white bg-opacity-10 rounded-lg border border-white border-opacity-20">
                                         <div className="flex items-center">
-                                            <IconClock className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-sky-200 flex-shrink-0" />
+                                            <IconClock className="h-4 w-4 sm:h-5 sm:w-5 mr-3 sm:mr-2 text-sky-200 flex-shrink-0" />
                                             <span className="text-xs sm:text-sm text-sky-100">We typically respond within 24-48 hours</span>
                                         </div>
                                     </div>
