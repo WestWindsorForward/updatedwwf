@@ -353,13 +353,11 @@ const GoogleFormComponent: FC<GoogleFormComponentProps> = ({ formUrl, fieldMappi
         return;
     }
 
-    // --- START: Added validation for newsletter form ---
     if (fieldMapping.email && (!formData.email || !/\S+@\S+\.\S+/.test(formData.email as string))) {
         setStatus('Please enter a valid email address.');
         setTimeout(() => setStatus(''), 5000);
         return;
     }
-    // --- END: Added validation for newsletter form ---
 
     setStatus('Sending...');
 
@@ -388,12 +386,12 @@ const GoogleFormComponent: FC<GoogleFormComponentProps> = ({ formUrl, fieldMappi
       setStatus('Submitted successfully! Thank you.');
       setFormData({});
       if(onSuccess) onSuccess();
-      setTimeout(() => setStatus(''), 5000);
+      setTimeout(() => setStatus(''), 8000);
     } catch (error) {
       console.error('Error submitting to Google Form:', error);
       setStatus('An error occurred. Please try again.');
       if(onError) onError();
-      setTimeout(() => setStatus(''), 5000);
+      setTimeout(() => setStatus(''), 8000);
     }
   };
 
@@ -406,7 +404,8 @@ const GoogleFormComponent: FC<GoogleFormComponentProps> = ({ formUrl, fieldMappi
 
   return (
     <div>
-      {status && (
+      {/* This top-level status is for multi-field forms like the question one */}
+      {Object.keys(fieldMapping).length > 1 && status && (
         <div className={`mb-4 p-3 rounded-md text-sm ${status.includes('successfully') ? 'bg-green-100 text-green-700 border border-green-200' : status.includes('Please select') || status.includes('valid email') ? 'bg-amber-100 text-amber-700 border border-amber-200' : 'bg-blue-100 text-blue-700 border border-blue-200'}`}>
           {status}
         </div>
@@ -456,12 +455,11 @@ const CandidateQuestionForm: FC<FormFieldsProps & {handleSubmit?: () => void}> =
   );
 };
 
-// --- START: Newsletter Form Component ---
 const NewsletterForm: FC<FormFieldsProps & {handleSubmit?: () => void}> = ({ handleChange, formData, status, handleSubmit }) => {
     const isSubmitting = status === 'Sending...';
     return (
         <>
-            <form onSubmit={(e) => { e.preventDefault(); handleSubmit && handleSubmit(); }} className="flex flex-col sm:flex-row gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
                 <input 
                     type="email" 
                     name="email"
@@ -471,24 +469,20 @@ const NewsletterForm: FC<FormFieldsProps & {handleSubmit?: () => void}> = ({ han
                     value={(formData.email as string) || ''}
                     onChange={handleChange}
                     disabled={isSubmitting}
+                    required
                 />
-                <button 
-                    type="submit" 
-                    className="bg-sky-600 text-white font-semibold px-4 py-2 rounded-md hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-slate-900 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                    disabled={isSubmitting}
-                >
+                <Button onClick={handleSubmit} type="primary" disabled={isSubmitting} className="w-full sm:w-auto">
                     {isSubmitting ? 'Subscribing...' : 'Subscribe'}
-                </button>
-            </form>
-            {status && (
+                </Button>
+            </div>
+            {status && status !== 'Sending...' && (
                 <p className={`mt-2 text-xs h-4 ${status.includes('successfully') ? 'text-green-400' : 'text-amber-400'}`}>
-                    {status.replace('Sending...', '')}
+                    {status}
                 </p>
             )}
         </>
     );
 };
-// --- END: Newsletter Form Component ---
 
 // --- Data ---
 const forumData = {
@@ -595,7 +589,7 @@ const Footer: FC<FooterProps> = memo(({ setActivePage }) => {
     return (
         <footer className="bg-slate-900 text-gray-300 print:hidden">
             <div className="container mx-auto px-6 pt-12 pb-8">
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     {/* Column 1: About */}
                     <div className="md:col-span-2 lg:col-span-1 space-y-4">
                         <div className="flex items-center space-x-3 cursor-pointer" onClick={() => setActivePage("Home")}>
