@@ -1326,7 +1326,7 @@ const KeyInformationSection = () => {
                 <Button
                     type="secondary"
                     size="sm"
-                    onClick={() => window.open("/candidate-agreement.pdf", "_blank")}
+                    onClick={() => window.open("/WWF_Candidate_Forum_Candidate_Agreement.pdf", "_blank")}
                     icon={<IconDocument />}
                 >
                     Candidate Agreement
