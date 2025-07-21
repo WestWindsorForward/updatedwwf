@@ -927,26 +927,38 @@ const ContactPage: FC = () => {
     const initialFormData = { name: "", email: "", message: "" };
     const [formData, setFormData] = useState(initialFormData);
     const [result, setResult] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const web3FormsAccessKey = "ccb9ef54-31b7-4397-9eb8-ff8d3b587265";
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        setIsSubmitting(true);
         setResult("Sending....");
         const formElement = event.target as HTMLFormElement;
         const web3FormData = new FormData(formElement);
         web3FormData.append("access_key", web3FormsAccessKey);
-        web3FormData.append("subject", `New Contact from ${formElement.name || "Website Visitor"}`);
+        web3FormData.append("subject", `New Contact from ${formData.name || "Website Visitor"}`);
 
-        if (!formData.name || !formData.email || !formData.message) { setResult("Please fill in all required fields."); setTimeout(() => setResult(""), 6000); return; }
-        if (!/\S+@\S+\.\S+/.test(formData.email)) { setResult("Please enter a valid email address."); setTimeout(() => setResult(""), 6000); return; }
+        if (!formData.name || !formData.email || !formData.message) { 
+            setResult("Please fill in all required fields."); 
+            setIsSubmitting(false);
+            setTimeout(() => setResult(""), 6000); 
+            return; 
+        }
+        if (!/\S+@\S+\.\S+/.test(formData.email)) { 
+            setResult("Please enter a valid email address."); 
+            setIsSubmitting(false);
+            setTimeout(() => setResult(""), 6000); 
+            return; 
+        }
 
         try {
             const response = await fetch("https://api.web3forms.com/submit", { method: "POST", body: web3FormData });
             const data = await response.json();
             if (data.success) {
-                setResult("Form Submitted Successfully");
+                setResult("Message sent successfully! We'll get back to you soon.");
                 formElement.reset();
                 setFormData(initialFormData);
             } else {
@@ -957,61 +969,228 @@ const ContactPage: FC = () => {
             console.error("Submission error:", error);
             setResult("An error occurred while submitting the form. Please try again later.");
         } finally {
-            setTimeout(() => setResult(""), 6000);
+            setIsSubmitting(false);
+            setTimeout(() => setResult(""), 8000);
         }
     };
 
     return (
-        <div className="container mx-auto py-10 sm:py-12 md:py-16 px-4 animate-fadeIn" id="contact-page-link">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-800 mb-8 sm:mb-10 md:mb-12 text-center"> Contact Us </h1>
-            <div className="grid md:grid-cols-2 gap-6 md:gap-8 lg:gap-10">
-                <Card className="bg-slate-50 border-slate-200 p-0" hasDotPattern>
-                    <div className="p-4 sm:p-6 md:p-8">
-                        <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-sky-700 mb-4 sm:mb-6"> Contact Information </h2>
-                        <p className="text-gray-700 leading-relaxed mb-4 sm:mb-6 text-xs sm:text-sm md:text-lg"> We welcome your questions and ideas! Reach out to learn more or support our initiatives. </p>
-                        <div className="space-y-4 sm:space-y-5">
-                            <div className="flex items-start">
-                                <IconMail className="text-sky-600 mr-2 sm:mr-3 mt-0.5 sm:mt-1 flex-shrink-0 h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6" />
-                                <div>
-                                    <strong className="text-slate-700 text-xs sm:text-sm md:text-base">Email:</strong>
-                                    <ul className="list-none text-gray-600 mt-1 space-y-1 text-2xs sm:text-xs md:text-sm">
-                                        <li><a href="mailto:contact@westwindsorforward.org" className="hover:text-sky-500 transition-colors">contact@westwindsorforward.org</a></li>
-                                    </ul>
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-sky-50 to-indigo-50 relative overflow-hidden">
+            {/* Background decoration */}
+            <DotPattern dotColor="text-sky-400 opacity-10" rows={12} cols={15} />
+            
+            <div className="relative z-10 container mx-auto py-12 sm:py-16 md:py-20 px-4 animate-fadeIn">
+                {/* Header Section */}
+                <div className="text-center mb-12 sm:mb-16">
+                    <div className="inline-block bg-sky-600 text-white px-4 py-2 rounded-full text-sm font-semibold mb-4">
+                        <IconMail className="inline-block h-4 w-4 mr-2" />
+                        Get In Touch
+                    </div>
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-800 mb-4"> 
+                        Contact <span className="text-sky-600">West Windsor Forward</span>
+                    </h1>
+                    <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                        Ready to make a difference in our community? We'd love to hear from you.
+                    </p>
+                </div>
+
+                <div className="grid lg:grid-cols-5 gap-8 lg:gap-12 max-w-7xl mx-auto">
+                    {/* Contact Information - Left Side */}
+                    <div className="lg:col-span-2">
+                        <Card className="bg-gradient-to-br from-sky-600 to-indigo-700 text-white p-0 transform hover:scale-105 transition-all duration-300" noHoverEffect>
+                            <div className="relative p-6 sm:p-8">
+                                <DotPattern dotColor="text-white opacity-10" rows={6} cols={8} />
+                                <div className="relative z-10">
+                                    <h2 className="text-2xl sm:text-3xl font-bold mb-6"> Let's Connect </h2>
+                                    <p className="text-sky-100 mb-8 leading-relaxed"> 
+                                        We welcome your questions, ideas, and partnership opportunities. Together, we can create positive change in West Windsor. 
+                                    </p>
+                                    
+                                    {/* Contact Methods */}
+                                    <div className="space-y-6">
+                                        <div className="flex items-start group">
+                                            <div className="bg-white bg-opacity-20 p-3 rounded-lg mr-4 group-hover:bg-opacity-30 transition-all duration-200">
+                                                <IconMail className="h-6 w-6" />
+                                            </div>
+                                            <div>
+                                                <h3 className="font-semibold text-lg mb-2">Email Us</h3>
+                                                <a href="mailto:contact@westwindsorforward.org" className="text-sky-100 hover:text-white transition-colors">
+                                                    contact@westwindsorforward.org
+                                                </a>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-start group">
+                                            <div className="bg-white bg-opacity-20 p-3 rounded-lg mr-4 group-hover:bg-opacity-30 transition-all duration-200">
+                                                <IconUsers className="h-6 w-6" />
+                                            </div>
+                                            <div>
+                                                <h3 className="font-semibold text-lg mb-2">Join Our Community</h3>
+                                                <p className="text-sky-100 mb-3">Follow us for updates and events</p>
+                                                <a href="https://www.facebook.com/profile.php?id=61575121893868" target="_blank" rel="noopener noreferrer" className="inline-flex items-center bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-lg transition-all duration-200 group">
+                                                    <IconFacebook className="h-5 w-5 mr-2" />
+                                                    <span>Facebook</span>
+                                                    <IconExternalLink className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                                                </a>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-start group">
+                                            <div className="bg-white bg-opacity-20 p-3 rounded-lg mr-4 group-hover:bg-opacity-30 transition-all duration-200">
+                                                <IconLightBulb className="h-6 w-6" />
+                                            </div>
+                                            <div>
+                                                <h3 className="font-semibold text-lg mb-2">Get Involved</h3>
+                                                <p className="text-sky-100">Volunteer opportunities, events, and ways to make an impact in our community.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Response Time */}
+                                    <div className="mt-8 p-4 bg-white bg-opacity-10 rounded-lg border border-white border-opacity-20">
+                                        <div className="flex items-center">
+                                            <IconClock className="h-5 w-5 mr-2 text-sky-200" />
+                                            <span className="text-sm text-sky-100">We typically respond within 24-48 hours</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <p className="text-gray-700 mt-6 sm:mt-8 text-xs sm:text-sm md:text-lg"> Stay connected! Follow us on social media for the latest news and ways to engage. </p>
-                        <div className="mt-4">
-                            <a href="https://www.facebook.com/profile.php?id=61575121893868" target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-sky-600 hover:text-sky-700 transition-colors text-sm"> <IconFacebook /> <span className="ml-2">Follow us on Facebook</span> </a>
-                        </div>
+                        </Card>
                     </div>
-                </Card>
-                <Card hasDotPattern className="p-0">
-                    <div className="p-4 sm:p-6 md:p-8">
-                        <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-sky-700 mb-4 sm:mb-6"> Send Us a Message </h2>
-                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-                            <p className="text-sm text-blue-800 flex items-start"> <IconInfo className="mr-2 mt-0.5 flex-shrink-0" /> This form is powered by Web3Forms, a secure third-party service that ensures your data privacy and message delivery. </p>
-                        </div>
-                        {result && <div className={`mb-3 sm:mb-4 p-2.5 sm:p-3 rounded-md border text-xs sm:text-sm ${result === "Form Submitted Successfully" ? "bg-green-100 text-green-700 border-green-300" : result === "Sending...." ? "bg-blue-100 text-blue-700 border-blue-300" : "bg-red-100 text-red-700 border-red-300"}`}>{result}</div>}
-                        <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
-                            <div>
-                                <label htmlFor="name" className="block text-2xs sm:text-xs font-medium text-gray-700 mb-0.5 sm:mb-1"> Full Name <span className="text-red-500">*</span> </label>
-                                <input type="text" name="name" id="name" value={formData.name} onChange={handleChange} className="mt-1 block w-full px-2.5 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-xs sm:text-sm" required />
+
+                    {/* Contact Form - Right Side */}
+                    <div className="lg:col-span-3">
+                        <Card className="bg-white p-0 border-2 border-transparent hover:border-sky-200 transition-all duration-300" hasDotPattern>
+                            <div className="p-6 sm:p-8">
+                                <div className="flex items-center mb-6">
+                                    <div className="bg-sky-100 p-3 rounded-lg mr-4">
+                                        <IconDocument className="h-6 w-6 text-sky-600" />
+                                    </div>
+                                    <div>
+                                        <h2 className="text-2xl sm:text-3xl font-bold text-slate-800"> Send Us a Message </h2>
+                                        <p className="text-gray-600">Share your thoughts, questions, or ideas with us</p>
+                                    </div>
+                                </div>
+                                
+                                <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
+                                    <div className="flex items-start">
+                                        <IconInfo className="text-blue-600 mr-3 mt-0.5 flex-shrink-0" />
+                                        <div>
+                                            <p className="text-sm text-blue-800 font-medium mb-1">Secure & Private</p>
+                                            <p className="text-sm text-blue-700">This form is powered by Web3Forms, ensuring your data privacy and reliable message delivery.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {result && (
+                                    <div className={`mb-6 p-4 rounded-xl border text-sm font-medium ${
+                                        result.includes('successfully') 
+                                            ? 'bg-green-50 text-green-800 border-green-200' 
+                                            : result.includes('Sending') 
+                                                ? 'bg-blue-50 text-blue-800 border-blue-200' 
+                                                : 'bg-red-50 text-red-800 border-red-200'
+                                    }`}>
+                                        <div className="flex items-center">
+                                            {result.includes('successfully') && <IconCheckCircle className="h-5 w-5 mr-2 text-green-600" />}
+                                            {result.includes('Sending') && <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>}
+                                            <span>{result}</span>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <form onSubmit={handleSubmit} className="space-y-6">
+                                    <div>
+                                        <label htmlFor="contact-name" className="block text-sm font-semibold text-gray-700 mb-2"> 
+                                            Full Name <span className="text-red-500">*</span> 
+                                        </label>
+                                        <input 
+                                            type="text" 
+                                            name="name" 
+                                            id="contact-name" 
+                                            value={formData.name} 
+                                            onChange={handleChange} 
+                                            className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-200 hover:border-gray-400" 
+                                            placeholder="Enter your full name"
+                                            required 
+                                        />
+                                    </div>
+                                    
+                                    <div>
+                                        <label htmlFor="contact-email" className="block text-sm font-semibold text-gray-700 mb-2"> 
+                                            Email Address <span className="text-red-500">*</span> 
+                                        </label>
+                                        <input 
+                                            type="email" 
+                                            name="email" 
+                                            id="contact-email" 
+                                            value={formData.email} 
+                                            onChange={handleChange} 
+                                            className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-200 hover:border-gray-400" 
+                                            placeholder="Enter your email address"
+                                            required 
+                                        />
+                                    </div>
+                                    
+                                    <div>
+                                        <label htmlFor="contact-message" className="block text-sm font-semibold text-gray-700 mb-2"> 
+                                            Message <span className="text-red-500">*</span> 
+                                        </label>
+                                        <textarea 
+                                            name="message" 
+                                            id="contact-message" 
+                                            rows={5} 
+                                            value={formData.message} 
+                                            onChange={handleChange} 
+                                            className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-200 hover:border-gray-400 resize-none" 
+                                            placeholder="Tell us about your questions, ideas, or how you'd like to get involved..."
+                                            required
+                                        ></textarea>
+                                    </div>
+                                    
+                                    <div>
+                                        <button 
+                                            type="submit"
+                                            className="w-full inline-flex items-center justify-center rounded-xl font-semibold transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-opacity-75 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed bg-sky-600 hover:bg-sky-700 text-white focus:ring-sky-500 px-6 py-4 text-base"
+                                            disabled={isSubmitting}
+                                        >
+                                            {isSubmitting ? (
+                                                <>
+                                                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                                                    Sending Message...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <IconMail className="mr-2" />
+                                                    Send Message
+                                                </>
+                                            )}
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
-                            <div>
-                                <label htmlFor="email" className="block text-2xs sm:text-xs font-medium text-gray-700 mb-0.5 sm:mb-1"> Email Address <span className="text-red-500">*</span> </label>
-                                <input type="email" name="email" id="email" value={formData.email} onChange={handleChange} className="mt-1 block w-full px-2.5 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-xs sm:text-sm" required />
-                            </div>
-                            <div>
-                                <label htmlFor="message" className="block text-2xs sm:text-xs font-medium text-gray-700 mb-0.5 sm:mb-1"> Message <span className="text-red-500">*</span> </label>
-                                <textarea name="message" id="message" rows={4} value={formData.message} onChange={handleChange} className="mt-1 block w-full px-2.5 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-xs sm:text-sm" required></textarea>
-                            </div>
-                            <div>
-                                <Button onClick={() => handleSubmit} type="primary" className="w-full text-xs sm:text-sm md:text-base py-2 sm:py-2.5" disabled={result === "Sending...."} icon={result === "Sending...." ? <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-white"></div> : <IconMail />}> {result === "Sending...." ? "Sending..." : "Send Message"} </Button>
-                            </div>
-                        </form>
+                        </Card>
                     </div>
-                </Card>
+                </div>
+
+                {/* Call to Action Section */}
+                <div className="mt-16 text-center">
+                    <Card className="bg-gradient-to-r from-slate-50 to-sky-50 border-sky-200 p-0 max-w-4xl mx-auto">
+                        <div className="p-8">
+                            <h3 className="text-2xl font-bold text-slate-800 mb-4">Ready to Make a Difference?</h3>
+                            <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+                                Join our community of engaged residents working together to create positive change in West Windsor.
+                            </p>
+                            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                                <Button onClick={() => window.open("https://www.facebook.com/profile.php?id=61575121893868", "_blank")} type="secondary" icon={<IconFacebook />}>
+                                    Follow on Facebook
+                                </Button>
+                                <Button onClick={() => window.location.href = "mailto:contact@westwindsorforward.org?subject=Volunteer%20Interest"} icon={<IconUsers />}>
+                                    Volunteer With Us
+                                </Button>
+                            </div>
+                        </div>
+                    </Card>
+                </div>
             </div>
         </div>
     );
