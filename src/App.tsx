@@ -85,17 +85,27 @@ interface GoogleFormComponentProps {
 
 interface FormFieldsProps {
     handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
-    formData: { [key: string]: string };
+    formData: { [key: string]: string | string[] };
     status?: string;
 }
 
 const GoogleFormComponent: FC<GoogleFormComponentProps> = ({ formUrl, fieldMapping, children, onSuccess, onError }) => {
-  const [formData, setFormData] = useState<{ [key: string]: string }>({});
+  const [formData, setFormData] = useState<{ [key: string]: string | string[] }>({});
   const [status, setStatus] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    const { name, value, type } = e.target;
+    if (type === 'checkbox') {
+        const { checked } = e.target as HTMLInputElement;
+        const currentValues = (formData[name] as string[] | undefined) || [];
+        if (checked) {
+            setFormData(prev => ({ ...prev, [name]: [...currentValues, value] }));
+        } else {
+            setFormData(prev => ({ ...prev, [name]: currentValues.filter(v => v !== value) }));
+        }
+    } else {
+        setFormData(prev => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -105,24 +115,24 @@ const GoogleFormComponent: FC<GoogleFormComponentProps> = ({ formUrl, fieldMappi
     const googleFormData = new FormData();
     for (const key in formData) {
       if (fieldMapping[key]) {
-        googleFormData.append(fieldMapping[key], formData[key]);
+        const value = formData[key];
+        if (Array.isArray(value)) {
+            // For checkboxes, join the array into a single string
+            googleFormData.append(fieldMapping[key], value.join(', '));
+        } else {
+            googleFormData.append(fieldMapping[key], value);
+        }
       }
     }
     
-    // Ensure the radio button always has a value
     if (fieldMapping.position && !googleFormData.has(fieldMapping.position)) {
         const defaultPosition = "Mayor of West Windsor Township";
         googleFormData.append(fieldMapping.position, defaultPosition);
         setFormData(prev => ({...prev, position: defaultPosition}));
     }
 
-
     try {
-      await fetch(formUrl, {
-        method: 'POST',
-        body: googleFormData,
-        mode: 'no-cors'
-      });
+      await fetch(formUrl, { method: 'POST', body: googleFormData, mode: 'no-cors' });
       setStatus('Submitted successfully! Thank you.');
       setFormData({});
       if(onSuccess) onSuccess();
@@ -157,65 +167,84 @@ const GoogleFormComponent: FC<GoogleFormComponentProps> = ({ formUrl, fieldMappi
 const CandidateQuestionForm: FC<FormFieldsProps> = ({ handleChange, formData }) => {
   const positionOptions = [ "Mayor of West Windsor Township", "West Windsor Township Council", "Both Mayoral and Council Candidates" ];
   return (
-    <div className="space-y-6">
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2"> Which position would you like to suggest a question/topic for? <span className="text-red-500">*</span> </label>
-        <div className="space-y-2">
-          {positionOptions.map(option => (
-            <div key={option} className="flex items-center">
-              <input type="radio" id={option.replace(/\s+/g, '-')} name="position" value={option} checked={formData.position === option} onChange={handleChange} className="h-4 w-4 text-sky-600 border-gray-300 focus:ring-sky-500" required />
-              <label htmlFor={option.replace(/\s+/g, '-')} className="ml-3 block text-sm text-gray-700"> {option} </label>
-            </div>
-          ))}
+    <>
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-6">
+          <p className="text-sm text-blue-800 flex items-start">
+              <IconInfo className="mr-2 mt-0.5 flex-shrink-0" />
+              Your submission is processed securely through a Google Form to ensure anonymity and proper handling.
+          </p>
+      </div>
+      <div className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2"> Which position would you like to suggest a question/topic for? <span className="text-red-500">*</span> </label>
+          <div className="space-y-2">
+            {positionOptions.map(option => (
+              <div key={option} className="flex items-center">
+                <input type="radio" id={option.replace(/\s+/g, '-')} name="position" value={option} checked={formData.position === option} onChange={handleChange} className="h-4 w-4 text-sky-600 border-gray-300 focus:ring-sky-500" required />
+                <label htmlFor={option.replace(/\s+/g, '-')} className="ml-3 block text-sm text-gray-700"> {option} </label>
+              </div>
+            ))}
+          </div>
         </div>
+        <div>
+          <label htmlFor="topic" className="block text-sm font-medium text-gray-700 mb-1"> Please provide your suggested topic(s) for the candidates. What overarching themes or areas of concern do you believe the panelists should address? <span className="text-red-500">*</span> </label>
+          <input type="text" name="topic" id="topic" value={formData.topic as string || ''} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-md shadow-sm" placeholder="e.g., Downtown Development, School Funding, Traffic Safety" required />
+        </div>
+        <div>
+          <label htmlFor="question" className="block text-sm font-medium text-gray-700 mb-1"> Please write down your specific question(s) for the candidates. Try to make them clear, concise, and relevant to the West Windsor community. <span className="text-red-500">*</span> </label>
+          <textarea name="question" id="question" rows={3} value={formData.question as string || ''} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-md shadow-sm" required></textarea>
+        </div>
+        <div>
+          <label htmlFor="comment" className="block text-sm font-medium text-gray-700 mb-1"> Would you like to provide any additional comments regarding your suggestions? (Optional) </label>
+          <textarea name="comment" id="comment" rows={2} value={formData.comment as string || ''} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-md shadow-sm"></textarea>
+        </div>
+        <Button isSubmit type="primary" className="w-full sm:w-auto"> Submit Question </Button>
       </div>
-      <div>
-        <label htmlFor="topic" className="block text-sm font-medium text-gray-700 mb-1"> Please provide your suggested topic(s) for the candidates. What overarching themes or areas of concern do you believe the panelists should address? <span className="text-red-500">*</span> </label>
-        <input type="text" name="topic" id="topic" value={formData.topic || ''} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-md shadow-sm" placeholder="e.g., Downtown Development, School Funding, Traffic Safety" required />
-      </div>
-      <div>
-        <label htmlFor="question" className="block text-sm font-medium text-gray-700 mb-1"> Please write down your specific question(s) for the candidates. Try to make them clear, concise, and relevant to the West Windsor community. <span className="text-red-500">*</span> </label>
-        <textarea name="question" id="question" rows={3} value={formData.question || ''} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-md shadow-sm" required></textarea>
-      </div>
-      <div>
-        <label htmlFor="comment" className="block text-sm font-medium text-gray-700 mb-1"> Would you like to provide any additional comments regarding your suggestions? (Optional) </label>
-        <textarea name="comment" id="comment" rows={2} value={formData.comment || ''} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-md shadow-sm"></textarea>
-      </div>
-      <Button isSubmit type="primary" className="w-full sm:w-auto"> Submit Question </Button>
-    </div>
+    </>
   );
 };
 
 const VolunteerForm: FC<FormFieldsProps> = ({ handleChange, formData }) => (
     <>
-      <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
-        <p className="text-sm text-green-800 flex items-start">
-          <IconCheckCircle className="mr-2 mt-0.5 flex-shrink-0" />
-          Help make this important civic event a success! We'll contact you with specific details and training information.
-        </p>
-      </div>
-      <div className="mb-4">
-        <h4 className="text-md font-semibold text-slate-700 mb-2"> Available Volunteer Roles: </h4>
-        <div className="grid sm:grid-cols-2 gap-2">
-          {forumData.volunteerRoles.map((role) => (
-            <div key={role} className="text-sm text-slate-600 flex items-center">
-              <IconCheckCircle className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" /> {role}
-            </div>
-          ))}
-        </div>
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+          <p className="text-sm text-blue-800 flex items-start">
+              <IconInfo className="mr-2 mt-0.5 flex-shrink-0" />
+              Your submission is processed securely through a Google Form.
+          </p>
       </div>
       <div className="space-y-4 mt-6">
         <div>
           <label htmlFor="v-name" className="block text-sm font-medium text-gray-700 mb-1"> Full Name <span className="text-red-500">*</span> </label>
-          <input type="text" name="name" id="v-name" value={formData.name || ''} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-md shadow-sm" required />
+          <input type="text" name="name" id="v-name" value={formData.name as string || ''} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-md shadow-sm" required />
         </div>
         <div>
           <label htmlFor="v-email" className="block text-sm font-medium text-gray-700 mb-1"> Email Address <span className="text-red-500">*</span> </label>
-          <input type="email" name="email" id="v-email" value={formData.email || ''} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-md shadow-sm" required />
+          <input type="email" name="email" id="v-email" value={formData.email as string || ''} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-md shadow-sm" required />
         </div>
         <div>
-          <label htmlFor="v-phone" className="block text-sm font-medium text-gray-700 mb-1"> Phone Number (Optional) </label>
-          <input type="tel" name="phone" id="v-phone" value={formData.phone || ''} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-md shadow-sm" placeholder="(123) 456-7890" />
+          <label htmlFor="v-phone" className="block text-sm font-medium text-gray-700 mb-1"> Phone Number <span className="text-red-500">*</span> </label>
+          <input type="tel" name="phone" id="v-phone" value={formData.phone as string || ''} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-md shadow-sm" placeholder="(123) 456-7890" required/>
+        </div>
+        <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2"> Positions of Interest <span className="text-red-500">*</span></label>
+            <div className="space-y-2">
+                {forumData.volunteerRoles.map(role => (
+                    <div key={role} className="flex items-center">
+                        <input
+                            type="checkbox"
+                            id={`role-${role.replace(/\s+/g, '-')}`}
+                            name="positionsOfInterest"
+                            value={role}
+                            checked={(formData.positionsOfInterest as string[] | undefined)?.includes(role) || false}
+                            onChange={handleChange}
+                            className="h-4 w-4 text-sky-600 border-gray-300 rounded focus:ring-sky-500"
+                        />
+                        <label htmlFor={`role-${role.replace(/\s+/g, '-')}`} className="ml-3 block text-sm text-gray-700">
+                            {role}
+                        </label>
+                    </div>
+                ))}
+            </div>
         </div>
         <Button isSubmit type="success" className="w-full sm:w-auto"> Sign Up to Volunteer </Button>
       </div>
@@ -456,7 +485,14 @@ const InteractiveSection: FC = () => {
 
     const volunteerFormConfig = {
         url: "https://docs.google.com/forms/d/e/1FAIpQLScBBr9JiV86Bru2k3JDq3pf7ItThq26WDvax2s2FOsu4L76LA/formResponse",
-        fields: { name: "entry.218113281", email: "entry.1239370203", phone: "entry.1618585724" },
+        fields: { 
+            name: "entry.218113281", 
+            email: "entry.1239370203", 
+            phone: "entry.1618585724",
+            // IMPORTANT: You must replace "entry.XXXXXXXXXX" with the real entry ID from your Google Form for the "Positions of Interest" question.
+            // To get this: 1. Open your form for editing. 2. Click "Get pre-filled link". 3. Select a few checkboxes and get the link. 4. Find the entry ID for this question in the generated URL.
+            positionsOfInterest: "entry.115328393" 
+        },
     };
 
     return (
