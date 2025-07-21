@@ -80,6 +80,7 @@ const Button: FC<ButtonProps> = ({ children, onClick, type = "primary", classNam
 const AnnouncementBar: FC<AnnouncementBarProps> = ({ onNavigateToEvents }) => {
     const [isDismissed, setIsDismissed] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
         // Check if user has dismissed the bar in this session
@@ -93,6 +94,13 @@ const AnnouncementBar: FC<AnnouncementBarProps> = ({ onNavigateToEvents }) => {
         }
     }, []);
 
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 640);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
     const handleDismiss = () => {
         setIsVisible(false);
         setTimeout(() => {
@@ -101,10 +109,19 @@ const AnnouncementBar: FC<AnnouncementBarProps> = ({ onNavigateToEvents }) => {
         }, 300);
     };
 
+    const handleMobileClick = () => {
+        if (isMobile) {
+            onNavigateToEvents();
+        }
+    };
+
     if (isDismissed) return null;
 
     return (
-        <div className={`relative bg-gradient-to-r from-sky-600 via-sky-700 to-indigo-700 text-white shadow-lg border-b border-sky-500 overflow-hidden transition-all duration-500 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full'}`}>
+        <div 
+            className={`relative bg-gradient-to-r from-sky-600 via-sky-700 to-indigo-700 text-white shadow-lg border-b border-sky-500 overflow-hidden transition-all duration-500 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full'} ${isMobile ? 'cursor-pointer' : ''}`}
+            onClick={handleMobileClick}
+        >
             {/* Animated background pattern */}
             <div className="absolute inset-0 bg-gradient-to-r from-sky-600 via-sky-700 to-indigo-700">
                 <div className="absolute inset-0 bg-white bg-opacity-5">
@@ -125,27 +142,24 @@ const AnnouncementBar: FC<AnnouncementBarProps> = ({ onNavigateToEvents }) => {
             </div>
 
             <div className="relative z-10 container mx-auto px-4 py-3">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3 flex-1 min-w-0">
-                        {/* Animated pulse dot */}
-                        <div className="flex-shrink-0">
-                            <div className="relative">
-                                <div className="w-3 h-3 bg-red-400 rounded-full animate-ping"></div>
-                                <div className="absolute inset-0 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                {/* Desktop Layout */}
+                <div className="hidden sm:block">
+                    <div className="flex items-center justify-center">
+                        <div className="flex items-center space-x-3">
+                            {/* Animated pulse dot */}
+                            <div className="flex-shrink-0">
+                                <div className="relative">
+                                    <div className="w-3 h-3 bg-red-400 rounded-full animate-ping"></div>
+                                    <div className="absolute inset-0 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                                </div>
                             </div>
-                        </div>
 
-                        {/* Content - responsive layout */}
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 flex-1 min-w-0">
-                            <div className="flex items-center justify-center sm:justify-start space-x-2 mb-1 sm:mb-0 w-full sm:w-auto">
+                            <div className="flex items-center space-x-2">
                                 <IconSpeakerPhone />
-                                <span className="font-semibold text-sm sm:text-base">
-                                    <span className="hidden sm:inline">Join us for the </span>
-                                    2025 Candidate Forum
-                                </span>
+                                <span className="font-semibold text-base">Join us for the 2025 Candidate Forum</span>
                             </div>
                             
-                            <div className="flex items-center text-xs sm:text-sm text-sky-100 space-x-3">
+                            <div className="flex items-center text-sm text-sky-100 space-x-4 ml-6">
                                 <div className="flex items-center space-x-1">
                                     <IconCalendar className="h-4 w-4" />
                                     <span>Sept 25th</span>
@@ -154,50 +168,88 @@ const AnnouncementBar: FC<AnnouncementBarProps> = ({ onNavigateToEvents }) => {
                                     <IconClock className="h-4 w-4" />
                                     <span>7:00 PM</span>
                                 </div>
-                                <div className="hidden md:flex items-center space-x-1">
+                                <div className="flex items-center space-x-1">
                                     <IconMapMarker className="h-4 w-4" />
                                     <span>Kelsey Theatre</span>
                                 </div>
                             </div>
                         </div>
+
+                        {/* Desktop Action buttons */}
+                        <div className="flex items-center space-x-2 ml-6">
+                            <button
+                                onClick={onNavigateToEvents}
+                                className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-2 rounded-md font-medium text-sm transition-all duration-200 transform hover:scale-105 flex items-center space-x-1 group"
+                            >
+                                <span>Learn More</span>
+                                <IconArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                            </button>
+                            
+                            <button
+                                onClick={handleDismiss}
+                                className="text-sky-200 hover:text-white p-1 rounded-md transition-colors hover:bg-white hover:bg-opacity-20"
+                                aria-label="Dismiss announcement"
+                            >
+                                <IconClose className="h-4 w-4" />
+                            </button>
+                        </div>
                     </div>
 
-                    {/* Action buttons */}
-                    <div className="flex items-center space-x-2 ml-3">
+                    {/* Secondary info line for larger screens */}
+                    <div className="hidden lg:flex items-center justify-center mt-2 pt-2 border-t border-sky-500 border-opacity-30">
+                        <div className="text-xs text-sky-100 flex items-center space-x-6">
+                            <span className="flex items-center space-x-1">
+                                <IconUsers className="h-4 w-4" />
+                                <span>Meet mayoral & council candidates</span>
+                            </span>
+                            <span className="flex items-center space-x-1">
+                                <IconMicrophone className="h-4 w-4" />
+                                <span>Q&A with community questions</span>
+                            </span>
+                            <span className="flex items-center space-x-1">
+                                <IconDocument className="h-4 w-4" />
+                                <span>Free admission & live stream available</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Mobile Layout */}
+                <div className="sm:hidden">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3 flex-1">
+                            {/* Animated pulse dot */}
+                            <div className="flex-shrink-0">
+                                <div className="relative">
+                                    <div className="w-2.5 h-2.5 bg-red-400 rounded-full animate-ping"></div>
+                                    <div className="absolute inset-0 w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse"></div>
+                                </div>
+                            </div>
+
+                            <div className="flex-1 text-center">
+                                <div className="flex items-center justify-center space-x-2 mb-1">
+                                    <IconSpeakerPhone className="h-4 w-4" />
+                                    <span className="font-semibold text-sm">2025 Candidate Forum</span>
+                                </div>
+                                <div className="flex items-center justify-center text-xs text-sky-100 space-x-3">
+                                    <span>Sept 25th</span>
+                                    <span>•</span>
+                                    <span>7:00 PM</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Mobile dismiss button only */}
                         <button
-                            onClick={onNavigateToEvents}
-                            className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-md font-medium text-xs sm:text-sm transition-all duration-200 transform hover:scale-105 flex items-center space-x-1 group"
-                        >
-                            <span className="hidden sm:inline">Learn More</span>
-                            <span className="sm:hidden">Details</span>
-                            <IconArrowRight className="h-3 w-3 sm:h-4 sm:w-4 group-hover:translate-x-1 transition-transform" />
-                        </button>
-                        
-                        <button
-                            onClick={handleDismiss}
-                            className="text-sky-200 hover:text-white p-1 rounded-md transition-colors hover:bg-white hover:bg-opacity-20"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleDismiss();
+                            }}
+                            className="text-sky-200 hover:text-white p-2 rounded-md transition-colors hover:bg-white hover:bg-opacity-20 ml-2 flex-shrink-0"
                             aria-label="Dismiss announcement"
                         >
                             <IconClose className="h-4 w-4" />
                         </button>
-                    </div>
-                </div>
-
-                {/* Secondary info line for larger screens */}
-                <div className="hidden lg:flex items-center justify-center mt-2 pt-2 border-t border-sky-500 border-opacity-30">
-                    <div className="text-xs text-sky-100 flex items-center space-x-6">
-                        <span className="flex items-center space-x-1">
-                            <IconUsers className="h-4 w-4" />
-                            <span>Meet mayoral & council candidates</span>
-                        </span>
-                        <span className="flex items-center space-x-1">
-                            <IconMicrophone className="h-4 w-4" />
-                            <span>Q&A with community questions</span>
-                        </span>
-                        <span className="flex items-center space-x-1">
-                            <IconDocument className="h-4 w-4" />
-                            <span>Free admission & live stream available</span>
-                        </span>
                     </div>
                 </div>
             </div>
