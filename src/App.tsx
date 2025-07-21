@@ -1641,31 +1641,38 @@ const AboutPage = () => {
   );
 };
 
-// FIXED: ProjectCard component with proper logic
+// FIXED: ProjectCard component with DataCloneError protection
 const ProjectCard = ({ project, setActivePage }) => {
     const handleCardClick = (e) => {
-      // Prevent navigation if a link or button inside the card is clicked
       if (e.target.closest('a, button')) {
         return;
       }
       
-      // Check if project has redirectTo property
+      // For Princeton Junction Station (id: 2), explicitly go to ProjectDetails
+      if (project.id === 2) {
+        setActivePage("ProjectDetails", project);
+        return;
+      }
+      
       if (project.redirectTo) {
         setActivePage(project.redirectTo);
       } else {
-        // Go to project detail page
         setActivePage("ProjectDetails", project);
       }
     };
   
     const handleButtonClick = (e) => {
-      e.stopPropagation(); // Prevent the card's onClick from firing
+      e.stopPropagation();
       
-      // Check if project has redirectTo property
+      // For Princeton Junction Station (id: 2), explicitly go to ProjectDetails
+      if (project.id === 2) {
+        setActivePage("ProjectDetails", project);
+        return;
+      }
+      
       if (project.redirectTo) {
         setActivePage(project.redirectTo);
       } else {
-        // Go to project detail page
         setActivePage("ProjectDetails", project);
       }
     };
@@ -1728,7 +1735,7 @@ const ProjectCard = ({ project, setActivePage }) => {
             type="secondary"
             className="w-full text-xs"
           >
-            {project.redirectTo ? "View Event Details" : "View Project Details"}
+            {project.id === 1 ? "View Event Details" : "View Project Details"}
           </Button>
         </div>
       </Card>
@@ -2246,7 +2253,7 @@ const ContactPage = () => {
   );
 };
 
-// Main App Component
+// FIXED: Main App Component with DataCloneError protection
 function App() {
   const [activePage, setActivePage] = useState("Home");
   const [selectedProject, setSelectedProject] = useState(null);
@@ -2290,8 +2297,14 @@ function App() {
         title = 'West Windsor Forward';
     }
     
+    // FIXED: Only store serializable data in browser history to prevent DataCloneError
     if (typeof window !== 'undefined' && window.location.pathname !== url) {
-      window.history.pushState({ page, project }, title, url);
+      const historyState = { 
+        page, 
+        projectId: project?.id || null,
+        projectSlug: project?.slug || null 
+      };
+      window.history.pushState(historyState, title, url);
     }
     if (typeof window !== 'undefined') {
         document.title = title;
@@ -2300,10 +2313,18 @@ function App() {
   };
 
   useEffect(() => {
+    // FIXED: Handle popstate by reconstructing project from projectsData
     const handlePopState = (event) => {
       if (event.state) {
         setActivePage(event.state.page);
-        setSelectedProject(event.state.project);
+        
+        // Find project by ID if needed
+        if (event.state.projectId) {
+          const project = projectsData.find(p => p.id === event.state.projectId);
+          setSelectedProject(project);
+        } else {
+          setSelectedProject(null);
+        }
       }
     };
     
