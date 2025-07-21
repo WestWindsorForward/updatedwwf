@@ -37,6 +37,10 @@ interface PageProps { setActivePage: (page: PageName, project?: Project | null) 
 interface ProjectCardProps { project: Project; setActivePage: (page: PageName, project?: Project | null) => void; }
 interface ProjectDetailPageProps { project: Project | null; setActivePage: (page: PageName, project?: Project | null) => void; }
 interface AnnouncementBarProps { onNavigateToEvents: () => void; }
+// --- START: Added Footer Props ---
+interface FooterProps { setActivePage: (page: PageName) => void; }
+// --- END: Added Footer Props ---
+
 
 // --- Helper Components ---
 const DotPattern: FC<DotPatternProps> = memo(({ className = "", dotColor = "text-sky-200 opacity-5", rows = 6, cols = 8 }) => {
@@ -542,31 +546,86 @@ const Navbar: FC<NavbarProps> = ({ setActivePage, activePage, selectedProject })
     );
 };
 
-const Footer: FC = memo(() => (
-    <footer className="bg-slate-800 text-gray-400 p-6 sm:p-8 mt-12 sm:mt-16 text-center print:hidden">
-        <div className="container mx-auto">
-            <img 
-                src={logoUrl} 
-                alt="West Windsor Forward Logo" 
-                className="h-8 sm:h-10 mx-auto mb-3 sm:mb-4 rounded bg-white p-1.5" 
-                loading="lazy"
-                decoding="async"
-                onError={(e) => { 
-                    (e.target as HTMLImageElement).onerror = null; 
-                    (e.target as HTMLImageElement).src = `https://placehold.co/40x40/FFFFFF/0C4A6E?text=WWF&font=Lora`; 
-                }} 
-            />
-            <p className="text-xs sm:text-sm"> &copy; {new Date().getFullYear()} West Windsor Forward. All rights reserved. </p>
-            <p className="text-xs mt-1 mb-3 sm:mb-4"> Igniting positive change and working collaboratively for a better West Windsor. </p>
-            <div className="flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-4 mb-3 sm:mb-4 text-xs sm:text-sm">
-                <a href="mailto:contact@westwindsorforward.org" className="hover:text-sky-400 transition-colors flex items-center"> <IconMail /> <span className="ml-2">contact@westwindsorforward.org</span> </a>
+// --- START: Improved Footer ---
+const Footer: FC<FooterProps> = memo(({ setActivePage }) => (
+    <footer className="bg-slate-900 text-gray-300 print:hidden">
+        <div className="container mx-auto px-6 pt-12 pb-8">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                {/* Column 1: About */}
+                <div className="md:col-span-2 lg:col-span-1 space-y-4">
+                    <div className="flex items-center space-x-3 cursor-pointer" onClick={() => setActivePage("Home")}>
+                        <img 
+                            src={logoUrl} 
+                            alt="West Windsor Forward Logo" 
+                            className="h-10 rounded bg-white p-1.5" 
+                            loading="lazy"
+                            decoding="async"
+                            onError={(e) => { 
+                                (e.target as HTMLImageElement).onerror = null; 
+                                (e.target as HTMLImageElement).src = `https://placehold.co/40x40/FFFFFF/0C4A6E?text=WWF&font=Lora`; 
+                            }} 
+                        />
+                        <span className="text-xl font-bold text-white">West Windsor Forward</span>
+                    </div>
+                    <p className="text-sm text-slate-400 leading-relaxed">
+                        A dedicated coalition igniting positive change and working collaboratively to build a better future for West Windsor.
+                    </p>
+                    <div className="flex space-x-4 pt-2">
+                        <a href="https://www.facebook.com/profile.php?id=61575121893868" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-sky-400 transition-colors" aria-label="Facebook">
+                            <IconFacebook />
+                        </a>
+                        <a href="mailto:contact@westwindsorforward.org" className="text-slate-400 hover:text-sky-400 transition-colors" aria-label="Email">
+                            <IconMail />
+                        </a>
+                    </div>
+                </div>
+
+                {/* Column 2: Quick Links */}
+                <div>
+                    <h3 className="text-md font-semibold text-white uppercase tracking-wider mb-4">Quick Links</h3>
+                    <ul className="space-y-3">
+                        <li><button onClick={() => setActivePage('Home')} className="text-slate-400 hover:text-sky-400 transition-colors text-sm">Home</button></li>
+                        <li><button onClick={() => setActivePage('About')} className="text-slate-400 hover:text-sky-400 transition-colors text-sm">About Us</button></li>
+                        <li><button onClick={() => setActivePage('Projects')} className="text-slate-400 hover:text-sky-400 transition-colors text-sm">Our Initiatives</button></li>
+                        <li><button onClick={() => setActivePage('Events')} className="text-slate-400 hover:text-sky-400 transition-colors text-sm">2025 Forum</button></li>
+                        <li><button onClick={() => setActivePage('Contact')} className="text-slate-400 hover:text-sky-400 transition-colors text-sm">Contact</button></li>
+                    </ul>
+                </div>
+
+                {/* Column 3: Stay Informed */}
+                <div className="md:col-span-2 lg:col-span-2">
+                     <h3 className="text-md font-semibold text-white uppercase tracking-wider mb-4">Stay Informed</h3>
+                     <p className="text-sm text-slate-400 mb-4">Get updates on our initiatives and events directly in your inbox.</p>
+                     <form onSubmit={(e) => e.preventDefault()} className="flex flex-col sm:flex-row gap-2">
+                         <input 
+                            type="email" 
+                            placeholder="Enter your email" 
+                            className="flex-grow w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-md text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all"
+                            aria-label="Email for newsletter"
+                         />
+                         <button 
+                            type="submit" 
+                            className="bg-sky-600 text-white font-semibold px-4 py-2 rounded-md hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-slate-900 transition-all"
+                         >
+                            Subscribe
+                        </button>
+                     </form>
+                </div>
             </div>
-            <div className="flex justify-center items-center space-x-4 mt-4">
-                <a href="https://www.facebook.com/profile.php?id=61575121893868" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-sky-400 transition-colors"> <IconFacebook /> <span className="sr-only">Facebook</span> </a>
+
+            <div className="mt-10 pt-8 border-t border-slate-800 text-center text-sm text-slate-500">
+                <p>&copy; {new Date().getFullYear()} West Windsor Forward. All Rights Reserved.</p>
+                 <div className="mt-2 space-x-2">
+                     <a href="#privacy" onClick={(e) => e.preventDefault()} className="hover:text-sky-400 transition-colors">Privacy Policy</a>
+                     <span className="mx-1">|</span>
+                     <a href="#terms" onClick={(e) => e.preventDefault()} className="hover:text-sky-400 transition-colors">Terms of Service</a>
+                 </div>
             </div>
         </div>
     </footer>
 ));
+// --- END: Improved Footer ---
+
 
 const ForumHeader: FC = () => {
     const generateICSData = () => {
@@ -1365,7 +1424,7 @@ function App() {
             <Navbar setActivePage={navigateToPage} activePage={activePage} selectedProject={selectedProject} />
             {activePage === "Home" && <AnnouncementBar onNavigateToEvents={() => navigateToPage("Events")} />}
             <main className="flex-grow">{renderPage()}</main>
-            <Footer />
+            <Footer setActivePage={navigateToPage} />
         </div>
     );
 }
