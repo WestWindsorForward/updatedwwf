@@ -658,7 +658,7 @@ const projectsData = [
     description:
       "Providing a non-partisan platform for Mayoral and Council candidates to engage with residents, ensuring informed participation in our local democracy.",
     image:
-      "https://placehold.co/600x400/0A2342/FFFFFF?text=Candidate+Forum&font=Lora",
+      "/2025 Forum Graphic.png",
     partnerOrganizations: ["League of Women Voters of the Greater Princeton Area"],
     redirectTo: "Events", // This project redirects to Events page
   },
