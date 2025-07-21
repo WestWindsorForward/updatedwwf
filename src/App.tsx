@@ -125,13 +125,14 @@ const GoogleFormComponent: FC<GoogleFormComponentProps> = ({ formUrl, fieldMappi
       if (fieldMapping[key]) {
         const value = formData[key];
         if (Array.isArray(value)) {
-            // For checkboxes, Google Forms expects each selected option as a separate field with the same name
-            value.forEach(item => {
-                googleFormData.append(fieldMapping[key], item);
-            });
-        } else {
-            googleFormData.append(fieldMapping[key], value);
-        }
+    // For checkboxes, Google Forms expects each selected option 
+    // as a separate field with the same name.
+    value.forEach(item => {
+        googleFormData.append(fieldMapping[key], item);
+    });
+} else {
+    googleFormData.append(fieldMapping[key], value);
+}
       }
     }
     
