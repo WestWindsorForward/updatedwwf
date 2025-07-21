@@ -1750,8 +1750,8 @@ const ProjectsPage = ({ setActivePage }) => {
           Our Initiatives
         </h1>
         <p className="text-sm sm:text-md md:text-lg text-gray-600 max-w-2xl mx-auto">
-          Explore the projects West Windsor Forward is championing to build a
-          better community.
+          Explore the projects West Windsor Forward is undertaking to enhance our
+         community.
         </p>
         <div className="mt-4 sm:mt-6 inline-block relative">
           <DotPattern dotColor="text-sky-500 opacity-10" rows={2} cols={8} />
@@ -2268,7 +2268,7 @@ function App() {
     switch (page) {
       case 'Home':
         url = '/';
-        title = 'West Windsor Forward - Building a Better Community';
+        title = 'West Windsor Forward';
         break;
       case 'About':
         url = '/about';
