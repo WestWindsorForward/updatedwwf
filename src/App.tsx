@@ -137,7 +137,7 @@ const AnnouncementBar: FC<AnnouncementBarProps> = ({ onNavigateToEvents }) => {
 
                         {/* Content - responsive layout */}
                         <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 flex-1 min-w-0">
-                            <div className="flex items-center space-x-2 mb-1 sm:mb-0">
+                            <div className="flex items-center justify-center sm:justify-start space-x-2 mb-1 sm:mb-0 w-full sm:w-auto">
                                 <IconSpeakerPhone />
                                 <span className="font-semibold text-sm sm:text-base">
                                     <span className="hidden sm:inline">Join us for the </span>
@@ -1032,7 +1032,7 @@ function App() {
     return (
         <div id="app" className="flex flex-col min-h-screen bg-slate-100 font-body text-slate-700">
             <Navbar setActivePage={navigateToPage} activePage={activePage} selectedProject={selectedProject} />
-            <AnnouncementBar onNavigateToEvents={() => navigateToPage("Events")} />
+            {activePage === "Home" && <AnnouncementBar onNavigateToEvents={() => navigateToPage("Events")} />}
             <main className="flex-grow">{renderPage()}</main>
             <Footer />
         </div>
