@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, FC, ReactNode } from "react";
+import React, { useState, useEffect, useRef, FC, ReactNode, useCallback, useMemo, memo } from "react";
 
 // --- Asset URLs ---
 const logoUrl = "/WW Forward.png";
@@ -39,45 +39,88 @@ interface ProjectDetailPageProps { project: Project | null; setActivePage: (page
 interface AnnouncementBarProps { onNavigateToEvents: () => void; }
 
 // --- Helper Components ---
-const DotPattern: FC<DotPatternProps> = ({ className = "", dotColor = "text-sky-200 opacity-5", rows = 6, cols = 8 }) => (
-    <div className={`absolute inset-0 overflow-hidden -z-10 ${className}`} aria-hidden="true">
-        <div className="absolute -top-1/4 -left-1/4 w-[150%] h-[150%] animate-pulse-slow">
-            {Array.from({ length: rows * 2 }).map((_, r) => (
-                <div key={`row-${r}`} className="flex justify-around" style={{ marginBottom: "25px" }}>
-                    {Array.from({ length: cols * 2 }).map((_, c) => (
-                        <div key={`dot-${r}-${c}`} className={`w-1 h-1 sm:w-1.5 sm:h-1.5 ${dotColor} rounded-full transition-all duration-500 ease-in-out`}></div>
-                    ))}
-                </div>
-            ))}
-        </div>
-    </div>
-);
+const DotPattern: FC<DotPatternProps> = memo(({ className = "", dotColor = "text-sky-200 opacity-5", rows = 6, cols = 8 }) => {
+    const dots = useMemo(() => {
+        const totalDots = Math.min(rows * cols * 4, 100); // Limit total dots for performance
+        return Array.from({ length: totalDots }).map((_, i) => ({
+            id: i,
+            left: `${(i % (cols * 2) * 12.5) + Math.random() * 5}%`,
+            top: `${(Math.floor(i / (cols * 2)) * 25) + Math.random() * 15 + 10}%`,
+            delay: `${(i % 10) * 0.2}s`
+        }));
+    }, [rows, cols]);
 
-const Card: FC<CardProps> = ({ children, className = "", noHoverEffect = false, hasDotPattern = false, onClick }) => (
+    return (
+        <div className={`absolute inset-0 overflow-hidden -z-10 ${className}`} aria-hidden="true">
+            <div className="absolute inset-0 will-change-transform">
+                {dots.map((dot) => (
+                    <div
+                        key={dot.id}
+                        className={`absolute w-1 h-1 sm:w-1.5 sm:h-1.5 ${dotColor} rounded-full animate-pulse-slow`}
+                        style={{
+                            left: dot.left,
+                            top: dot.top,
+                            animationDelay: dot.delay,
+                            transform: 'translateZ(0)' // Force hardware acceleration
+                        }}
+                    ></div>
+                ))}
+            </div>
+        </div>
+    );
+});
+
+const Card: FC<CardProps> = memo(({ children, className = "", noHoverEffect = false, hasDotPattern = false, onClick }) => (
     <div
-        className={`relative bg-white shadow-lg rounded-xl mb-6 sm:mb-8 border border-gray-200 ${hasDotPattern ? "overflow-hidden" : ""} ${noHoverEffect ? "" : "transition-all duration-300 hover:shadow-2xl hover:border-sky-400 hover:scale-[1.01]"} ${onClick ? "cursor-pointer" : ""} ${className}`}
+        className={`relative bg-white shadow-lg rounded-xl mb-6 sm:mb-8 border border-gray-200 ${hasDotPattern ? "overflow-hidden" : ""} ${noHoverEffect ? "" : "transition-all duration-300 hover:shadow-2xl hover:border-sky-400 hover:scale-[1.01] will-change-transform"} ${onClick ? "cursor-pointer" : ""} ${className}`}
         onClick={onClick}
+        style={{ transform: 'translateZ(0)' }} // Force hardware acceleration
     >
         {hasDotPattern && <DotPattern dotColor="text-sky-500 opacity-5" />}
         <div className="relative z-10 h-full flex flex-col">{children}</div>
     </div>
-);
+));
 
-const Button: FC<ButtonProps> = ({ children, onClick, type = "primary", className = "", icon, isSubmit = false, disabled = false, size = "md" }) => {
-    const baseStyle = `inline-flex items-center justify-center rounded-lg font-semibold transition-all duration-200 ease-in-out transform hover:scale-103 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-opacity-75 shadow-md hover:shadow-lg ${disabled ? "opacity-50 cursor-not-allowed" : ""}`;
+const Button: FC<ButtonProps> = memo(({ children, onClick, type = "primary", className = "", icon, isSubmit = false, disabled = false, size = "md" }) => {
+    const baseStyle = `inline-flex items-center justify-center rounded-lg font-semibold transition-all duration-200 ease-in-out transform hover:scale-103 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-opacity-75 shadow-md hover:shadow-lg will-change-transform ${disabled ? "opacity-50 cursor-not-allowed" : ""}`;
     const sizeStyles = { sm: "px-3 py-1.5 text-xs", md: "px-4 py-2 sm:px-5 sm:py-2.5 text-xs sm:text-sm", lg: "px-6 py-3 text-sm sm:text-base" };
     const typeStyle = type === "primary" ? "bg-sky-600 hover:bg-sky-700 text-white focus:ring-sky-500" : type === "secondary" ? "bg-slate-200 hover:bg-slate-300 text-slate-800 focus:ring-slate-400" : type === "success" ? "bg-green-600 hover:bg-green-700 text-white focus:ring-green-500" : type === "warning" ? "bg-amber-600 hover:bg-amber-700 text-white focus:ring-amber-500" : "bg-slate-200 hover:bg-slate-300 text-slate-800 focus:ring-slate-400";
+    
+    const handleClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+        if (onClick && !disabled) {
+            onClick(e);
+        }
+    }, [onClick, disabled]);
+
     return (
-        <button onClick={onClick} className={`${baseStyle} ${typeStyle} ${sizeStyles[size]} ${className}`} disabled={disabled}>
+        <button 
+            onClick={handleClick} 
+            className={`${baseStyle} ${typeStyle} ${sizeStyles[size]} ${className}`} 
+            disabled={disabled}
+            style={{ transform: 'translateZ(0)' }}
+        >
             {icon && !children && <span>{icon}</span>}
             {icon && children && <span className="mr-2">{icon}</span>}
             {children}
         </button>
     );
+});
+
+// --- Utility Functions ---
+const debounce = (func: Function, wait: number) => {
+    let timeout: NodeJS.Timeout;
+    return function executedFunction(...args: any[]) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
 };
 
 // --- Announcement Bar Component ---
-const AnnouncementBar: FC<AnnouncementBarProps> = ({ onNavigateToEvents }) => {
+const AnnouncementBar: FC<AnnouncementBarProps> = memo(({ onNavigateToEvents }) => {
     const [isDismissed, setIsDismissed] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
@@ -88,47 +131,62 @@ const AnnouncementBar: FC<AnnouncementBarProps> = ({ onNavigateToEvents }) => {
         return () => clearTimeout(timer);
     }, []);
 
-    useEffect(() => {
-        const checkMobile = () => setIsMobile(window.innerWidth < 640);
-        checkMobile();
-        window.addEventListener('resize', checkMobile);
-        return () => window.removeEventListener('resize', checkMobile);
-    }, []);
+    const checkMobile = useCallback(
+        debounce(() => setIsMobile(window.innerWidth < 640), 100),
+        []
+    );
 
-    const handleDismiss = () => {
+    useEffect(() => {
+        checkMobile();
+        window.addEventListener('resize', checkMobile, { passive: true });
+        return () => window.removeEventListener('resize', checkMobile);
+    }, [checkMobile]);
+
+    const handleDismiss = useCallback(() => {
         setIsVisible(false);
         setTimeout(() => {
             setIsDismissed(true);
         }, 300);
-    };
+    }, []);
 
-    const handleMobileClick = () => {
+    const handleMobileClick = useCallback(() => {
         if (isMobile) {
             onNavigateToEvents();
         }
-    };
+    }, [isMobile, onNavigateToEvents]);
+
+    const backgroundDots = useMemo(() => (
+        Array.from({ length: 8 }).map((_, i) => ({ // Reduced from 12 to 8
+            id: i,
+            left: `${(i * 12.5) + Math.random() * 5}%`,
+            top: `${20 + Math.random() * 60}%`,
+            delay: `${i * 0.2}s`
+        }))
+    ), []);
 
     if (isDismissed) return null;
 
     return (
         <div 
-            className={`relative bg-gradient-to-r from-sky-600 via-sky-700 to-indigo-700 text-white shadow-lg border-b border-sky-500 overflow-hidden transition-all duration-500 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full'} ${isMobile ? 'cursor-pointer' : ''}`}
+            className={`relative bg-gradient-to-r from-sky-600 via-sky-700 to-indigo-700 text-white shadow-lg border-b border-sky-500 overflow-hidden transition-all duration-500 ease-out will-change-transform ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full'} ${isMobile ? 'cursor-pointer' : ''}`}
             onClick={handleMobileClick}
+            style={{ transform: 'translateZ(0)' }}
         >
-            {/* Animated background pattern */}
+            {/* Optimized background pattern */}
             <div className="absolute inset-0 bg-gradient-to-r from-sky-600 via-sky-700 to-indigo-700">
                 <div className="absolute inset-0 bg-white bg-opacity-5">
-                    <div className="absolute inset-0 animate-pulse-slow">
-                        {Array.from({ length: 12 }).map((_, i) => (
+                    <div className="absolute inset-0 will-change-transform">
+                        {backgroundDots.map((dot) => (
                             <div
-                                key={i}
-                                className="absolute w-1 h-1 bg-white rounded-full opacity-20"
+                                key={dot.id}
+                                className="absolute w-1 h-1 bg-white rounded-full opacity-20 animate-pulse-slow"
                                 style={{
-                                    left: `${(i * 8.33) + Math.random() * 5}%`,
-                                    top: `${20 + Math.random() * 60}%`,
-                                    animationDelay: `${i * 0.2}s`
+                                    left: dot.left,
+                                    top: dot.top,
+                                    animationDelay: dot.delay,
+                                    transform: 'translateZ(0)'
                                 }}
-                            ></div>
+                            />
                         ))}
                     </div>
                 </div>
@@ -248,7 +306,7 @@ const AnnouncementBar: FC<AnnouncementBarProps> = ({ onNavigateToEvents }) => {
             </div>
         </div>
     );
-};
+});
 
 // --- Google Form Integration Components ---
 
@@ -440,7 +498,17 @@ const Navbar: FC<NavbarProps> = ({ setActivePage, activePage, selectedProject })
         <nav className="bg-slate-900 text-white p-3 sm:p-4 shadow-lg sticky top-0 z-50 print:hidden">
             <div className="container mx-auto flex justify-between items-center">
                 <div className="flex items-center cursor-pointer" onClick={handleLogoClick}>
-                    <img src={logoUrl} alt="West Windsor Forward Logo" className="h-10 sm:h-12 mr-2 sm:mr-3 rounded bg-white p-1.5" onError={(e) => { (e.target as HTMLImageElement).onerror = null; (e.target as HTMLImageElement).src = `https://placehold.co/48x48/FFFFFF/0C4A6E?text=WWF&font=Lora`; }} />
+                    <img 
+                        src={logoUrl} 
+                        alt="West Windsor Forward Logo" 
+                        className="h-10 sm:h-12 mr-2 sm:mr-3 rounded bg-white p-1.5" 
+                        loading="eager"
+                        decoding="async"
+                        onError={(e) => { 
+                            (e.target as HTMLImageElement).onerror = null; 
+                            (e.target as HTMLImageElement).src = `https://placehold.co/48x48/FFFFFF/0C4A6E?text=WWF&font=Lora`; 
+                        }} 
+                    />
                 </div>
                 <div className="sm:hidden">
                     <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-gray-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-sky-400 p-2 rounded-md" aria-label="Open navigation menu" aria-expanded={isMobileMenuOpen}>
@@ -474,10 +542,20 @@ const Navbar: FC<NavbarProps> = ({ setActivePage, activePage, selectedProject })
     );
 };
 
-const Footer: FC = () => (
+const Footer: FC = memo(() => (
     <footer className="bg-slate-800 text-gray-400 p-6 sm:p-8 mt-12 sm:mt-16 text-center print:hidden">
         <div className="container mx-auto">
-            <img src={logoUrl} alt="West Windsor Forward Logo" className="h-8 sm:h-10 mx-auto mb-3 sm:mb-4 rounded bg-white p-1.5" onError={(e) => { (e.target as HTMLImageElement).onerror = null; (e.target as HTMLImageElement).src = `https://placehold.co/40x40/FFFFFF/0C4A6E?text=WWF&font=Lora`; }} />
+            <img 
+                src={logoUrl} 
+                alt="West Windsor Forward Logo" 
+                className="h-8 sm:h-10 mx-auto mb-3 sm:mb-4 rounded bg-white p-1.5" 
+                loading="lazy"
+                decoding="async"
+                onError={(e) => { 
+                    (e.target as HTMLImageElement).onerror = null; 
+                    (e.target as HTMLImageElement).src = `https://placehold.co/40x40/FFFFFF/0C4A6E?text=WWF&font=Lora`; 
+                }} 
+            />
             <p className="text-xs sm:text-sm"> &copy; {new Date().getFullYear()} West Windsor Forward. All rights reserved. </p>
             <p className="text-xs mt-1 mb-3 sm:mb-4"> Igniting positive change and working collaboratively for a better West Windsor. </p>
             <div className="flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-4 mb-3 sm:mb-4 text-xs sm:text-sm">
@@ -488,7 +566,7 @@ const Footer: FC = () => (
             </div>
         </div>
     </footer>
-);
+));
 
 const ForumHeader: FC = () => {
     const generateICSData = () => {
@@ -695,12 +773,22 @@ const KeyInformationSection: FC = () => {
 };
 
 // --- Pages ---
-const HomePage: FC<PageProps> = ({ setActivePage }) => (
+const HomePage: FC<PageProps> = memo(({ setActivePage }) => (
     <div className="animate-fadeIn">
         <header className="relative bg-gradient-to-br from-slate-900 via-sky-800 to-indigo-900 text-white py-16 sm:py-20 md:py-28 px-4 text-center rounded-b-2xl shadow-2xl overflow-hidden">
             <DotPattern dotColor="text-sky-700 opacity-10" rows={8} cols={10} />
             <div className="relative z-10 container mx-auto">
-                <img src={logoUrl} alt="West Windsor Forward Logo" className="h-16 sm:h-20 md:h-24 mx-auto mb-4 sm:mb-6 rounded-lg shadow-md bg-white p-1.5 sm:p-2" onError={(e) => { (e.target as HTMLImageElement).onerror = null; (e.target as HTMLImageElement).src = `https://placehold.co/96x96/FFFFFF/0C4A6E?text=WWF&font=Lora`; }} />
+                <img 
+                    src={logoUrl} 
+                    alt="West Windsor Forward Logo" 
+                    className="h-16 sm:h-20 md:h-24 mx-auto mb-4 sm:mb-6 rounded-lg shadow-md bg-white p-1.5 sm:p-2" 
+                    loading="eager"
+                    decoding="async"
+                    onError={(e) => { 
+                        (e.target as HTMLImageElement).onerror = null; 
+                        (e.target as HTMLImageElement).src = `https://placehold.co/96x96/FFFFFF/0C4A6E?text=WWF&font=Lora`; 
+                    }} 
+                />
                 <h1 className="text-2xl sm:text-3xl md:text-5xl font-extrabold mb-3 sm:mb-4 tracking-tight"> West Windsor Forward </h1>
                 <p className="text-sm sm:text-md md:text-xl text-sky-200 mb-6 sm:mb-8 max-w-3xl mx-auto"> A dedicated coalition of residents igniting positive change and working collaboratively to build a better future for West Windsor. </p>
                 <div className="space-y-2 sm:space-y-0 sm:space-x-3 flex flex-col sm:flex-row justify-center">
@@ -755,13 +843,14 @@ const HomePage: FC<PageProps> = ({ setActivePage }) => (
             </div>
         </section>
     </div>
-);
+));
 
-const AboutPage: FC = () => {
-    const teamMembers = [
+const AboutPage: FC = memo(() => {
+    const teamMembers = useMemo(() => [
         { name: "Parth Gupta", role: "Co-Founder", bio: "A West Windsor resident for 14 years and student at the Lawrenceville School. Parth is a runner for the Lawrenceville School as part of their cross-country and track and field teams. Parth has been playing piano for 10 years and has co-organized piano Performathons to raise money for the Children's Hospital of Philadelphia.", image: "parth.png" },
         { name: "Darshan Chidambaram", role: "Co-Founder", bio: "A West Windsor resident for 8 years and a student at the Lawrenceville School. Darshan is an active tennis player for the Lawrenceville School and debater on the national debate circuit.", image: "darshan.png" },
-    ];
+    ], []);
+
     return (
         <div className="container mx-auto py-10 sm:py-12 md:py-16 px-4 animate-fadeIn">
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-800 mb-8 sm:mb-10 md:mb-12 text-center"> About West Windsor Forward </h1>
@@ -778,7 +867,17 @@ const AboutPage: FC = () => {
                     <div className="grid md:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
                         {teamMembers.map((member) => (
                             <div key={member.name} className="bg-slate-50 p-4 sm:p-6 rounded-xl shadow-md text-center transition-all duration-300 hover:shadow-lg hover:scale-105">
-                                <img src={member.image} alt={member.name} className="w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full mx-auto mb-4 sm:mb-5 border-4 border-sky-500 shadow-sm" onError={(e) => { (e.target as HTMLImageElement).onerror = null; (e.target as HTMLImageElement).src = `https://placehold.co/150x150/E0F2FE/0C4A6E?text=${member.name.substring(0, 1)}${member.name.split(" ")[1] ? member.name.split(" ")[1].substring(0, 1) : ""}&font=Lora`; }} />
+                                <img 
+                                    src={member.image} 
+                                    alt={member.name} 
+                                    className="w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full mx-auto mb-4 sm:mb-5 border-4 border-sky-500 shadow-sm" 
+                                    loading="lazy"
+                                    decoding="async"
+                                    onError={(e) => { 
+                                        (e.target as HTMLImageElement).onerror = null; 
+                                        (e.target as HTMLImageElement).src = `https://placehold.co/150x150/E0F2FE/0C4A6E?text=${member.name.substring(0, 1)}${member.name.split(" ")[1] ? member.name.split(" ")[1].substring(0, 1) : ""}&font=Lora`; 
+                                    }} 
+                                />
                                 <h3 className="text-md sm:text-lg md:text-xl font-semibold text-slate-800">{member.name}</h3>
                                 <p className="text-sky-600 font-medium mb-2 sm:mb-3 text-xs sm:text-sm md:text-base">{member.role}</p>
                                 <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">{member.bio}</p>
@@ -800,22 +899,34 @@ const AboutPage: FC = () => {
             </Card>
         </div>
     );
-};
+});
 
-const ProjectCard: FC<ProjectCardProps> = ({ project, setActivePage }) => {
-    const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
+const ProjectCard: FC<ProjectCardProps> = memo(({ project, setActivePage }) => {
+    const handleCardClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
         if ((e.target as HTMLElement).closest('a, button')) return;
         if (project.redirectTo) setActivePage(project.redirectTo);
         else setActivePage("ProjectDetails", project);
-    };
-    const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    }, [project, setActivePage]);
+
+    const handleButtonClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation();
         if (project.redirectTo) setActivePage(project.redirectTo);
         else setActivePage("ProjectDetails", project);
-    };
+    }, [project, setActivePage]);
+
     return (
         <Card onClick={handleCardClick} className="flex flex-col h-full group p-0" hasDotPattern>
-            <img src={project.image} alt={project.title} className="w-full h-48 object-cover rounded-t-lg transition-transform duration-300 group-hover:scale-105" onError={(e) => { (e.target as HTMLImageElement).onerror = null; (e.target as HTMLImageElement).src = `https://placehold.co/600x400/CCCCCC/FFFFFF?text=Project+Image&font=Lora`; }} />
+            <img 
+                src={project.image} 
+                alt={project.title} 
+                className="w-full h-48 object-cover rounded-t-lg transition-transform duration-300 group-hover:scale-105" 
+                loading="lazy"
+                decoding="async"
+                onError={(e) => { 
+                    (e.target as HTMLImageElement).onerror = null; 
+                    (e.target as HTMLImageElement).src = `https://placehold.co/600x400/CCCCCC/FFFFFF?text=Project+Image&font=Lora`; 
+                }} 
+            />
             <div className="flex-grow flex flex-col p-4 sm:p-6">
                 <h3 className="text-lg sm:text-xl font-semibold text-sky-700 group-hover:text-sky-600 transition-colors mb-2 min-h-[3.5rem] line-clamp-2">{project.title}</h3>
                 <p className="text-sm text-gray-600 mb-4 line-clamp-3">{project.shortGoal}</p>
@@ -834,7 +945,7 @@ const ProjectCard: FC<ProjectCardProps> = ({ project, setActivePage }) => {
             </div>
         </Card>
     );
-};
+});
 
 const ProjectsPage: FC<PageProps> = ({ setActivePage }) => (
     <div className="container mx-auto py-10 sm:py-12 md:py-16 px-4 animate-fadeIn">
@@ -1274,15 +1385,82 @@ if (typeof window !== "undefined") {
       .prose p { margin-bottom: 1em; line-height: 1.7; }
       .prose ul, .prose ol { margin-left: 1.5em; margin-bottom: 1em; }
       .prose li { margin-bottom: 0.25em; }
-      @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-      .animate-fadeIn { animation: fadeIn 0.6s ease-out forwards; }
-      @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-      .animate-slideDown { animation: slideDown 0.3s ease-out forwards; }
-      .group:hover .dot-pattern-animated div div { transform: scale(1.5); opacity: 0.5; }
-      @keyframes pulse-slow { 0%, 100% { opacity: 0.05; } 50% { opacity: 0.15; } }
-      .animate-pulse-slow { animation: pulse-slow 5s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-      .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-      .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+      
+      /* Optimized animations with hardware acceleration */
+      @keyframes fadeIn { 
+        from { opacity: 0; transform: translate3d(0, 15px, 0); } 
+        to { opacity: 1; transform: translate3d(0, 0, 0); } 
+      }
+      .animate-fadeIn { 
+        animation: fadeIn 0.6s ease-out forwards; 
+        will-change: transform, opacity;
+      }
+      
+      @keyframes slideDown { 
+        from { opacity: 0; transform: translate3d(0, -10px, 0); } 
+        to { opacity: 1; transform: translate3d(0, 0, 0); } 
+      }
+      .animate-slideDown { 
+        animation: slideDown 0.3s ease-out forwards; 
+        will-change: transform, opacity;
+      }
+      
+      @keyframes pulse-slow { 
+        0%, 100% { opacity: 0.05; } 
+        50% { opacity: 0.15; } 
+      }
+      .animate-pulse-slow { 
+        animation: pulse-slow 5s cubic-bezier(0.4, 0, 0.6, 1) infinite; 
+        will-change: opacity;
+      }
+      
+      /* Optimize hover effects */
+      .group:hover .dot-pattern-animated div div { 
+        transform: scale3d(1.5, 1.5, 1); 
+        opacity: 0.5; 
+        will-change: transform, opacity;
+      }
+      
+      /* Better line clamping */
+      .line-clamp-2 { 
+        display: -webkit-box; 
+        -webkit-line-clamp: 2; 
+        -webkit-box-orient: vertical; 
+        overflow: hidden; 
+      }
+      .line-clamp-3 { 
+        display: -webkit-box; 
+        -webkit-line-clamp: 3; 
+        -webkit-box-orient: vertical; 
+        overflow: hidden; 
+      }
+      
+      /* Performance improvements */
+      * {
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+      }
+      
+      /* Reduce motion for users who prefer it */
+      @media (prefers-reduced-motion: reduce) {
+        .animate-fadeIn,
+        .animate-slideDown,
+        .animate-pulse-slow {
+          animation: none;
+        }
+        
+        .transition-all,
+        .transition-transform,
+        .transition-colors {
+          transition: none;
+        }
+      }
+      
+      /* Optimize images */
+      img {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+      }
     `;
     document.head.appendChild(styleSheet);
 
