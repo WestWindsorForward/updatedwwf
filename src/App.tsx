@@ -111,7 +111,6 @@ const GoogleFormComponent: FC<GoogleFormComponentProps> = ({ formUrl, fieldMappi
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
-    // Checkbox validation for volunteer form
     if (fieldMapping.positionsOfInterest && (!formData.positionsOfInterest || (formData.positionsOfInterest as string[]).length === 0)) {
         setStatus('Please select at least one position of interest.');
         setTimeout(() => setStatus(''), 5000);
@@ -125,14 +124,12 @@ const GoogleFormComponent: FC<GoogleFormComponentProps> = ({ formUrl, fieldMappi
       if (fieldMapping[key]) {
         const value = formData[key];
         if (Array.isArray(value)) {
-    // For checkboxes, Google Forms expects each selected option 
-    // as a separate field with the same name.
-    value.forEach(item => {
-        googleFormData.append(fieldMapping[key], item);
-    });
-} else {
-    googleFormData.append(fieldMapping[key], value);
-}
+            value.forEach(item => {
+                googleFormData.append(fieldMapping[key], item);
+            });
+        } else {
+            googleFormData.append(fieldMapping[key], value);
+        }
       }
     }
     
@@ -262,7 +259,35 @@ const VolunteerForm: FC<FormFieldsProps> = ({ handleChange, formData }) => (
     </>
 );
 
-// --- Navigation Component ---
+// --- Data ---
+const forumData = {
+    title: "West Windsor Forward 2025 Candidate Forum", date: "Thursday, September 25th, 2025", time: "7:00 PM - 9:15 PM", arrivalTime: "6:30 PM for candidates", location: "Kelsey Theatre @ Mercer County Community College", positions: ["Mayor of West Windsor Township", "2 seats on West Windsor Township Council"], status: "upcoming",
+    panelists: [
+        { id: "micah-rasmussen", name: "Micah Rasmussen", title: "Director, Rebovich Institute for NJ Politics", imageUrl: "/micah.png", bio: 'Micah Rasmussen is the director of the Rebovich Institute for New Jersey Politics at Rider University. He has worked in the New Jersey General Assembly and managed several political campaigns. After completing his undergraduate studies at Rider under his mentor David Rebovich, the namesake of the institute he now leads, Rasmussen earned his Master of Arts in Political Science from the Eagleton Institute of Politics at Rutgers University. Rasmussen is a panelist for the state\'s biggest political debates-- twice so far this year in the race to elect New Jersey\'s next governor, and in the only debate last year between now Senator Andy Kim and First Lady Tammy Murphy. He is regularly included on New Jersey\'s political power and higher education influencer lists. One called him "the go-to guy for the media to comment on what\'s happening in New Jersey politics-- and what it means".', note: "Contributing questions remotely due to scheduling conflict" },
+        { id: "david-matthau", name: "David Matthau", title: "WHYY NJ Reporter", imageUrl: "/matthau.png", bio: "David Matthau is a WHYY New Jersey reporter covering the Statehouse and general assignments in the Garden State. Prior to joining WHYY, David was lead investigative reporter for NJ 101.5 News, winning multiple Associated Press and Society of Professional Journalists awards, the National Association of Broadcasters Service to Community Award, and contributed to the National Edward R. Murrow Best Newscast award. David is a graduate of the University of Southern California." },
+        { id: "rhea-biswas", name: "Rhea Biswas", title: "West Windsor HS Student & Journalist", imageUrl: "/rhea.png", bio: "Rhea Biswas is a West Windsor high school student passionate about politics and social justice, with hopes of pursuing a career in law. She regularly competes in debate competitions and Model Congress conferences, as well as writes for her school newspaper and a local newspaper, The West Windsor Voice. She is committed to transparent debate and honest discussion in order to better advocate for meaningful change in her community." },
+    ],
+    forumParts: [
+        { id: 1, title: "Panelist Q&A Sessions", description: "Equal time Q&A sessions for Mayoral and Council candidates with questions from our distinguished panelists", location: "Main Theatre", iconType: "microphone" },
+        { id: 2, title: "Town Hall Q&A", description: "Community-driven Q&A where residents can submit questions for candidates to address", location: "Main Theatre", iconType: "users" },
+        { id: 3, title: "Meet & Greet", description: "Informal conversations between candidates and voters, plus community organization tables", location: "Theatre Lobby", iconType: "lightbulb" },
+    ],
+    milestones: [
+        { id: 1, title: "Completed: Venue & Panelists Secured", description: "Kelsey Theatre confirmed, distinguished panelists recruited, partnerships established", completed: true, date: "Completed" },
+        { id: 2, title: "In Progress: Candidate Invitations & Agreements", description: "Formal invitations sent to all declared candidates, agreements being collected", completed: false, date: "In Progress" },
+        { id: 3, title: "Upcoming: Community Engagement & Promotion", description: "Public awareness campaign, ticket distribution, volunteer recruitment", completed: false, date: "August - September 2025" },
+        { id: 4, title: "Upcoming: Forum Event Day", description: "Live forum with streaming, Q&A sessions, and community engagement", completed: false, date: "September 25, 2025" },
+    ],
+    requirements: { council: "At least 3 council candidates participating OR candidates from at least 2 different tickets with minimum 3 total candidates running", mayor: "At least 2 mayoral candidates participating" },
+    volunteerRoles: ["Event Setup & Logistics", "Attendee Greeting & Check-in", "Camera & Live Stream Operation", "Question Collection & Management", "Community Organization Coordination", "Post-Event Cleanup"],
+};
+
+const projectsData: Project[] = [
+    { id: 1, slug: "candidate-forum-2025", title: "2025 Candidate Forum", shortGoal: "Fostering informed civic participation.", status: "Upcoming: September 25, 2025", description: "Providing a non-partisan platform for Mayoral and Council candidates to engage with residents, ensuring informed participation in our local democracy.", image: "/2025 Forum Graphic.png", partnerOrganizations: ["League of Women Voters of the Greater Princeton Area"], redirectTo: "Events" },
+    { id: 2, slug: "princeton-junction-station-improvement", title: "Princeton Junction Station Improvement Project", shortGoal: "Revitalizing our key transit hub.", goal: "To transform the Princeton Junction Station into a welcoming, aesthetically appealing, and culturally reflective community hub that serves all users.", status: "Early Planning & Proposal Development", description: "This is a proposed comprehensive project to transform Princeton Junction Station—a vital asset serving over 4,000 NJ TRANSIT passengers daily and 123,000+ Amtrak passengers annually—into a vibrant community hub. We are developing plans for beautification efforts, community art installations, environmental initiatives, and programming to enhance the daily experience for thousands of commuters while fostering community pride and connectivity. Currently in early planning stages with proposals being developed for potential partnerships.", impact: "Enhanced commuter experience for thousands of daily users, strengthened community identity through public art, environmental benefits through recycling and beautification programs, increased community engagement through events and programming, and preserved infrastructure value through maintenance and improvements.", timeline: [{ stage: "Completed: Concept Development & Research", details: "Initial research completed on station usage, community needs, and potential improvement opportunities. Concept proposal drafted.", completed: true }, { stage: "In Progress: Stakeholder Outreach & Partnership Development", details: "Reaching out to NJ TRANSIT, West Windsor Parking Authority, and community organizations to gauge interest and explore potential partnerships.", completed: false }, { stage: "Upcoming: Community Input & Proposal Refinement", details: "Gathering community feedback on proposed improvements and refining plans based on resident input and partnership possibilities.", completed: false }, { stage: "Upcoming: Implementation Planning", details: "If partnerships are established, develop detailed implementation timeline and begin coordination with relevant authorities.", completed: false }], getInvolved: "Share your ideas for station improvements, express interest in volunteering for future cleanup or beautification efforts, connect us with relevant community organizations, or let us know what would make your commuting experience better.", image: "https://www.westwindsorhistory.com/uploads/1/2/3/1/123111196/2018-12-08-pj-train-station-ticket-building_orig.jpg", partnerOrganizations: [], fundingSources: [], initiatives: [{ title: "Beautification & Maintenance", description: "Potential regular cleanup, landscaping, and seasonal decorations", icon: <IconLightBulb />, status: "Concept Phase" }, { title: "Art & Cultural Enhancement", description: "Proposed community murals, decorative elements, and cultural programming", icon: <IconPhotograph />, status: "Concept Phase" }, { title: "Environmental Initiatives", description: "Exploring recycling programs and sustainable improvements", icon: <IconRecycle />, status: "Concept Phase" }, { title: "Community Programming", description: "Ideas for events and community engagement opportunities", icon: <IconUsers />, status: "Concept Phase" }] },
+];
+
+// --- Main Page Components ---
 const Navbar: FC<NavbarProps> = ({ setActivePage, activePage, selectedProject }) => {
     const navItems: PageName[] = ["Home", "About", "Projects", "Events", "Contact"];
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -320,7 +345,6 @@ const Navbar: FC<NavbarProps> = ({ setActivePage, activePage, selectedProject })
     );
 };
 
-// --- Footer Component ---
 const Footer: FC = () => (
     <footer className="bg-slate-800 text-gray-400 p-6 sm:p-8 mt-12 sm:mt-16 text-center print:hidden">
         <div className="container mx-auto">
@@ -337,35 +361,6 @@ const Footer: FC = () => (
     </footer>
 );
 
-// --- Data ---
-const forumData = {
-    title: "West Windsor Forward 2025 Candidate Forum", date: "Thursday, September 25th, 2025", time: "7:00 PM - 9:15 PM", arrivalTime: "6:30 PM for candidates", location: "Kelsey Theatre @ Mercer County Community College", positions: ["Mayor of West Windsor Township", "2 seats on West Windsor Township Council"], status: "upcoming",
-    panelists: [
-        { id: "micah-rasmussen", name: "Micah Rasmussen", title: "Director, Rebovich Institute for NJ Politics", imageUrl: "/micah.png", bio: 'Micah Rasmussen is the director of the Rebovich Institute for New Jersey Politics at Rider University. He has worked in the New Jersey General Assembly and managed several political campaigns. After completing his undergraduate studies at Rider under his mentor David Rebovich, the namesake of the institute he now leads, Rasmussen earned his Master of Arts in Political Science from the Eagleton Institute of Politics at Rutgers University. Rasmussen is a panelist for the state\'s biggest political debates-- twice so far this year in the race to elect New Jersey\'s next governor, and in the only debate last year between now Senator Andy Kim and First Lady Tammy Murphy. He is regularly included on New Jersey\'s political power and higher education influencer lists. One called him "the go-to guy for the media to comment on what\'s happening in New Jersey politics-- and what it means".', note: "Contributing questions remotely due to scheduling conflict" },
-        { id: "david-matthau", name: "David Matthau", title: "WHYY NJ Reporter", imageUrl: "/matthau.png", bio: "David Matthau is a WHYY New Jersey reporter covering the Statehouse and general assignments in the Garden State. Prior to joining WHYY, David was lead investigative reporter for NJ 101.5 News, winning multiple Associated Press and Society of Professional Journalists awards, the National Association of Broadcasters Service to Community Award, and contributed to the National Edward R. Murrow Best Newscast award. David is a graduate of the University of Southern California." },
-        { id: "rhea-biswas", name: "Rhea Biswas", title: "West Windsor HS Student & Journalist", imageUrl: "/rhea.png", bio: "Rhea Biswas is a West Windsor high school student passionate about politics and social justice, with hopes of pursuing a career in law. She regularly competes in debate competitions and Model Congress conferences, as well as writes for her school newspaper and a local newspaper, The West Windsor Voice. She is committed to transparent debate and honest discussion in order to better advocate for meaningful change in her community." },
-    ],
-    forumParts: [
-        { id: 1, title: "Panelist Q&A Sessions", description: "Equal time Q&A sessions for Mayoral and Council candidates with questions from our distinguished panelists", location: "Main Theatre", iconType: "microphone" },
-        { id: 2, title: "Town Hall Q&A", description: "Community-driven Q&A where residents can submit questions for candidates to address", location: "Main Theatre", iconType: "users" },
-        { id: 3, title: "Meet & Greet", description: "Informal conversations between candidates and voters, plus community organization tables", location: "Theatre Lobby", iconType: "lightbulb" },
-    ],
-    milestones: [
-        { id: 1, title: "Completed: Venue & Panelists Secured", description: "Kelsey Theatre confirmed, distinguished panelists recruited, partnerships established", completed: true, date: "Completed" },
-        { id: 2, title: "In Progress: Candidate Invitations & Agreements", description: "Formal invitations sent to all declared candidates, agreements being collected", completed: false, date: "In Progress" },
-        { id: 3, title: "Upcoming: Community Engagement & Promotion", description: "Public awareness campaign, ticket distribution, volunteer recruitment", completed: false, date: "August - September 2025" },
-        { id: 4, title: "Upcoming: Forum Event Day", description: "Live forum with streaming, Q&A sessions, and community engagement", completed: false, date: "September 25, 2025" },
-    ],
-    requirements: { council: "At least 3 council candidates participating OR candidates from at least 2 different tickets with minimum 3 total candidates running", mayor: "At least 2 mayoral candidates participating" },
-    volunteerRoles: ["Event Setup & Logistics", "Attendee Greeting & Check-in", "Camera & Live Stream Operation", "Question Collection & Management", "Community Organization Coordination", "Post-Event Cleanup"],
-};
-
-const projectsData: Project[] = [
-    { id: 1, slug: "candidate-forum-2025", title: "2025 Candidate Forum", shortGoal: "Fostering informed civic participation.", status: "Upcoming: September 25, 2025", description: "Providing a non-partisan platform for Mayoral and Council candidates to engage with residents, ensuring informed participation in our local democracy.", image: "/2025 Forum Graphic.png", partnerOrganizations: ["League of Women Voters of the Greater Princeton Area"], redirectTo: "Events" },
-    { id: 2, slug: "princeton-junction-station-improvement", title: "Princeton Junction Station Improvement Project", shortGoal: "Revitalizing our key transit hub.", goal: "To transform the Princeton Junction Station into a welcoming, aesthetically appealing, and culturally reflective community hub that serves all users.", status: "Early Planning & Proposal Development", description: "This is a proposed comprehensive project to transform Princeton Junction Station—a vital asset serving over 4,000 NJ TRANSIT passengers daily and 123,000+ Amtrak passengers annually—into a vibrant community hub. We are developing plans for beautification efforts, community art installations, environmental initiatives, and programming to enhance the daily experience for thousands of commuters while fostering community pride and connectivity. Currently in early planning stages with proposals being developed for potential partnerships.", impact: "Enhanced commuter experience for thousands of daily users, strengthened community identity through public art, environmental benefits through recycling and beautification programs, increased community engagement through events and programming, and preserved infrastructure value through maintenance and improvements.", timeline: [{ stage: "Completed: Concept Development & Research", details: "Initial research completed on station usage, community needs, and potential improvement opportunities. Concept proposal drafted.", completed: true }, { stage: "In Progress: Stakeholder Outreach & Partnership Development", details: "Reaching out to NJ TRANSIT, West Windsor Parking Authority, and community organizations to gauge interest and explore potential partnerships.", completed: false }, { stage: "Upcoming: Community Input & Proposal Refinement", details: "Gathering community feedback on proposed improvements and refining plans based on resident input and partnership possibilities.", completed: false }, { stage: "Upcoming: Implementation Planning", details: "If partnerships are established, develop detailed implementation timeline and begin coordination with relevant authorities.", completed: false }], getInvolved: "Share your ideas for station improvements, express interest in volunteering for future cleanup or beautification efforts, connect us with relevant community organizations, or let us know what would make your commuting experience better.", image: "https://www.westwindsorhistory.com/uploads/1/2/3/1/123111196/2018-12-08-pj-train-station-ticket-building_orig.jpg", partnerOrganizations: [], fundingSources: [], initiatives: [{ title: "Beautification & Maintenance", description: "Potential regular cleanup, landscaping, and seasonal decorations", icon: <IconLightBulb />, status: "Concept Phase" }, { title: "Art & Cultural Enhancement", description: "Proposed community murals, decorative elements, and cultural programming", icon: <IconPhotograph />, status: "Concept Phase" }, { title: "Environmental Initiatives", description: "Exploring recycling programs and sustainable improvements", icon: <IconRecycle />, status: "Concept Phase" }, { title: "Community Programming", description: "Ideas for events and community engagement opportunities", icon: <IconUsers />, status: "Concept Phase" }] },
-];
-
-// --- Main Page Components ---
 const ForumHeader: FC = () => {
     const generateICSData = () => {
         const startDate = "20250925T190000"; const endDate = "20250925T211500"; const timezone = "America/New_York";
@@ -493,17 +488,7 @@ const InteractiveSection: FC = () => {
         url: "https://docs.google.com/forms/d/e/1FAIpQLSd-meCtFz2waEZGDfLqaoc4Se4WGOT3H4053aHiri-GMnl4Mw/formResponse",
         fields: { position: "entry.218113281", topic: "entry.1239370203", question: "entry.1618585724", comment: "entry.1917106770" },
     };
-
-    const volunteerFormConfig = {
-        url: "https://docs.google.com/forms/d/e/1FAIpQLScBBr9JiV86Bru2k3JDq3pf7ItThq26WDvax2s2FOsu4L76LA/formResponse",
-        fields: { 
-            name: "entry.218113281", 
-            email: "entry.1239370203", 
-            phone: "entry.1618585724",
-            positionsOfInterest: "entry.1917106770" 
-        },
-    };
-
+    
     return (
         <Card className="bg-gradient-to-br from-slate-50 to-sky-50 p-0">
             <div className="p-4 sm:p-6 md:p-8">
@@ -523,9 +508,21 @@ const InteractiveSection: FC = () => {
                 {activeTab === "volunteer" && (
                     <div>
                         <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center"> <IconUsers className="mr-2" /> Volunteer for the Forum </h3>
-                        <GoogleFormComponent formUrl={volunteerFormConfig.url} fieldMapping={volunteerFormConfig.fields}>
-                            <VolunteerForm handleChange={() => {}} formData={{}} />
-                        </GoogleFormComponent>
+                        <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                            <p className="text-sm text-green-800 flex items-start">
+                                <IconInfo className="mr-2 mt-0.5 flex-shrink-0" />
+                                Our official volunteer sign-up page is coming soon! For now, please email us to express your interest.
+                            </p>
+                        </div>
+                        <p className="text-sm text-slate-600 mb-4"> Help make this important civic event a success! We need volunteers for various roles throughout the event. </p>
+                        <Button
+                            type="success"
+                            onClick={() => { window.location.href = "mailto:contact@westwindsorforward.org?subject=Volunteer%20Interest%20for%20Candidate%20Forum"; }}
+                            icon={<IconMail />}
+                            className="w-full sm:w-auto"
+                        >
+                            Email to Sign Up
+                        </Button>
                     </div>
                 )}
             </div>
@@ -884,7 +881,7 @@ const ContactPage: FC = () => {
     );
 };
 
-// --- Main App Component ---
+// --- Main App Component (Moved to the end to fix reference errors) ---
 function App() {
     const [activePage, setActivePage] = useState<PageName>("Home");
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
