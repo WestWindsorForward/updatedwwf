@@ -110,6 +110,14 @@ const GoogleFormComponent: FC<GoogleFormComponentProps> = ({ formUrl, fieldMappi
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
+    // Checkbox validation for volunteer form
+    if (fieldMapping.positionsOfInterest && (!formData.positionsOfInterest || (formData.positionsOfInterest as string[]).length === 0)) {
+        setStatus('Please select at least one position of interest.');
+        setTimeout(() => setStatus(''), 5000);
+        return;
+    }
+
     setStatus('Sending...');
 
     const googleFormData = new FormData();
@@ -117,7 +125,6 @@ const GoogleFormComponent: FC<GoogleFormComponentProps> = ({ formUrl, fieldMappi
       if (fieldMapping[key]) {
         const value = formData[key];
         if (Array.isArray(value)) {
-            // For checkboxes, join the array into a single string
             googleFormData.append(fieldMapping[key], value.join(', '));
         } else {
             googleFormData.append(fieldMapping[key], value);
@@ -155,7 +162,7 @@ const GoogleFormComponent: FC<GoogleFormComponentProps> = ({ formUrl, fieldMappi
   return (
     <form onSubmit={handleSubmit}>
       {status && (
-        <div className={`mb-4 p-3 rounded-md text-sm ${status.includes('successfully') ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-blue-100 text-blue-700 border border-blue-200'}`}>
+        <div className={`mb-4 p-3 rounded-md text-sm ${status.includes('successfully') ? 'bg-green-100 text-green-700 border border-green-200' : status.includes('Please select') ? 'bg-amber-100 text-amber-700 border border-amber-200' : 'bg-blue-100 text-blue-700 border border-blue-200'}`}>
           {status}
         </div>
       )}
@@ -180,7 +187,7 @@ const CandidateQuestionForm: FC<FormFieldsProps> = ({ handleChange, formData }) 
           <div className="space-y-2">
             {positionOptions.map(option => (
               <div key={option} className="flex items-center">
-                <input type="radio" id={option.replace(/\s+/g, '-')} name="position" value={option} checked={formData.position === option} onChange={handleChange} className="h-4 w-4 text-sky-600 border-gray-300 focus:ring-sky-500" required />
+                <input type="radio" id={option.replace(/\s+/g, '-')} name="position" value={option} checked={formData.position === option || (option === positionOptions[0] && !formData.position)} onChange={handleChange} className="h-4 w-4 text-sky-600 border-gray-300 focus:ring-sky-500" required />
                 <label htmlFor={option.replace(/\s+/g, '-')} className="ml-3 block text-sm text-gray-700"> {option} </label>
               </div>
             ))}
@@ -489,9 +496,7 @@ const InteractiveSection: FC = () => {
             name: "entry.218113281", 
             email: "entry.1239370203", 
             phone: "entry.1618585724",
-            // IMPORTANT: You must replace "entry.XXXXXXXXXX" with the real entry ID from your Google Form for the "Positions of Interest" question.
-            // To get this: 1. Open your form for editing. 2. Click "Get pre-filled link". 3. Select a few checkboxes and get the link. 4. Find the entry ID for this question in the generated URL.
-            positionsOfInterest: "entry.115328393" 
+            positionsOfInterest: "entry.1917106770" 
         },
     };
 
