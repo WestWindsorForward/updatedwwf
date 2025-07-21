@@ -353,6 +353,14 @@ const GoogleFormComponent: FC<GoogleFormComponentProps> = ({ formUrl, fieldMappi
         return;
     }
 
+    // --- START: Added validation for newsletter form ---
+    if (fieldMapping.email && (!formData.email || !/\S+@\S+\.\S+/.test(formData.email as string))) {
+        setStatus('Please enter a valid email address.');
+        setTimeout(() => setStatus(''), 5000);
+        return;
+    }
+    // --- END: Added validation for newsletter form ---
+
     setStatus('Sending...');
 
     const googleFormData = new FormData();
@@ -399,7 +407,7 @@ const GoogleFormComponent: FC<GoogleFormComponentProps> = ({ formUrl, fieldMappi
   return (
     <div>
       {status && (
-        <div className={`mb-4 p-3 rounded-md text-sm ${status.includes('successfully') ? 'bg-green-100 text-green-700 border border-green-200' : status.includes('Please select') ? 'bg-amber-100 text-amber-700 border border-amber-200' : 'bg-blue-100 text-blue-700 border border-blue-200'}`}>
+        <div className={`mb-4 p-3 rounded-md text-sm ${status.includes('successfully') ? 'bg-green-100 text-green-700 border border-green-200' : status.includes('Please select') || status.includes('valid email') ? 'bg-amber-100 text-amber-700 border border-amber-200' : 'bg-blue-100 text-blue-700 border border-blue-200'}`}>
           {status}
         </div>
       )}
@@ -447,6 +455,40 @@ const CandidateQuestionForm: FC<FormFieldsProps & {handleSubmit?: () => void}> =
     </>
   );
 };
+
+// --- START: Newsletter Form Component ---
+const NewsletterForm: FC<FormFieldsProps & {handleSubmit?: () => void}> = ({ handleChange, formData, status, handleSubmit }) => {
+    const isSubmitting = status === 'Sending...';
+    return (
+        <>
+            <form onSubmit={(e) => { e.preventDefault(); handleSubmit && handleSubmit(); }} className="flex flex-col sm:flex-row gap-2">
+                <input 
+                    type="email" 
+                    name="email"
+                    placeholder="Enter your email" 
+                    className="flex-grow w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-md text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all disabled:opacity-50"
+                    aria-label="Email for newsletter"
+                    value={(formData.email as string) || ''}
+                    onChange={handleChange}
+                    disabled={isSubmitting}
+                />
+                <button 
+                    type="submit" 
+                    className="bg-sky-600 text-white font-semibold px-4 py-2 rounded-md hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-slate-900 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={isSubmitting}
+                >
+                    {isSubmitting ? 'Subscribing...' : 'Subscribe'}
+                </button>
+            </form>
+            {status && (
+                <p className={`mt-2 text-xs h-4 ${status.includes('successfully') ? 'text-green-400' : 'text-amber-400'}`}>
+                    {status.replace('Sending...', '')}
+                </p>
+            )}
+        </>
+    );
+};
+// --- END: Newsletter Form Component ---
 
 // --- Data ---
 const forumData = {
@@ -545,40 +587,9 @@ const Navbar: FC<NavbarProps> = ({ setActivePage, activePage, selectedProject })
 };
 
 const Footer: FC<FooterProps> = memo(({ setActivePage }) => {
-    const [email, setEmail] = useState('');
-    const [newsletterStatus, setNewsletterStatus] = useState('');
-    const [isSubmitting, setIsSubmitting] = useState(false);
-
-    const handleNewsletterSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        if (!email || !/\S+@\S+\.\S+/.test(email)) {
-            setNewsletterStatus('Please enter a valid email address.');
-            setTimeout(() => setNewsletterStatus(''), 5000);
-            return;
-        }
-
-        setIsSubmitting(true);
-        setNewsletterStatus('Subscribing...');
-
-        const googleFormUrl = "https://docs.google.com/forms/d/e/1FAIpQLSe91ZeyNz6W2rrsTaVYdp4nFElmPsuMxMbDgnETHFcA-oDxtw/formResponse";
-        const formData = new FormData();
-        formData.append('entry.774756621', email);
-
-        try {
-            await fetch(googleFormUrl, {
-                method: 'POST',
-                body: formData,
-                mode: 'no-cors'
-            });
-            setNewsletterStatus('Thank you for subscribing!');
-            setEmail(''); // Clear input on success
-        } catch (error) {
-            console.error('Newsletter submission error:', error);
-            setNewsletterStatus('An error occurred. Please try again.');
-        } finally {
-            setIsSubmitting(false);
-            setTimeout(() => setNewsletterStatus(''), 8000); // Clear status message after 8 seconds
-        }
+    const newsletterFormConfig = {
+        url: "https://docs.google.com/forms/d/e/1FAIpQLSe91ZeyNz6W2rrsTaVYdp4nFElmPsuMxMbDgnETHFcA-oDxtw/formResponse",
+        fields: { email: "entry.774756621" },
     };
 
     return (
@@ -630,29 +641,9 @@ const Footer: FC<FooterProps> = memo(({ setActivePage }) => {
                     <div className="md:col-span-2 lg:col-span-2">
                          <h3 className="text-md font-semibold text-white uppercase tracking-wider mb-4">Stay Informed</h3>
                          <p className="text-sm text-slate-400 mb-4">Get updates on our initiatives and events directly in your inbox.</p>
-                         <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-2">
-                             <input 
-                                type="email" 
-                                placeholder="Enter your email" 
-                                className="flex-grow w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-md text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all disabled:opacity-50"
-                                aria-label="Email for newsletter"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                disabled={isSubmitting}
-                             />
-                             <button 
-                                type="submit" 
-                                className="bg-sky-600 text-white font-semibold px-4 py-2 rounded-md hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-slate-900 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                                disabled={isSubmitting}
-                             >
-                                {isSubmitting ? 'Subscribing...' : 'Subscribe'}
-                            </button>
-                         </form>
-                         {newsletterStatus && (
-                            <p className={`mt-2 text-xs h-4 ${newsletterStatus.includes('Thank you') ? 'text-green-400' : 'text-amber-400'}`}>
-                                {newsletterStatus}
-                            </p>
-                        )}
+                         <GoogleFormComponent formUrl={newsletterFormConfig.url} fieldMapping={newsletterFormConfig.fields}>
+                             <NewsletterForm handleChange={() => {}} formData={{}} />
+                         </GoogleFormComponent>
                     </div>
                 </div>
 
