@@ -584,9 +584,9 @@ const Footer: FC<FooterProps> = memo(({ setActivePage }) => {
     return (
         <footer className="bg-slate-900 text-gray-300 print:hidden">
             <div className="container mx-auto px-6 pt-12 pb-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {/* Column 1: About */}
-                    <div className="lg:col-span-1 space-y-4">
+                    <div className="md:col-span-1 space-y-4">
                         <div className="flex items-center space-x-3 cursor-pointer" onClick={() => setActivePage("Home")}>
                             <img 
                                 src={logoUrl} 
@@ -615,9 +615,9 @@ const Footer: FC<FooterProps> = memo(({ setActivePage }) => {
                     </div>
 
                     {/* Column 2: Quick Links */}
-                    <div>
+                    <div className="md:col-span-1">
                         <h3 className="text-md font-semibold text-white uppercase tracking-wider mb-4">Quick Links</h3>
-                        <ul className="grid grid-cols-2 gap-y-3 sm:grid-cols-1">
+                        <ul className="grid grid-cols-2 gap-y-3">
                             <li><button onClick={() => setActivePage('Home')} className="text-slate-400 hover:text-sky-400 transition-colors text-sm text-left w-full">Home</button></li>
                             <li><button onClick={() => setActivePage('About')} className="text-slate-400 hover:text-sky-400 transition-colors text-sm text-left w-full">About Us</button></li>
                             <li><button onClick={() => setActivePage('Projects')} className="text-slate-400 hover:text-sky-400 transition-colors text-sm text-left w-full">Our Initiatives</button></li>
@@ -626,8 +626,10 @@ const Footer: FC<FooterProps> = memo(({ setActivePage }) => {
                         </ul>
                     </div>
 
-                    {/* Column 3: Stay Informed */}
-                    <div className="md:col-span-2 lg:col-span-2">
+                    {/* Column 3: Get In Touch */}
+                    <div className="md:col-span-1">
+                         <h3 className="text-md font-semibold text-white uppercase tracking-wider mb-4">Get In Touch</h3>
+                         <p className="text-sm text-slate-400 mb-4">Have questions, ideas, or want to volunteer? We'd love to hear from you.</p>
                          <Button 
                             onClick={() => setActivePage('Contact')} 
                             type="primary" 
