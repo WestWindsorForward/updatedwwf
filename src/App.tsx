@@ -1964,7 +1964,7 @@ const ProjectDetailPage = ({ project, setActivePage }) => {
                 {project.id === 2 && (
                     <Button
                     onClick={() =>
-                        window.open("/WWF_Station_Proposal.pdf", "_blank")
+                        window.open("/WWF_Station_Proposal[V1].pdf", "_blank")
                     }
                     type="secondary"
                     icon={<IconDocument />}
