@@ -982,10 +982,6 @@ const ContactPage: FC = () => {
             <div className="relative z-10 container mx-auto py-12 sm:py-16 md:py-20 px-4 animate-fadeIn">
                 {/* Header Section */}
                 <div className="text-center mb-12 sm:mb-16">
-                    <div className="inline-block bg-sky-600 text-white px-4 py-2 rounded-full text-sm font-semibold mb-4">
-                        <IconMail className="inline-block h-4 w-4 mr-2" />
-                        Get In Touch
-                    </div>
                     <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-800 mb-4"> 
                         Contact <span className="text-sky-600">West Windsor Forward</span>
                     </h1>
@@ -998,59 +994,59 @@ const ContactPage: FC = () => {
                     {/* Contact Information - Left Side */}
                     <div className="lg:col-span-2">
                         <Card className="bg-gradient-to-br from-sky-600 to-indigo-700 text-white p-0 transform hover:scale-105 transition-all duration-300" noHoverEffect>
-                            <div className="relative p-6 sm:p-8">
+                            <div className="relative p-4 sm:p-6 lg:p-8">
                                 <DotPattern dotColor="text-white opacity-10" rows={6} cols={8} />
                                 <div className="relative z-10">
-                                    <h2 className="text-2xl sm:text-3xl font-bold mb-6"> Let's Connect </h2>
-                                    <p className="text-sky-100 mb-8 leading-relaxed"> 
+                                    <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-4 sm:mb-6"> Let's Connect </h2>
+                                    <p className="text-sky-100 mb-6 sm:mb-8 leading-relaxed text-sm sm:text-base"> 
                                         We welcome your questions, ideas, and partnership opportunities. Together, we can create positive change in West Windsor. 
                                     </p>
                                     
                                     {/* Contact Methods */}
-                                    <div className="space-y-6">
+                                    <div className="space-y-4 sm:space-y-6">
                                         <div className="flex items-start group">
-                                            <div className="bg-white bg-opacity-20 p-3 rounded-lg mr-4 group-hover:bg-opacity-30 transition-all duration-200">
-                                                <IconMail className="h-6 w-6" />
+                                            <div className="bg-white bg-opacity-20 p-2 sm:p-3 rounded-lg mr-3 sm:mr-4 group-hover:bg-opacity-30 transition-all duration-200 flex-shrink-0">
+                                                <IconMail className="h-5 w-5 sm:h-6 sm:w-6" />
                                             </div>
-                                            <div>
-                                                <h3 className="font-semibold text-lg mb-2">Email Us</h3>
-                                                <a href="mailto:contact@westwindsorforward.org" className="text-sky-100 hover:text-white transition-colors">
+                                            <div className="min-w-0 flex-1">
+                                                <h3 className="font-semibold text-base sm:text-lg mb-1 sm:mb-2">Email Us</h3>
+                                                <a href="mailto:contact@westwindsorforward.org" className="text-sky-100 hover:text-white transition-colors text-sm sm:text-base break-all">
                                                     contact@westwindsorforward.org
                                                 </a>
                                             </div>
                                         </div>
 
                                         <div className="flex items-start group">
-                                            <div className="bg-white bg-opacity-20 p-3 rounded-lg mr-4 group-hover:bg-opacity-30 transition-all duration-200">
-                                                <IconUsers className="h-6 w-6" />
+                                            <div className="bg-white bg-opacity-20 p-2 sm:p-3 rounded-lg mr-3 sm:mr-4 group-hover:bg-opacity-30 transition-all duration-200 flex-shrink-0">
+                                                <IconUsers className="h-5 w-5 sm:h-6 sm:w-6" />
                                             </div>
-                                            <div>
-                                                <h3 className="font-semibold text-lg mb-2">Join Our Community</h3>
-                                                <p className="text-sky-100 mb-3">Follow us for updates and events</p>
-                                                <a href="https://www.facebook.com/profile.php?id=61575121893868" target="_blank" rel="noopener noreferrer" className="inline-flex items-center bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-lg transition-all duration-200 group">
-                                                    <IconFacebook className="h-5 w-5 mr-2" />
+                                            <div className="min-w-0 flex-1">
+                                                <h3 className="font-semibold text-base sm:text-lg mb-1 sm:mb-2">Join Our Community</h3>
+                                                <p className="text-sky-100 mb-3 text-sm sm:text-base">Follow us for updates and events</p>
+                                                <a href="https://www.facebook.com/profile.php?id=61575121893868" target="_blank" rel="noopener noreferrer" className="inline-flex items-center bg-white bg-opacity-20 hover:bg-opacity-30 px-3 py-2 sm:px-4 sm:py-2 rounded-lg transition-all duration-200 group text-sm sm:text-base">
+                                                    <IconFacebook className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                                                     <span>Facebook</span>
-                                                    <IconExternalLink className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                                                    <IconExternalLink className="h-3 w-3 sm:h-4 sm:w-4 ml-2 group-hover:translate-x-1 transition-transform" />
                                                 </a>
                                             </div>
                                         </div>
 
                                         <div className="flex items-start group">
-                                            <div className="bg-white bg-opacity-20 p-3 rounded-lg mr-4 group-hover:bg-opacity-30 transition-all duration-200">
-                                                <IconLightBulb className="h-6 w-6" />
+                                            <div className="bg-white bg-opacity-20 p-2 sm:p-3 rounded-lg mr-3 sm:mr-4 group-hover:bg-opacity-30 transition-all duration-200 flex-shrink-0">
+                                                <IconLightBulb className="h-5 w-5 sm:h-6 sm:w-6" />
                                             </div>
-                                            <div>
-                                                <h3 className="font-semibold text-lg mb-2">Get Involved</h3>
-                                                <p className="text-sky-100">Volunteer opportunities, events, and ways to make an impact in our community.</p>
+                                            <div className="min-w-0 flex-1">
+                                                <h3 className="font-semibold text-base sm:text-lg mb-1 sm:mb-2">Get Involved</h3>
+                                                <p className="text-sky-100 text-sm sm:text-base">Volunteer opportunities, events, and ways to make an impact in our community.</p>
                                             </div>
                                         </div>
                                     </div>
 
                                     {/* Response Time */}
-                                    <div className="mt-8 p-4 bg-white bg-opacity-10 rounded-lg border border-white border-opacity-20">
+                                    <div className="mt-6 sm:mt-8 p-3 sm:p-4 bg-white bg-opacity-10 rounded-lg border border-white border-opacity-20">
                                         <div className="flex items-center">
-                                            <IconClock className="h-5 w-5 mr-2 text-sky-200" />
-                                            <span className="text-sm text-sky-100">We typically respond within 24-48 hours</span>
+                                            <IconClock className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-sky-200 flex-shrink-0" />
+                                            <span className="text-xs sm:text-sm text-sky-100">We typically respond within 24-48 hours</span>
                                         </div>
                                     </div>
                                 </div>
