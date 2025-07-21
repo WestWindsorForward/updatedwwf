@@ -599,7 +599,7 @@ const forumData = {
   milestones: [
     {
       id: 1,
-      title: "Venue & Panelists Secured",
+      title: "Completed: Venue & Panelists Secured",
       description:
         "Kelsey Theatre confirmed, distinguished panelists recruited, partnerships established",
       completed: true,
@@ -607,7 +607,7 @@ const forumData = {
     },
     {
       id: 2,
-      title: "Candidate Invitations & Agreements",
+      title: "In Progress: Candidate Invitations & Agreements",
       description:
         "Formal invitations sent to all declared candidates, agreements being collected",
       completed: false,
@@ -615,7 +615,7 @@ const forumData = {
     },
     {
       id: 3,
-      title: "Community Engagement & Promotion",
+      title: "Upcoming: Community Engagement & Promotion",
       description:
         "Public awareness campaign, ticket distribution, volunteer recruitment",
       completed: false,
@@ -623,7 +623,7 @@ const forumData = {
     },
     {
       id: 4,
-      title: "Forum Event Day",
+      title: "Upcoming: Forum Event Day",
       description:
         "Live forum with streaming, Q&A sessions, and community engagement",
       completed: false,
