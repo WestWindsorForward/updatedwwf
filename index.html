@@ -1,19 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    
-    <meta
-      name="description"
-      content="West Windsor Forward is a resident coalition dedicated to empowering neighbors, advocating for impactful projects, and fostering a better future for our town."
-    />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>West Windsor Forward</title>
-    </head>
-  <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <!--
+        Tailwind CSS CDN: This script loads the Tailwind CSS framework.
+        It's essential for the styling of your React components.
+        In a production build, you'd typically process Tailwind via a build tool.
+    -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!--
+        Google Fonts: The React application dynamically injects the 'Lora' font.
+        However, it's good practice to link it here as well for initial rendering
+        or if the JavaScript fails to load for any reason.
+    -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap">
+    <style>
+        /* Basic body styling to ensure full height and font application */
+        body {
+            margin: 0;
+            font-family: 'Lora', Georgia, serif; /* Apply Lora as default body font */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            min-height: 100vh; /* Ensure body takes full viewport height */
+            display: flex;
+            flex-direction: column;
+        }
+        /* Ensure the root div takes available space */
+        #root {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
+</head>
+<body>
+    <!--
+        The root element where your React application will be mounted.
+        All React components will be rendered inside this div.
+    -->
     <div id="root"></div>
-  </body>
+
+    <!--
+        React and ReactDOM CDNs: These scripts load the necessary React libraries.
+        React is the core library, and ReactDOM is used to render React components to the DOM.
+    -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+    <!--
+        Your React application's entry point.
+        This script uses type="module" to allow ES module imports.
+        It imports the App component and renders it into the 'root' div.
+        Note: In a typical React development setup, this would be handled by a bundler
+        like Webpack or Vite, which compiles JSX and handles imports.
+        For this self-contained Canvas example, we're importing directly.
+    -->
+    <script type="module">
+        // Import the App component from the 'App.tsx' equivalent.
+        // In this environment, 'App' is assumed to be available globally or
+        // defined in a way that 'import App from "./App";' would resolve.
+        // For a single file, we can directly reference the App function.
+        // Assuming App function is defined in the same scope or globally accessible.
+        import App from './App'; // This line assumes App.js/App.tsx is a separate file.
+                               // In the Canvas environment, the App component is defined
+                               // within the same code block, so it's directly available.
+                               // If running this in a real browser, you'd need App.js/App.tsx
+                               // in the same directory or a build step.
+
+        // Get the root DOM element.
+        const rootElement = document.getElementById('root');
+
+        // Create a React root and render the App component.
+        // This is the standard way to bootstrap a React application with React 18.
+        if (rootElement) {
+            ReactDOM.createRoot(rootElement).render(
+                React.createElement(App, null) // Use React.createElement for rendering the App component
+            );
+        }
+    </script>
+</body>
 </html>
