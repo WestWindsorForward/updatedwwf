@@ -581,11 +581,6 @@ const Navbar: FC<NavbarProps> = ({ setActivePage, activePage, selectedProject })
 };
 
 const Footer: FC<FooterProps> = memo(({ setActivePage }) => {
-    const newsletterFormConfig = {
-        url: "https://docs.google.com/forms/d/e/1FAIpQLSe91ZeyNz6W2rrsTaVYdp4nFElmPsuMxMbDgnETHFcA-oDxtw/formResponse",
-        fields: { email: "entry.774756621" },
-    };
-
     return (
         <footer className="bg-slate-900 text-gray-300 print:hidden">
             <div className="container mx-auto px-6 pt-12 pb-8">
@@ -622,12 +617,12 @@ const Footer: FC<FooterProps> = memo(({ setActivePage }) => {
                     {/* Column 2: Quick Links */}
                     <div>
                         <h3 className="text-md font-semibold text-white uppercase tracking-wider mb-4">Quick Links</h3>
-                        <ul className="space-y-3">
-                            <li><button onClick={() => setActivePage('Home')} className="text-slate-400 hover:text-sky-400 transition-colors text-sm">Home</button></li>
-                            <li><button onClick={() => setActivePage('About')} className="text-slate-400 hover:text-sky-400 transition-colors text-sm">About Us</button></li>
-                            <li><button onClick={() => setActivePage('Projects')} className="text-slate-400 hover:text-sky-400 transition-colors text-sm">Our Initiatives</button></li>
-                            <li><button onClick={() => setActivePage('Events')} className="text-slate-400 hover:text-sky-400 transition-colors text-sm">Events</button></li>
-                            <li><button onClick={() => setActivePage('Contact')} className="text-slate-400 hover:text-sky-400 transition-colors text-sm">Contact</button></li>
+                        <ul className="grid grid-cols-2 gap-y-3 sm:grid-cols-1">
+                            <li><button onClick={() => setActivePage('Home')} className="text-slate-400 hover:text-sky-400 transition-colors text-sm text-left w-full">Home</button></li>
+                            <li><button onClick={() => setActivePage('About')} className="text-slate-400 hover:text-sky-400 transition-colors text-sm text-left w-full">About Us</button></li>
+                            <li><button onClick={() => setActivePage('Projects')} className="text-slate-400 hover:text-sky-400 transition-colors text-sm text-left w-full">Our Initiatives</button></li>
+                            <li><button onClick={() => setActivePage('Events')} className="text-slate-400 hover:text-sky-400 transition-colors text-sm text-left w-full">Events</button></li>
+                            <li><button onClick={() => setActivePage('Contact')} className="text-slate-400 hover:text-sky-400 transition-colors text-sm text-left w-full">Contact</button></li>
                         </ul>
                     </div>
 
@@ -635,9 +630,14 @@ const Footer: FC<FooterProps> = memo(({ setActivePage }) => {
                     <div className="md:col-span-2 lg:col-span-2">
                          <h3 className="text-md font-semibold text-white uppercase tracking-wider mb-4">Stay Informed</h3>
                          <p className="text-sm text-slate-400 mb-4">Get updates on our initiatives and events directly in your inbox.</p>
-                         <GoogleFormComponent formUrl={newsletterFormConfig.url} fieldMapping={newsletterFormConfig.fields}>
-                             <NewsletterForm handleChange={() => {}} formData={{}} />
-                         </GoogleFormComponent>
+                         <Button 
+                            onClick={() => setActivePage('Contact')} 
+                            type="primary" 
+                            className="w-full sm:w-auto"
+                            icon={<IconMail />}
+                         >
+                            Contact Us
+                         </Button>
                     </div>
                 </div>
 
