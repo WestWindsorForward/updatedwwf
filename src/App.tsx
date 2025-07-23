@@ -95,9 +95,9 @@ const Button: FC<ButtonProps> = memo(({ children, onClick, type = "primary", cla
     }, [onClick, disabled]);
 
     return (
-        <button 
-            onClick={handleClick} 
-            className={`${baseStyle} ${typeStyle} ${sizeStyles[size]} ${className}`} 
+        <button
+            onClick={handleClick}
+            className={`${baseStyle} ${typeStyle} ${sizeStyles[size]} ${className}`}
             disabled={disabled}
             style={{ transform: 'translateZ(0)' }}
         >
@@ -169,7 +169,7 @@ const AnnouncementBar: FC<AnnouncementBarProps> = memo(({ onNavigateToEvents }) 
     if (isDismissed) return null;
 
     return (
-        <div 
+        <div
             className={`relative bg-gradient-to-r from-sky-600 via-sky-700 to-indigo-700 text-white shadow-lg border-b border-sky-500 overflow-hidden transition-all duration-500 ease-out will-change-transform ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full'} ${isMobile ? 'cursor-pointer' : ''}`}
             onClick={handleMobileClick}
             style={{ transform: 'translateZ(0)' }}
@@ -327,132 +327,132 @@ interface FormFieldsProps {
 }
 
 const GoogleFormComponent: FC<GoogleFormComponentProps> = ({ formUrl, fieldMapping, children, onSuccess, onError }) => {
-  const [formData, setFormData] = useState<{ [key: string]: string | string[] }>({});
-  const [status, setStatus] = useState('');
+    const [formData, setFormData] = useState<{ [key: string]: string | string[] }>({});
+    const [status, setStatus] = useState('');
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target;
-    if (type === 'checkbox') {
-        const { checked } = e.target as HTMLInputElement;
-        const currentValues = (formData[name] as string[] | undefined) || [];
-        if (checked) {
-            setFormData(prev => ({ ...prev, [name]: [...currentValues, value] }));
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+        const { name, value, type } = e.target;
+        if (type === 'checkbox') {
+            const { checked } = e.target as HTMLInputElement;
+            const currentValues = (formData[name] as string[] | undefined) || [];
+            if (checked) {
+                setFormData(prev => ({ ...prev, [name]: [...currentValues, value] }));
+            } else {
+                setFormData(prev => ({ ...prev, [name]: currentValues.filter(v => v !== value) }));
+            }
         } else {
-            setFormData(prev => ({ ...prev, [name]: currentValues.filter(v => v !== value) }));
+            setFormData(prev => ({ ...prev, [name]: value }));
         }
-    } else {
-        setFormData(prev => ({ ...prev, [name]: value }));
-    }
-  };
+    };
 
-  const handleSubmit = async () => {
-    
-    if (fieldMapping.positionsOfInterest && (!formData.positionsOfInterest || (formData.positionsOfInterest as string[]).length === 0)) {
-        setStatus('Please select at least one position of interest.');
-        setTimeout(() => setStatus(''), 5000);
-        return;
-    }
-
-    if (fieldMapping.email && (!formData.email || !/\S+@\S+\.\S+/.test(formData.email as string))) {
-        setStatus('Please enter a valid email address.');
-        setTimeout(() => setStatus(''), 5000);
-        return;
-    }
-
-    setStatus('Sending...');
-
-    const googleFormData = new FormData();
-    for (const key in formData) {
-      if (fieldMapping[key]) {
-        const value = formData[key];
-        if (Array.isArray(value)) {
-            value.forEach(item => {
-                googleFormData.append(fieldMapping[key], item);
-            });
-        } else {
-            googleFormData.append(fieldMapping[key], value);
+    const handleSubmit = async () => {
+        
+        if (fieldMapping.positionsOfInterest && (!formData.positionsOfInterest || (formData.positionsOfInterest as string[]).length === 0)) {
+            setStatus('Please select at least one position of interest.');
+            setTimeout(() => setStatus(''), 5000);
+            return;
         }
-      }
-    }
-    
-    if (fieldMapping.position && !googleFormData.has(fieldMapping.position)) {
-        const defaultPosition = "Mayor of West Windsor Township";
-        googleFormData.append(fieldMapping.position, defaultPosition);
-        setFormData(prev => ({...prev, position: defaultPosition}));
-    }
 
-    try {
-      await fetch(formUrl, { method: 'POST', body: googleFormData, mode: 'no-cors' });
-      setStatus('Submitted successfully! Thank you.');
-      setFormData({});
-      if(onSuccess) onSuccess();
-      setTimeout(() => setStatus(''), 8000);
-    } catch (error) {
-      console.error('Error submitting to Google Form:', error);
-      setStatus('An error occurred. Please try again.');
-      if(onError) onError();
-      setTimeout(() => setStatus(''), 8000);
-    }
-  };
+        if (fieldMapping.email && (!formData.email || !/\S+@\S+\.\S+/.test(formData.email as string))) {
+            setStatus('Please enter a valid email address.');
+            setTimeout(() => setStatus(''), 5000);
+            return;
+        }
 
-  const childrenWithProps = React.Children.map(children, child => {
-    if (React.isValidElement<FormFieldsProps>(child)) {
-      return React.cloneElement(child, { handleChange, formData, status, handleSubmit });
-    }
-    return child;
-  });
+        setStatus('Sending...');
 
-  return (
-    <div>
-      {/* This top-level status is for multi-field forms like the question one */}
-      {Object.keys(fieldMapping).length > 1 && status && (
-        <div className={`mb-4 p-3 rounded-md text-sm ${status.includes('successfully') ? 'bg-green-100 text-green-700 border border-green-200' : status.includes('Please select') || status.includes('valid email') ? 'bg-amber-100 text-amber-700 border border-amber-200' : 'bg-blue-100 text-blue-700 border border-blue-200'}`}>
-          {status}
+        const googleFormData = new FormData();
+        for (const key in formData) {
+            if (fieldMapping[key]) {
+                const value = formData[key];
+                if (Array.isArray(value)) {
+                    value.forEach(item => {
+                        googleFormData.append(fieldMapping[key], item);
+                    });
+                } else {
+                    googleFormData.append(fieldMapping[key], value);
+                }
+            }
+        }
+        
+        if (fieldMapping.position && !googleFormData.has(fieldMapping.position)) {
+            const defaultPosition = "Mayor of West Windsor Township";
+            googleFormData.append(fieldMapping.position, defaultPosition);
+            setFormData(prev => ({...prev, position: defaultPosition}));
+        }
+
+        try {
+            await fetch(formUrl, { method: 'POST', body: googleFormData, mode: 'no-cors' });
+            setStatus('Submitted successfully! Thank you.');
+            setFormData({});
+            if(onSuccess) onSuccess();
+            setTimeout(() => setStatus(''), 8000);
+        } catch (error) {
+            console.error('Error submitting to Google Form:', error);
+            setStatus('An error occurred. Please try again.');
+            if(onError) onError();
+            setTimeout(() => setStatus(''), 8000);
+        }
+    };
+
+    const childrenWithProps = React.Children.map(children, child => {
+        if (React.isValidElement<FormFieldsProps>(child)) {
+            return React.cloneElement(child, { handleChange, formData, status, handleSubmit });
+        }
+        return child;
+    });
+
+    return (
+        <div>
+            {/* This top-level status is for multi-field forms like the question one */}
+            {Object.keys(fieldMapping).length > 1 && status && (
+                <div className={`mb-4 p-3 rounded-md text-sm ${status.includes('successfully') ? 'bg-green-100 text-green-700 border border-green-200' : status.includes('Please select') || status.includes('valid email') ? 'bg-amber-100 text-amber-700 border border-amber-200' : 'bg-blue-100 text-blue-700 border border-blue-200'}`}>
+                    {status}
+                </div>
+            )}
+            {childrenWithProps}
         </div>
-      )}
-      {childrenWithProps}
-    </div>
-  );
+    );
 };
 
 const CandidateQuestionForm: FC<FormFieldsProps & {handleSubmit?: () => void}> = ({ handleChange, formData, handleSubmit }) => {
-  const positionOptions = [ "Mayor of West Windsor Township", "West Windsor Township Council", "Both Mayoral and Council Candidates" ];
-  return (
-    <>
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-6">
-          <p className="text-sm text-blue-800 flex items-start">
-              <IconInfo className="mr-2 mt-0.5 flex-shrink-0" />
-              Your submission is processed securely through a Google Form to ensure anonymity and proper handling.
-          </p>
-      </div>
-      <div className="space-y-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2"> Which position would you like to suggest a question/topic for? <span className="text-red-500">*</span> </label>
-          <div className="space-y-2">
-            {positionOptions.map(option => (
-              <div key={option} className="flex items-center">
-                <input type="radio" id={option.replace(/\s+/g, '-')} name="position" value={option} checked={formData.position === option || (option === positionOptions[0] && !formData.position)} onChange={handleChange} className="h-4 w-4 text-sky-600 border-gray-300 focus:ring-sky-500" required />
-                <label htmlFor={option.replace(/\s+/g, '-')} className="ml-3 block text-sm text-gray-700"> {option} </label>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div>
-          <label htmlFor="topic" className="block text-sm font-medium text-gray-700 mb-1"> Please provide your suggested topic(s) for the candidates. What overarching themes or areas of concern do you believe the panelists should address? <span className="text-red-500">*</span> </label>
-          <input type="text" name="topic" id="topic" value={formData.topic as string || ''} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-md shadow-sm" placeholder="e.g., Downtown Development, School Funding, Traffic Safety" required />
-        </div>
-        <div>
-          <label htmlFor="question" className="block text-sm font-medium text-gray-700 mb-1"> Please write down your specific question(s) for the candidates. Try to make them clear, concise, and relevant to the West Windsor community. <span className="text-red-500">*</span> </label>
-          <textarea name="question" id="question" rows={3} value={formData.question as string || ''} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-md shadow-sm" required></textarea>
-        </div>
-        <div>
-          <label htmlFor="comment" className="block text-sm font-medium text-gray-700 mb-1"> Would you like to provide any additional comments regarding your suggestions? (Optional) </label>
-          <textarea name="comment" id="comment" rows={2} value={formData.comment as string || ''} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-md shadow-sm"></textarea>
-        </div>
-        <Button onClick={handleSubmit} type="primary" className="w-full sm:w-auto"> Submit Question </Button>
-      </div>
-    </>
-  );
+    const positionOptions = [ "Mayor of West Windsor Township", "West Windsor Township Council", "Both Mayoral and Council Candidates" ];
+    return (
+        <>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-6">
+                <p className="text-sm text-blue-800 flex items-start">
+                    <IconInfo className="mr-2 mt-0.5 flex-shrink-0" />
+                    Your submission is processed securely through a Google Form to ensure anonymity and proper handling.
+                </p>
+            </div>
+            <div className="space-y-6">
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2"> Which position would you like to suggest a question/topic for? <span className="text-red-500">*</span> </label>
+                    <div className="space-y-2">
+                        {positionOptions.map(option => (
+                            <div key={option} className="flex items-center">
+                                <input type="radio" id={option.replace(/\s+/g, '-')} name="position" value={option} checked={formData.position === option || (option === positionOptions[0] && !formData.position)} onChange={handleChange} className="h-4 w-4 text-sky-600 border-gray-300 focus:ring-sky-500" required />
+                                <label htmlFor={option.replace(/\s+/g, '-')} className="ml-3 block text-sm text-gray-700"> {option} </label>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                <div>
+                    <label htmlFor="topic" className="block text-sm font-medium text-gray-700 mb-1"> Please provide your suggested topic(s) for the candidates. What overarching themes or areas of concern do you believe the panelists should address? <span className="text-red-500">*</span> </label>
+                    <input type="text" name="topic" id="topic" value={formData.topic as string || ''} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-md shadow-sm" placeholder="e.g., Downtown Development, School Funding, Traffic Safety" required />
+                </div>
+                <div>
+                    <label htmlFor="question" className="block text-sm font-medium text-gray-700 mb-1"> Please write down your specific question(s) for the candidates. Try to make them clear, concise, and relevant to the West Windsor community. <span className="text-red-500">*</span> </label>
+                    <textarea name="question" id="question" rows={3} value={formData.question as string || ''} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-md shadow-sm" required></textarea>
+                </div>
+                <div>
+                    <label htmlFor="comment" className="block text-sm font-medium text-gray-700 mb-1"> Would you like to provide any additional comments regarding your suggestions? (Optional) </label>
+                    <textarea name="comment" id="comment" rows={2} value={formData.comment as string || ''} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-md shadow-sm"></textarea>
+                </div>
+                <Button onClick={handleSubmit} type="primary" className="w-full sm:w-auto"> Submit Question </Button>
+            </div>
+        </>
+    );
 };
 
 const NewsletterForm: FC<FormFieldsProps & {handleSubmit?: () => void}> = ({ handleChange, formData, handleSubmit, status }) => {
@@ -460,10 +460,10 @@ const NewsletterForm: FC<FormFieldsProps & {handleSubmit?: () => void}> = ({ han
     return (
         <>
             <div className="flex flex-col sm:flex-row gap-2">
-                <input 
-                    type="email" 
+                <input
+                    type="email"
                     name="email"
-                    placeholder="Enter your email" 
+                    placeholder="Enter your email"
                     className="flex-grow w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-md text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all disabled:opacity-50"
                     aria-label="Email for newsletter"
                     value={(formData.email as string) || ''}
@@ -536,16 +536,16 @@ const Navbar: FC<NavbarProps> = ({ setActivePage, activePage, selectedProject })
         <nav className="bg-slate-900 text-white p-3 sm:p-4 shadow-lg sticky top-0 z-50 print:hidden">
             <div className="container mx-auto flex justify-between items-center">
                 <div className="flex items-center cursor-pointer" onClick={handleLogoClick}>
-                    <img 
-                        src={logoUrl} 
-                        alt="West Windsor Forward Logo" 
-                        className="h-10 sm:h-12 mr-2 sm:mr-3 rounded bg-white p-1.5" 
+                    <img
+                        src={logoUrl}
+                        alt="West Windsor Forward Logo"
+                        className="h-10 sm:h-12 mr-2 sm:mr-3 rounded bg-white p-1.5"
                         loading="eager"
                         decoding="async"
-                        onError={(e) => { 
-                            (e.target as HTMLImageElement).onerror = null; 
-                            (e.target as HTMLImageElement).src = `https://placehold.co/48x48/FFFFFF/0C4A6E?text=WWF&font=Lora`; 
-                        }} 
+                        onError={(e) => {
+                            (e.target as HTMLImageElement).onerror = null;
+                            (e.target as HTMLImageElement).src = `https://placehold.co/48x48/FFFFFF/0C4A6E?text=WWF&font=Lora`;
+                        }}
                     />
                 </div>
                 <div className="sm:hidden">
@@ -588,16 +588,16 @@ const Footer: FC<FooterProps> = memo(({ setActivePage }) => {
                     {/* Column 1: About */}
                     <div className="md:col-span-1 space-y-4">
                         <div className="flex items-center space-x-3 cursor-pointer" onClick={() => setActivePage("Home")}>
-                            <img 
-                                src={logoUrl} 
-                                alt="West Windsor Forward Logo" 
-                                className="h-10 rounded bg-white p-1.5" 
+                            <img
+                                src={logoUrl}
+                                alt="West Windsor Forward Logo"
+                                className="h-10 rounded bg-white p-1.5"
                                 loading="lazy"
                                 decoding="async"
-                                onError={(e) => { 
-                                    (e.target as HTMLImageElement).onerror = null; 
-                                    (e.target as HTMLImageElement).src = `https://placehold.co/40x40/FFFFFF/0C4A6E?text=WWF&font=Lora`; 
-                                }} 
+                                onError={(e) => {
+                                    (e.target as HTMLImageElement).onerror = null;
+                                    (e.target as HTMLImageElement).src = `https://placehold.co/40x40/FFFFFF/0C4A6E?text=WWF&font=Lora`;
+                                }}
                             />
                             <span className="text-xl font-bold text-white">West Windsor Forward</span>
                         </div>
@@ -628,16 +628,16 @@ const Footer: FC<FooterProps> = memo(({ setActivePage }) => {
 
                     {/* Column 3: Get In Touch */}
                     <div className="md:col-span-1">
-                         <h3 className="text-md font-semibold text-white uppercase tracking-wider mb-4">Get In Touch</h3>
-                         <p className="text-sm text-slate-400 mb-4">Have questions, ideas, or want to volunteer? We'd love to hear from you.</p>
-                         <Button 
-                            onClick={() => setActivePage('Contact')} 
-                            type="primary" 
-                            className="w-full sm:w-auto"
-                            icon={<IconMail />}
-                         >
-                            Contact Us
-                         </Button>
+                           <h3 className="text-md font-semibold text-white uppercase tracking-wider mb-4">Get In Touch</h3>
+                           <p className="text-sm text-slate-400 mb-4">Have questions, ideas, or want to volunteer? We'd love to hear from you.</p>
+                           <Button
+                               onClick={() => setActivePage('Contact')}
+                               type="primary"
+                               className="w-full sm:w-auto"
+                               icon={<IconMail />}
+                           >
+                               Contact Us
+                           </Button>
                     </div>
                 </div>
 
@@ -748,9 +748,9 @@ const PanelistSection: FC = () => {
                                 <img src={panelist.imageUrl || `https://placehold.co/150x150/E0F2FE/0C4A6E?text=${panelist.name.substring(0, 1)}${panelist.name.split(" ")[1]?.substring(0, 1) || ""}&font=Lora`} alt={panelist.name} className="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-sky-200 object-cover shadow-sm" onError={(e) => { (e.target as HTMLImageElement).onerror = null; (e.target as HTMLImageElement).src = `https://placehold.co/150x150/CCCCCC/FFFFFF?text=Panelist&font=Lora`; }} />
                                 <div className="flex-grow flex flex-col">
                                     <h3 className="font-semibold text-sky-700 mb-1 min-h-[1.5rem]">{panelist.name}</h3>
-                                    <p className="text-sm text-slate-600 mb-3 flex-grow">{panelist.title}</p>
-                                    {panelist.note && <p className="text-xs text-amber-600 italic mb-3 min-h-[2.5rem] flex items-center justify-center">{panelist.note}</p>}
-                                    {!panelist.note && <div className="min-h-[2.5rem] mb-3"></div>}
+                                    <p className="text-sm text-slate-600 mb-1 flex-grow">{panelist.title}</p> {/* Changed mb-3 to mb-1 */}
+                                    {panelist.note && <p className="text-xs text-amber-600 italic mb-1 flex items-center justify-center">{panelist.note}</p>} {/* Changed mb-3 and removed min-h */}
+                                    {!panelist.note && <div className="mb-1"></div>} {/* Changed mb-3 and removed min-h */}
                                 </div>
                                 <button className="text-xs text-sky-600 hover:text-sky-700 font-medium flex items-center justify-center mx-auto mt-auto">
                                     {selectedPanelistId === panelist.id ? "Hide Bio" : "View Bio"}
@@ -860,16 +860,16 @@ const HomePage: FC<PageProps> = memo(({ setActivePage }) => (
         <header className="relative bg-gradient-to-br from-slate-900 via-sky-800 to-indigo-900 text-white py-16 sm:py-20 md:py-28 px-4 text-center rounded-b-2xl shadow-2xl overflow-hidden">
             <DotPattern dotColor="text-sky-700 opacity-10" rows={8} cols={10} />
             <div className="relative z-10 container mx-auto">
-                <img 
-                    src={logoUrl} 
-                    alt="West Windsor Forward Logo" 
-                    className="h-16 sm:h-20 md:h-24 mx-auto mb-4 sm:mb-6 rounded-lg shadow-md bg-white p-1.5 sm:p-2" 
+                <img
+                    src={logoUrl}
+                    alt="West Windsor Forward Logo"
+                    className="h-16 sm:h-20 md:h-24 mx-auto mb-4 sm:mb-6 rounded-lg shadow-md bg-white p-1.5 sm:p-2"
                     loading="eager"
                     decoding="async"
-                    onError={(e) => { 
-                        (e.target as HTMLImageElement).onerror = null; 
-                        (e.target as HTMLImageElement).src = `https://placehold.co/96x96/FFFFFF/0C4A6E?text=WWF&font=Lora`; 
-                    }} 
+                    onError={(e) => {
+                        (e.target as HTMLImageElement).onerror = null;
+                        (e.target as HTMLImageElement).src = `https://placehold.co/96x96/FFFFFF/0C4A6E?text=WWF&font=Lora`;
+                    }}
                 />
                 <h1 className="text-2xl sm:text-3xl md:text-5xl font-extrabold mb-3 sm:mb-4 tracking-tight"> West Windsor Forward </h1>
                 <p className="text-sm sm:text-md md:text-xl text-sky-200 mb-6 sm:mb-8 max-w-3xl mx-auto"> A dedicated coalition of residents igniting positive change and working collaboratively to build a better future for West Windsor. </p>
@@ -949,16 +949,16 @@ const AboutPage: FC = memo(() => {
                     <div className="grid md:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
                         {teamMembers.map((member) => (
                             <div key={member.name} className="bg-slate-50 p-4 sm:p-6 rounded-xl shadow-md text-center transition-all duration-300 hover:shadow-lg hover:scale-105">
-                                <img 
-                                    src={member.image} 
-                                    alt={member.name} 
-                                    className="w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full mx-auto mb-4 sm:mb-5 border-4 border-sky-500 shadow-sm" 
+                                <img
+                                    src={member.image}
+                                    alt={member.name}
+                                    className="w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full mx-auto mb-4 sm:mb-5 border-4 border-sky-500 shadow-sm"
                                     loading="lazy"
                                     decoding="async"
-                                    onError={(e) => { 
-                                        (e.target as HTMLImageElement).onerror = null; 
-                                        (e.target as HTMLImageElement).src = `https://placehold.co/150x150/E0F2FE/0C4A6E?text=${member.name.substring(0, 1)}${member.name.split(" ")[1] ? member.name.split(" ")[1].substring(0, 1) : ""}&font=Lora`; 
-                                    }} 
+                                    onError={(e) => {
+                                        (e.target as HTMLImageElement).onerror = null;
+                                        (e.target as HTMLImageElement).src = `https://placehold.co/150x150/E0F2FE/0C4A6E?text=${member.name.substring(0, 1)}${member.name.split(" ")[1] ? member.name.split(" ")[1].substring(0, 1) : ""}&font=Lora`;
+                                    }}
                                 />
                                 <h3 className="text-md sm:text-lg md:text-xl font-semibold text-slate-800">{member.name}</h3>
                                 <p className="text-sky-600 font-medium mb-2 sm:mb-3 text-xs sm:text-sm md:text-base">{member.role}</p>
@@ -998,16 +998,16 @@ const ProjectCard: FC<ProjectCardProps> = memo(({ project, setActivePage }) => {
 
     return (
         <Card onClick={handleCardClick} className="flex flex-col h-full group p-0" hasDotPattern>
-            <img 
-                src={project.image} 
-                alt={project.title} 
-                className="w-full h-48 object-cover rounded-t-lg transition-transform duration-300 group-hover:scale-105" 
+            <img
+                src={project.image}
+                alt={project.title}
+                className="w-full h-48 object-cover rounded-t-lg transition-transform duration-300 group-hover:scale-105"
                 loading="lazy"
                 decoding="async"
-                onError={(e) => { 
-                    (e.target as HTMLImageElement).onerror = null; 
-                    (e.target as HTMLImageElement).src = `https://placehold.co/600x400/CCCCCC/FFFFFF?text=Project+Image&font=Lora`; 
-                }} 
+                onError={(e) => {
+                    (e.target as HTMLImageElement).onerror = null;
+                    (e.target as HTMLImageElement).src = `https://placehold.co/600x400/CCCCCC/FFFFFF?text=Project+Image&font=Lora`;
+                }}
             />
             <div className="flex-grow flex flex-col p-4 sm:p-6">
                 <h3 className="text-lg sm:text-xl font-semibold text-sky-700 group-hover:text-sky-600 transition-colors mb-2 min-h-[3.5rem] line-clamp-2">{project.title}</h3>
@@ -1127,17 +1127,17 @@ const ContactPage: FC = () => {
         web3FormData.append("access_key", web3FormsAccessKey);
         web3FormData.append("subject", `New Contact from ${formData.name || "Website Visitor"}`);
 
-        if (!formData.name || !formData.email || !formData.message) { 
-            setResult("Please fill in all required fields."); 
+        if (!formData.name || !formData.email || !formData.message) {
+            setResult("Please fill in all required fields.");
             setIsSubmitting(false);
-            setTimeout(() => setResult(""), 6000); 
-            return; 
+            setTimeout(() => setResult(""), 6000);
+            return;
         }
-        if (!/\S+@\S+\.\S+/.test(formData.email)) { 
-            setResult("Please enter a valid email address."); 
+        if (!/\S+@\S+\.\S+/.test(formData.email)) {
+            setResult("Please enter a valid email address.");
             setIsSubmitting(false);
-            setTimeout(() => setResult(""), 6000); 
-            return; 
+            setTimeout(() => setResult(""), 6000);
+            return;
         }
 
         try {
@@ -1168,7 +1168,7 @@ const ContactPage: FC = () => {
             <div className="relative z-10 container mx-auto py-12 sm:py-16 md:py-20 px-4 animate-fadeIn">
                 {/* Header Section */}
                 <div className="text-center mb-12 sm:mb-16">
-                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-800 mb-4"> 
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-800 mb-4">
                         Contact <span className="text-sky-600">West Windsor Forward</span>
                     </h1>
                     <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
@@ -1184,8 +1184,8 @@ const ContactPage: FC = () => {
                                 <DotPattern dotColor="text-white opacity-10" rows={6} cols={8} />
                                 <div className="relative z-10">
                                     <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-4 sm:mb-6"> Let's Connect </h2>
-                                    <p className="text-sky-100 mb-6 sm:mb-8 leading-relaxed text-sm sm:text-base"> 
-                                        We welcome your questions, ideas, and partnership opportunities. Together, we can create positive change in West Windsor. 
+                                    <p className="text-sky-100 mb-6 sm:mb-8 leading-relaxed text-sm sm:text-base">
+                                        We welcome your questions, ideas, and partnership opportunities. Together, we can create positive change in West Windsor.
                                     </p>
                                     
                                     {/* Contact Methods */}
@@ -1266,10 +1266,10 @@ const ContactPage: FC = () => {
 
                                 {result && (
                                     <div className={`mb-6 p-4 rounded-xl border text-sm font-medium ${
-                                        result.includes('successfully') 
-                                            ? 'bg-green-50 text-green-800 border-green-200' 
-                                            : result.includes('Sending') 
-                                                ? 'bg-blue-50 text-blue-800 border-blue-200' 
+                                        result.includes('successfully')
+                                            ? 'bg-green-50 text-green-800 border-green-200'
+                                            : result.includes('Sending')
+                                                ? 'bg-blue-50 text-blue-800 border-blue-200'
                                                 : 'bg-red-50 text-red-800 border-red-200'
                                     }`}>
                                         <div className="flex items-center">
@@ -1282,55 +1282,55 @@ const ContactPage: FC = () => {
 
                                 <form onSubmit={handleSubmit} className="space-y-6">
                                     <div>
-                                        <label htmlFor="contact-name" className="block text-sm font-semibold text-gray-700 mb-2"> 
-                                            Full Name <span className="text-red-500">*</span> 
+                                        <label htmlFor="contact-name" className="block text-sm font-semibold text-gray-700 mb-2">
+                                            Full Name <span className="text-red-500">*</span>
                                         </label>
-                                        <input 
-                                            type="text" 
-                                            name="name" 
-                                            id="contact-name" 
-                                            value={formData.name} 
-                                            onChange={handleChange} 
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-200 hover:border-gray-400" 
+                                        <input
+                                            type="text"
+                                            name="name"
+                                            id="contact-name"
+                                            value={formData.name}
+                                            onChange={handleChange}
+                                            className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-200 hover:border-gray-400"
                                             placeholder="Enter your full name"
-                                            required 
+                                            required
                                         />
                                     </div>
                                     
                                     <div>
-                                        <label htmlFor="contact-email" className="block text-sm font-semibold text-gray-700 mb-2"> 
-                                            Email Address <span className="text-red-500">*</span> 
+                                        <label htmlFor="contact-email" className="block text-sm font-semibold text-gray-700 mb-2">
+                                            Email Address <span className="text-red-500">*</span>
                                         </label>
-                                        <input 
-                                            type="email" 
-                                            name="email" 
-                                            id="contact-email" 
-                                            value={formData.email} 
-                                            onChange={handleChange} 
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-200 hover:border-gray-400" 
+                                        <input
+                                            type="email"
+                                            name="email"
+                                            id="contact-email"
+                                            value={formData.email}
+                                            onChange={handleChange}
+                                            className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-200 hover:border-gray-400"
                                             placeholder="Enter your email address"
-                                            required 
+                                            required
                                         />
                                     </div>
                                     
                                     <div>
-                                        <label htmlFor="contact-message" className="block text-sm font-semibold text-gray-700 mb-2"> 
-                                            Message <span className="text-red-500">*</span> 
+                                        <label htmlFor="contact-message" className="block text-sm font-semibold text-gray-700 mb-2">
+                                            Message <span className="text-red-500">*</span>
                                         </label>
-                                        <textarea 
-                                            name="message" 
-                                            id="contact-message" 
-                                            rows={5} 
-                                            value={formData.message} 
-                                            onChange={handleChange} 
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-200 hover:border-gray-400 resize-none" 
+                                        <textarea
+                                            name="message"
+                                            id="contact-message"
+                                            rows={5}
+                                            value={formData.message}
+                                            onChange={handleChange}
+                                            className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-200 hover:border-gray-400 resize-none"
                                             placeholder="Tell us about your questions, ideas, or how you'd like to get involved..."
                                             required
                                         ></textarea>
                                     </div>
                                     
                                     <div>
-                                        <button 
+                                        <button
                                             type="submit"
                                             className="w-full inline-flex items-center justify-center rounded-xl font-semibold transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-opacity-75 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed bg-sky-600 hover:bg-sky-700 text-white focus:ring-sky-500 px-6 py-4 text-base"
                                             disabled={isSubmitting}
@@ -1469,52 +1469,52 @@ if (typeof window !== "undefined") {
       .prose li { margin-bottom: 0.25em; }
       
       /* Optimized animations with hardware acceleration */
-      @keyframes fadeIn { 
-        from { opacity: 0; transform: translate3d(0, 15px, 0); } 
-        to { opacity: 1; transform: translate3d(0, 0, 0); } 
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translate3d(0, 15px, 0); }
+        to { opacity: 1; transform: translate3d(0, 0, 0); }
       }
-      .animate-fadeIn { 
-        animation: fadeIn 0.6s ease-out forwards; 
+      .animate-fadeIn {
+        animation: fadeIn 0.6s ease-out forwards;
         will-change: transform, opacity;
       }
       
-      @keyframes slideDown { 
-        from { opacity: 0; transform: translate3d(0, -10px, 0); } 
-        to { opacity: 1; transform: translate3d(0, 0, 0); } 
+      @keyframes slideDown {
+        from { opacity: 0; transform: translate3d(0, -10px, 0); }
+        to { opacity: 1; transform: translate3d(0, 0, 0); }
       }
-      .animate-slideDown { 
-        animation: slideDown 0.3s ease-out forwards; 
+      .animate-slideDown {
+        animation: slideDown 0.3s ease-out forwards;
         will-change: transform, opacity;
       }
       
-      @keyframes pulse-slow { 
-        0%, 100% { opacity: 0.05; } 
-        50% { opacity: 0.15; } 
+      @keyframes pulse-slow {
+        0%, 100% { opacity: 0.05; }
+        50% { opacity: 0.15; }
       }
-      .animate-pulse-slow { 
-        animation: pulse-slow 5s cubic-bezier(0.4, 0, 0.6, 1) infinite; 
+      .animate-pulse-slow {
+        animation: pulse-slow 5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         will-change: opacity;
       }
       
       /* Optimize hover effects */
-      .group:hover .dot-pattern-animated div div { 
-        transform: scale3d(1.5, 1.5, 1); 
-        opacity: 0.5; 
+      .group:hover .dot-pattern-animated div div {
+        transform: scale3d(1.5, 1.5, 1);
+        opacity: 0.5;
         will-change: transform, opacity;
       }
       
       /* Better line clamping */
-      .line-clamp-2 { 
-        display: -webkit-box; 
-        -webkit-line-clamp: 2; 
-        -webkit-box-orient: vertical; 
-        overflow: hidden; 
+      .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
       }
-      .line-clamp-3 { 
-        display: -webkit-box; 
-        -webkit-line-clamp: 3; 
-        -webkit-box-orient: vertical; 
-        overflow: hidden; 
+      .line-clamp-3 {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
       }
       
       /* Performance improvements */
@@ -1548,6 +1548,6 @@ if (typeof window !== "undefined") {
 
     const fontLinkLora = document.createElement("link");
     fontLinkLora.rel = "stylesheet";
-    fontLinkLora.href = "https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap";
+    fontLinkLora.href = "https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600;1,700&display=swap";
     document.head.appendChild(fontLinkLora);
 }
