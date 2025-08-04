@@ -184,9 +184,9 @@ const AnnouncementBar: FC<AnnouncementBarProps> = memo(({ onNavigateToEvents }) 
             <div className="relative z-10 container mx-auto px-4 py-0 sm:py-0">
                 {/* Desktop Layout */}
                 <div className="hidden sm:block">
-                    <div className="flex items-center justify-between">
-                        {/* Main content block, now centered */}
-                        <div className="flex-1 flex items-center justify-center space-x-6">
+                    <div className="flex items-center justify-center">
+                        {/* This container holds the centered text content */}
+                        <div className="flex items-center space-x-3">
                             {/* Animated pulse dot */}
                             <div className="flex-shrink-0">
                                 <div className="relative">
@@ -216,8 +216,8 @@ const AnnouncementBar: FC<AnnouncementBarProps> = memo(({ onNavigateToEvents }) 
                             </div>
                         </div>
 
-                        {/* Desktop Action button */}
-                        <div className="flex items-center space-x-2">                            
+                        {/* Dismiss button, kept separate on the right */}
+                        <div className="flex items-center space-x-2">
                             <button
                                 onClick={handleDismiss}
                                 className="text-sky-200 hover:text-white p-1 rounded-md transition-colors hover:bg-white hover:bg-opacity-20"
@@ -1364,7 +1364,6 @@ const ContactPage: FC = () => {
                                         </div>
                                     </div>
                                 </div>
-                            </div>
                         </Card>
                     </div>
 
@@ -1443,3 +1442,4 @@ const ContactPage: FC = () => {
                                     
                                     <div>
                                         <label htmlFor="contact-message" className="block text-sm font-semibold text-gray-700 mb-2">
+                                            Message <span className="text-red-500">*</span>
