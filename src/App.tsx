@@ -27,17 +27,17 @@ const IconSpeakerPhone: FC = () => ( <svg xmlns="http://www.w3.org/2000/svg" cla
 const IconArrowRight: FC<{className?: string}> = ({className}) => ( <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 ${className}`} viewBox="0 0 20 20" fill="currentColor"> <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" /> </svg> );
 
 // --- Type Definitions ---
-interface DotPatternProps { className?: string; dotColor?: string; rows?: number; cols?: number; }
-interface CardProps { children: ReactNode; className?: string; noHoverEffect?: boolean; hasDotPattern?: boolean; onClick?: (e: React.MouseEvent<HTMLDivElement>) => void; }
-interface ButtonProps { children?: ReactNode; onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void; type?: 'primary' | 'secondary' | 'success' | 'warning'; className?: string; icon?: ReactNode; isSubmit?: boolean; disabled?: boolean; size?: 'sm' | 'md' | 'lg'; }
+interface DotPatternProps { className?: string; dotColor?: string; rows?: number; cols?: number; };
+interface CardProps { children: ReactNode; className?: string; noHoverEffect?: boolean; hasDotPattern?: boolean; onClick?: (e: React.MouseEvent<HTMLDivElement>) => void; };
+interface ButtonProps { children?: ReactNode; onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void; type?: 'primary' | 'secondary' | 'success' | 'warning'; className?: string; icon?: ReactNode; isSubmit?: boolean; disabled?: boolean; size?: 'sm' | 'md' | 'lg'; };
 type PageName = "Home" | "About" | "Projects" | "Events" | "Contact" | "ProjectDetails";
-interface Project { id: number; slug: string; title: string; shortGoal: string; status: string; description: string; image: string; partnerOrganizations: string[]; redirectTo?: PageName; goal?: string; impact?: string; timeline?: { stage: string; details: string; completed: boolean; }[]; getInvolved?: string; fundingSources?: string[]; initiatives?: { title: string; description: string; icon: ReactNode; status: string; }[]; }
-interface NavbarProps { setActivePage: (page: PageName, project?: Project | null) => void; activePage: PageName; selectedProject: Project | null; }
-interface PageProps { setActivePage: (page: PageName, project?: Project | null) => void; }
-interface ProjectCardProps { project: Project; setActivePage: (page: PageName, project?: Project | null) => void; }
-interface ProjectDetailPageProps { project: Project | null; setActivePage: (page: PageName, project?: Project | null) => void; }
-interface AnnouncementBarProps { onNavigateToEvents: () => void; }
-interface FooterProps { setActivePage: (page: PageName) => void; }
+interface Project { id: number; slug: string; title: string; shortGoal: string; status: string; description: string; image: string; partnerOrganizations: string[]; redirectTo?: PageName; goal?: string; impact?: string; timeline?: { stage: string; details: string; completed: boolean; }[]; getInvolved?: string; fundingSources?: string[]; initiatives?: { title: string; description: string; icon: ReactNode; status: string; }[]; };
+interface NavbarProps { setActivePage: (page: PageName, project?: Project | null) => void; activePage: PageName; selectedProject: Project | null; };
+interface PageProps { setActivePage: (page: PageName, project?: Project | null) => void; };
+interface ProjectCardProps { project: Project; setActivePage: (page: PageName, project?: Project | null) => void; };
+interface ProjectDetailPageProps { project: Project | null; setActivePage: (page: PageName, project?: Project | null) => void; };
+interface AnnouncementBarProps { onNavigateToEvents: () => void; };
+interface FooterProps { setActivePage: (page: PageName) => void; };
 
 // --- Helper Components ---
 const DotPattern: FC<DotPatternProps> = memo(({ className = "", dotColor = "text-sky-200 opacity-5", rows = 6, cols = 8 }) => {
@@ -183,66 +183,64 @@ const AnnouncementBar: FC<AnnouncementBarProps> = memo(({ onNavigateToEvents }) 
 
             <div className="relative z-10 container mx-auto px-4 py-0 sm:py-0">
                 {/* Desktop Layout */}
-                <div className="hidden sm:block">
-                    <div className="flex items-center justify-between">
-                        <div className="flex-1 flex items-center justify-center space-x-3">
-                            {/* Animated pulse dot */}
-                            <div className="flex-shrink-0">
-                                <div className="relative">
-                                    <div className="w-3 h-3 bg-red-400 rounded-full animate-ping"></div>
-                                    <div className="absolute inset-0 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                                </div>
-                            </div>
-
-                            <div className="flex items-center space-x-2">
-                                <IconSpeakerPhone />
-                                <span className="font-semibold text-base">Join us for the 2025 Candidate Forum</span>
-                            </div>
-                            
-                            <div className="flex items-center text-sm text-sky-100 space-x-4 ml-6">
-                                <div className="flex items-center space-x-1">
-                                    <IconCalendar className="h-4 w-4" />
-                                    <span>Sept 25th</span>
-                                </div>
-                                <div className="flex items-center space-x-1">
-                                    <IconClock className="h-4 w-4" />
-                                    <span>7:00 PM</span>
-                                </div>
-                                <div className="flex items-center space-x-1">
-                                    <IconMapMarker className="h-4 w-4" />
-                                    <span>Kelsey Theatre</span>
-                                </div>
+                <div className="hidden sm:flex items-center justify-between">
+                    <div className="flex-1 flex items-center justify-center space-x-3">
+                        {/* Animated pulse dot */}
+                        <div className="flex-shrink-0">
+                            <div className="relative">
+                                <div className="w-3 h-3 bg-red-400 rounded-full animate-ping"></div>
+                                <div className="absolute inset-0 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
                             </div>
                         </div>
 
-                        {/* Desktop Action button */}
-                        <div className="flex items-center space-x-2 ml-6">                            
-                            <button
-                                onClick={handleDismiss}
-                                className="text-sky-200 hover:text-white p-1 rounded-md transition-colors hover:bg-white hover:bg-opacity-20"
-                                aria-label="Dismiss announcement"
-                            >
-                                <IconClose className="h-4 w-4" />
-                            </button>
+                        <div className="flex items-center space-x-2">
+                            <IconSpeakerPhone />
+                            <span className="font-semibold text-base">Join us for the 2025 Candidate Forum</span>
+                        </div>
+                        
+                        <div className="flex items-center text-sm text-sky-100 space-x-4 ml-6">
+                            <div className="flex items-center space-x-1">
+                                <IconCalendar className="h-4 w-4" />
+                                <span>Sept 25th</span>
+                            </div>
+                            <div className="flex items-center space-x-1">
+                                <IconClock className="h-4 w-4" />
+                                <span>7:00 PM</span>
+                            </div>
+                            <div className="flex items-center space-x-1">
+                                <IconMapMarker className="h-4 w-4" />
+                                <span>Kelsey Theatre</span>
+                            </div>
                         </div>
                     </div>
 
-                    {/* Secondary info line for larger screens */}
-                    <div className="hidden lg:flex items-center justify-center mt-2 pt-2 border-t border-sky-500 border-opacity-30">
-                        <div className="text-xs text-sky-100 flex items-center space-x-6">
-                            <span className="flex items-center space-x-1">
-                                <IconUsers className="h-4 w-4" />
-                                <span>Meet mayoral & council candidates</span>
-                            </span>
-                            <span className="flex items-center space-x-1">
-                                <IconMicrophone className="h-4 w-4" />
-                                <span>Q&A with community questions</span>
-                            </span>
-                            <span className="flex items-center space-x-1">
-                                <IconDocument className="h-4 w-4" />
-                                <span>Free admission & live stream available</span>
-                            </span>
-                        </div>
+                    {/* Desktop Action button */}
+                    <div className="flex items-center space-x-2 ml-6">                            
+                        <button
+                            onClick={handleDismiss}
+                            className="text-sky-200 hover:text-white p-1 rounded-md transition-colors hover:bg-white hover:bg-opacity-20"
+                            aria-label="Dismiss announcement"
+                        >
+                            <IconClose className="h-4 w-4" />
+                        </button>
+                    </div>
+                </div>
+
+                {/* Secondary info line for larger screens */}
+                <div className="hidden lg:flex items-center justify-center mt-2 pt-2 border-t border-sky-500 border-opacity-30">
+                    <div className="text-xs text-sky-100 flex items-center space-x-6">
+                        <span className="flex items-center space-x-1">
+                            <IconUsers className="h-4 w-4" />
+                            <span>Meet mayoral & council candidates</span>
+                        </span>
+                        <span className="flex items-center space-x-1">
+                            <IconMicrophone className="h-4 w-4" />
+                            <span>Q&A with community questions</span>
+                        </span>
+                        <span className="flex items-center space-x-1">
+                            <IconDocument className="h-4 w-4" />
+                            <span>Free admission & live stream available</span>
+                        </span>
                     </div>
                 </div>
 
@@ -321,14 +319,14 @@ interface GoogleFormComponentProps {
     children: ReactNode;
     onSuccess?: () => void;
     onError?: () => void;
-}
+};
 
 interface FormFieldsProps {
     handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
     formData: { [key: string]: string | string[] };
     status?: string;
     handleSubmit?: (e: React.FormEvent<HTMLFormElement> | undefined) => void;
-}
+};
 
 const GoogleFormComponent: FC<GoogleFormComponentProps> = ({ formUrl, fieldMapping, children, onSuccess, onError }) => {
     const [formData, setFormData] = useState<{ [key: string]: string | string[] }>({});
@@ -587,7 +585,7 @@ const Navbar: FC<NavbarProps> = ({ setActivePage, activePage, selectedProject })
             )}
         </nav>
     );
-});
+};
 
 const Footer: FC<FooterProps> = memo(({ setActivePage }) => {
     return (
@@ -656,7 +654,7 @@ const Footer: FC<FooterProps> = memo(({ setActivePage }) => {
             </div>
         </footer>
     );
-});
+};
 
 // A new component for the calendar dropdown
 const CalendarDropdown: FC = () => {
