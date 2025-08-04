@@ -27,17 +27,17 @@ const IconSpeakerPhone: FC = () => ( <svg xmlns="http://www.w3.org/2000/svg" cla
 const IconArrowRight: FC<{className?: string}> = ({className}) => ( <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 ${className}`} viewBox="0 0 20 20" fill="currentColor"> <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" /> </svg> );
 
 // --- Type Definitions ---
-interface DotPatternProps { className?: string; dotColor?: string; rows?: number; cols?: number; };
-interface CardProps { children: ReactNode; className?: string; noHoverEffect?: boolean; hasDotPattern?: boolean; onClick?: (e: React.MouseEvent<HTMLDivElement>) => void; };
-interface ButtonProps { children?: ReactNode; onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void; type?: 'primary' | 'secondary' | 'success' | 'warning'; className?: string; icon?: ReactNode; isSubmit?: boolean; disabled?: boolean; size?: 'sm' | 'md' | 'lg'; };
+interface DotPatternProps { className?: string; dotColor?: string; rows?: number; cols?: number; }
+interface CardProps { children: ReactNode; className?: string; noHoverEffect?: boolean; hasDotPattern?: boolean; onClick?: (e: React.MouseEvent<HTMLDivElement>) => void; }
+interface ButtonProps { children?: ReactNode; onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void; type?: 'primary' | 'secondary' | 'success' | 'warning'; className?: string; icon?: ReactNode; isSubmit?: boolean; disabled?: boolean; size?: 'sm' | 'md' | 'lg'; }
 type PageName = "Home" | "About" | "Projects" | "Events" | "Contact" | "ProjectDetails";
-interface Project { id: number; slug: string; title: string; shortGoal: string; status: string; description: string; image: string; partnerOrganizations: string[]; redirectTo?: PageName; goal?: string; impact?: string; timeline?: { stage: string; details: string; completed: boolean; }[]; getInvolved?: string; fundingSources?: string[]; initiatives?: { title: string; description: string; icon: ReactNode; status: string; }[]; };
-interface NavbarProps { setActivePage: (page: PageName, project?: Project | null) => void; activePage: PageName; selectedProject: Project | null; };
-interface PageProps { setActivePage: (page: PageName, project?: Project | null) => void; };
-interface ProjectCardProps { project: Project; setActivePage: (page: PageName, project?: Project | null) => void; };
-interface ProjectDetailPageProps { project: Project | null; setActivePage: (page: PageName, project?: Project | null) => void; };
-interface AnnouncementBarProps { onNavigateToEvents: () => void; };
-interface FooterProps { setActivePage: (page: PageName) => void; };
+interface Project { id: number; slug: string; title: string; shortGoal: string; status: string; description: string; image: string; partnerOrganizations: string[]; redirectTo?: PageName; goal?: string; impact?: string; timeline?: { stage: string; details: string; completed: boolean; }[]; getInvolved?: string; fundingSources?: string[]; initiatives?: { title: string; description: string; icon: ReactNode; status: string; }[]; }
+interface NavbarProps { setActivePage: (page: PageName, project?: Project | null) => void; activePage: PageName; selectedProject: Project | null; }
+interface PageProps { setActivePage: (page: PageName, project?: Project | null) => void; }
+interface ProjectCardProps { project: Project; setActivePage: (page: PageName, project?: Project | null) => void; }
+interface ProjectDetailPageProps { project: Project | null; setActivePage: (page: PageName, project?: Project | null) => void; }
+interface AnnouncementBarProps { onNavigateToEvents: () => void; }
+interface FooterProps { setActivePage: (page: PageName) => void; }
 
 // --- Helper Components ---
 const DotPattern: FC<DotPatternProps> = memo(({ className = "", dotColor = "text-sky-200 opacity-5", rows = 6, cols = 8 }) => {
@@ -183,64 +183,66 @@ const AnnouncementBar: FC<AnnouncementBarProps> = memo(({ onNavigateToEvents }) 
 
             <div className="relative z-10 container mx-auto px-4 py-0 sm:py-0">
                 {/* Desktop Layout */}
-                <div className="hidden sm:flex items-center justify-between">
-                    <div className="flex-1 flex items-center justify-center space-x-3">
-                        {/* Animated pulse dot */}
-                        <div className="flex-shrink-0">
-                            <div className="relative">
-                                <div className="w-3 h-3 bg-red-400 rounded-full animate-ping"></div>
-                                <div className="absolute inset-0 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                <div className="hidden sm:block">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                            {/* Animated pulse dot */}
+                            <div className="flex-shrink-0">
+                                <div className="relative">
+                                    <div className="w-3 h-3 bg-red-400 rounded-full animate-ping"></div>
+                                    <div className="absolute inset-0 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center space-x-2">
+                                <IconSpeakerPhone />
+                                <span className="font-semibold text-base">Join us for the 2025 Candidate Forum</span>
+                            </div>
+                            
+                            <div className="flex items-center text-sm text-sky-100 space-x-4 ml-6">
+                                <div className="flex items-center space-x-1">
+                                    <IconCalendar className="h-4 w-4" />
+                                    <span>Sept 25th</span>
+                                </div>
+                                <div className="flex items-center space-x-1">
+                                    <IconClock className="h-4 w-4" />
+                                    <span>7:00 PM</span>
+                                </div>
+                                <div className="flex items-center space-x-1">
+                                    <IconMapMarker className="h-4 w-4" />
+                                    <span>Kelsey Theatre</span>
+                                </div>
                             </div>
                         </div>
 
-                        <div className="flex items-center space-x-2">
-                            <IconSpeakerPhone />
-                            <span className="font-semibold text-base">Join us for the 2025 Candidate Forum</span>
-                        </div>
-                        
-                        <div className="flex items-center text-sm text-sky-100 space-x-4 ml-6">
-                            <div className="flex items-center space-x-1">
-                                <IconCalendar className="h-4 w-4" />
-                                <span>Sept 25th</span>
-                            </div>
-                            <div className="flex items-center space-x-1">
-                                <IconClock className="h-4 w-4" />
-                                <span>7:00 PM</span>
-                            </div>
-                            <div className="flex items-center space-x-1">
-                                <IconMapMarker className="h-4 w-4" />
-                                <span>Kelsey Theatre</span>
-                            </div>
+                        {/* Desktop Action button */}
+                        <div className="flex items-center space-x-2 ml-6">                            
+                            <button
+                                onClick={handleDismiss}
+                                className="text-sky-200 hover:text-white p-1 rounded-md transition-colors hover:bg-white hover:bg-opacity-20"
+                                aria-label="Dismiss announcement"
+                            >
+                                <IconClose className="h-4 w-4" />
+                            </button>
                         </div>
                     </div>
 
-                    {/* Desktop Action button */}
-                    <div className="flex items-center space-x-2 ml-6">                            
-                        <button
-                            onClick={handleDismiss}
-                            className="text-sky-200 hover:text-white p-1 rounded-md transition-colors hover:bg-white hover:bg-opacity-20"
-                            aria-label="Dismiss announcement"
-                        >
-                            <IconClose className="h-4 w-4" />
-                        </button>
-                    </div>
-                </div>
-
-                {/* Secondary info line for larger screens */}
-                <div className="hidden lg:flex items-center justify-center mt-2 pt-2 border-t border-sky-500 border-opacity-30">
-                    <div className="text-xs text-sky-100 flex items-center space-x-6">
-                        <span className="flex items-center space-x-1">
-                            <IconUsers className="h-4 w-4" />
-                            <span>Meet mayoral & council candidates</span>
-                        </span>
-                        <span className="flex items-center space-x-1">
-                            <IconMicrophone className="h-4 w-4" />
-                            <span>Q&A with community questions</span>
-                        </span>
-                        <span className="flex items-center space-x-1">
-                            <IconDocument className="h-4 w-4" />
-                            <span>Free admission & live stream available</span>
-                        </span>
+                    {/* Secondary info line for larger screens */}
+                    <div className="hidden lg:flex items-center justify-center mt-2 pt-2 border-t border-sky-500 border-opacity-30">
+                        <div className="text-xs text-sky-100 flex items-center space-x-6">
+                            <span className="flex items-center space-x-1">
+                                <IconUsers className="h-4 w-4" />
+                                <span>Meet mayoral & council candidates</span>
+                            </span>
+                            <span className="flex items-center space-x-1">
+                                <IconMicrophone className="h-4 w-4" />
+                                <span>Q&A with community questions</span>
+                            </span>
+                            <span className="flex items-center space-x-1">
+                                <IconDocument className="h-4 w-4" />
+                                <span>Free admission & live stream available</span>
+                            </span>
+                        </div>
                     </div>
                 </div>
 
@@ -319,14 +321,14 @@ interface GoogleFormComponentProps {
     children: ReactNode;
     onSuccess?: () => void;
     onError?: () => void;
-};
+}
 
 interface FormFieldsProps {
     handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
     formData: { [key: string]: string | string[] };
     status?: string;
     handleSubmit?: (e: React.FormEvent<HTMLFormElement> | undefined) => void;
-};
+}
 
 const GoogleFormComponent: FC<GoogleFormComponentProps> = ({ formUrl, fieldMapping, children, onSuccess, onError }) => {
     const [formData, setFormData] = useState<{ [key: string]: string | string[] }>({});
@@ -515,8 +517,8 @@ const forumData = {
 };
 
 const projectsData: Project[] = [
-    { id: 1, slug: "candidate-forum-2025", title: "2025 Candidate Forum", shortGoal: "Fostering informed civic participation.", status: "Upcoming: September 25, 2025", description: "Providing a non-partisan platform for Mayoral and Council candidates to engage with residents, ensuring informed participation in our local democracy.", image: "https://westwindsorforward.org/wp-content/uploads/2025/05/177983637_280036660699042_7925586111326442655_n-1-600x400.jpg", partnerOrganizations: ["League of Women Voters of the Greater Princeton Area"], redirectTo: "Events" },
-    { id: 2, slug: "princeton-junction-station-improvement", title: "Princeton Junction Station Improvement Project", shortGoal: "Revitalizing our key transit hub.", goal: "To transform the Princeton Junction Station into a welcoming, aesthetically appealing, and culturally reflective community hub that serves all users.", status: "Early Planning & Proposal Development", description: "This is a proposed comprehensive project to transform Princeton Junction Station—a vital asset serving over 4,000 NJ TRANSIT passengers daily and 123,000+ Amtrak passengers annually—into a vibrant community hub. We are developing plans for beautification efforts, community art installations, environmental initiatives, and programming to enhance the daily experience for thousands of commuters while fostering community pride and connectivity. Currently in early planning stages with proposals being developed for potential partnerships.", impact: "Enhanced commuter experience for thousands of daily users, strengthened community identity through public art, environmental benefits through recycling and beautification programs, increased community engagement through events and programming, and preserved infrastructure value through maintenance and improvements.", timeline: [{ stage: "Completed: Concept Development & Research", details: "Initial research completed on station usage, community needs, and potential improvement opportunities. Concept proposal drafted.", completed: true }, { stage: "In Progress: Stakeholder Outreach & Partnership Development", details: "Reaching out to NJ TRANSIT, West Windsor Parking Authority, and community organizations to gauge interest and explore potential partnerships.", completed: false }, { stage: "Upcoming: Community Input & Proposal Refinement", details: "Gathering community feedback on proposed improvements and refining plans based on resident input and partnership possibilities.", completed: false }, { stage: "Upcoming: Implementation Planning", details: "If partnerships are established, develop detailed implementation timeline and begin coordination with relevant authorities.", completed: false }], getInvolved: "Share your ideas for station improvements, express interest in volunteering for future cleanup or beautification efforts, connect us with relevant community organizations, or let us know what would make your commuting experience better.", image: "https://westwindsorforward.org/wp-content/uploads/2025/05/177983637_280036660699042_7925586111326442655_n-1-600x400.jpg", partnerOrganizations: [], fundingSources: [], initiatives: [{ title: "Beautification & Maintenance", description: "Potential regular cleanup, landscaping, and seasonal decorations", icon: <IconLightBulb />, status: "Concept Phase" }, { title: "Art & Cultural Enhancement", description: "Proposed community murals, decorative elements, and cultural programming", icon: <IconPhotograph />, status: "Concept Phase" }, { title: "Environmental Initiatives", description: "Exploring recycling programs and sustainable improvements", icon: <IconRecycle />, status: "Concept Phase" }, { title: "Community Programming", description: "Ideas for events and community engagement opportunities", icon: <IconUsers />, status: "Concept Phase" }] },
+    { id: 1, slug: "candidate-forum-2025", title: "2025 Candidate Forum", shortGoal: "Fostering informed civic participation.", status: "Upcoming: September 25, 2025", description: "Providing a non-partisan platform for Mayoral and Council candidates to engage with residents, ensuring informed participation in our local democracy.", image: "https://placehold.co/600x400/CCCCCC/FFFFFF?text=Candidate+Forum", partnerOrganizations: ["League of Women Voters of the Greater Princeton Area"], redirectTo: "Events" },
+    { id: 2, slug: "princeton-junction-station-improvement", title: "Princeton Junction Station Improvement Project", shortGoal: "Revitalizing our key transit hub.", goal: "To transform the Princeton Junction Station into a welcoming, aesthetically appealing, and culturally reflective community hub that serves all users.", status: "Early Planning & Proposal Development", description: "This is a proposed comprehensive project to transform Princeton Junction Station—a vital asset serving over 4,000 NJ TRANSIT passengers daily and 123,000+ Amtrak passengers annually—into a vibrant community hub. We are developing plans for beautification efforts, community art installations, environmental initiatives, and programming to enhance the daily experience for thousands of commuters while fostering community pride and connectivity. Currently in early planning stages with proposals being developed for potential partnerships.", impact: "Enhanced commuter experience for thousands of daily users, strengthened community identity through public art, environmental benefits through recycling and beautification programs, increased community engagement through events and programming, and preserved infrastructure value through maintenance and improvements.", timeline: [{ stage: "Completed: Concept Development & Research", details: "Initial research completed on station usage, community needs, and potential improvement opportunities. Concept proposal drafted.", completed: true }, { stage: "In Progress: Stakeholder Outreach & Partnership Development", details: "Reaching out to NJ TRANSIT, West Windsor Parking Authority, and community organizations to gauge interest and explore potential partnerships.", completed: false }, { stage: "Upcoming: Community Input & Proposal Refinement", details: "Gathering community feedback on proposed improvements and refining plans based on resident input and partnership possibilities.", completed: false }, { stage: "Upcoming: Implementation Planning", details: "If partnerships are established, develop detailed implementation timeline and begin coordination with relevant authorities.", completed: false }], getInvolved: "Share your ideas for station improvements, express interest in volunteering for future cleanup or beautification efforts, connect us with relevant community organizations, or let us know what would make your commuting experience better.", image: "https://placehold.co/600x400/E0F2FE/0C4A6E?text=Princeton+Junction", partnerOrganizations: [], fundingSources: [], initiatives: [{ title: "Beautification & Maintenance", description: "Potential regular cleanup, landscaping, and seasonal decorations", icon: <IconLightBulb />, status: "Concept Phase" }, { title: "Art & Cultural Enhancement", description: "Proposed community murals, decorative elements, and cultural programming", icon: <IconPhotograph />, status: "Concept Phase" }, { title: "Environmental Initiatives", description: "Exploring recycling programs and sustainable improvements", icon: <IconRecycle />, status: "Concept Phase" }, { title: "Community Programming", description: "Ideas for events and community engagement opportunities", icon: <IconUsers />, status: "Concept Phase" }] },
 ];
 
 // --- Main Page Components ---
@@ -654,7 +656,7 @@ const Footer: FC<FooterProps> = memo(({ setActivePage }) => {
             </div>
         </footer>
     );
-};
+});
 
 // A new component for the calendar dropdown
 const CalendarDropdown: FC = () => {
@@ -1037,9 +1039,12 @@ const HomePage: FC<PageProps> = memo(({ setActivePage }) => (
         <section className="py-10 md:py-12 px-4 bg-white">
             <div className="container mx-auto text-center">
                 <div className="p-4 sm:p-6 md:p-8">
-                    <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 mb-4"> Igniting Progress in West Windsor </h2>
-                    <p className="text-sm sm:text-md text-gray-700 max-w-3xl mx-auto mb-6 leading-relaxed"> West Windsor Forward is committed to empowering our neighbors, advocating for impactful projects, and injecting fresh energy into our community. We believe in responsive, accountable, and transparent leadership. </p>
-                    <Button onClick={() => setActivePage("About")}> Learn About Our Approach </Button>
+                    <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 mb-4"> Get Involved & Make an Impact </h2>
+                    <p className="text-sm sm:text-md text-gray-700 max-w-2xl mx-auto mb-6 leading-relaxed"> Your participation is crucial. Join us in mobilizing residents, organizations, and resources to create a West Windsor where every resident can thrive. </p>
+                    <div className="space-y-3 sm:space-y-0 sm:space-x-4 flex flex-col sm:flex-row justify-center">
+                        <Button onClick={() => setActivePage("Contact")} className="w-full sm:w-auto"> Volunteer With Us </Button>
+                        <Button onClick={() => setActivePage("Contact")} type="secondary" className="w-full sm:w-auto"> Contact & Support </Button>
+                    </div>
                 </div>
             </div>
         </section>
@@ -1048,8 +1053,8 @@ const HomePage: FC<PageProps> = memo(({ setActivePage }) => (
 
 const AboutPage: FC = memo(() => {
     const teamMembers = useMemo(() => [
-        { name: "Parth Gupta", role: "Co-Founder", bio: "A West Windsor resident for 14 years and student at the Lawrenceville School. Parth is a runner for the Lawrenceville School as part of their cross-country and track and field teams. Parth has been playing piano for 10 years and has co-organized piano Performathons to raise money for the Children's Hospital of Philadelphia.", image: "https://westwindsorforward.org/wp-content/uploads/2025/05/p1-150x150.jpg" },
-        { name: "Darshan Chidambaram", role: "Co-Founder", bio: "A West Windsor resident for 8 years and a student at the Lawrenceville School. Darshan is an active tennis player for the Lawrenceville School and debater on the national debate circuit.", image: "https://westwindsorforward.org/wp-content/uploads/2025/05/d1-150x150.jpg" },
+        { name: "Parth Gupta", role: "Co-Founder", bio: "A West Windsor resident for 14 years and student at the Lawrenceville School. Parth is a runner for the Lawrenceville School as part of their cross-country and track and field teams. Parth has been playing piano for 10 years and has co-organized piano Performathons to raise money for the Children's Hospital of Philadelphia.", image: "https://placehold.co/150x150/E0F2FE/0C4A6E?text=PG" },
+        { name: "Darshan Chidambaram", role: "Co-Founder", bio: "A West Windsor resident for 8 years and a student at the Lawrenceville School. Darshan is an active tennis player for the Lawrenceville School and debater on the national debate circuit.", image: "https://placehold.co/150x150/E0F2FE/0C4A6E?text=DC" },
     ], []);
 
     return (
