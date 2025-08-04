@@ -307,7 +307,7 @@ const AnnouncementBar: FC<AnnouncementBarProps> = memo(({ onNavigateToEvents }) 
 // --- Google Form Integration Components ---
 
 interface GoogleFormComponentProps {
-    formUrl: string;
+    forumUrl: string;
     fieldMapping: { [key: string]: string };
     children: ReactNode;
     onSuccess?: () => void;
