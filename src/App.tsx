@@ -124,7 +124,6 @@ const debounce = (func: Function, wait: number) => {
 const AnnouncementBar: FC<AnnouncementBarProps> = memo(({ onNavigateToEvents }) => {
     const [isDismissed, setIsDismissed] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
-    const [isExpanded, setIsExpanded] = useState(false);
 
     useEffect(() => {
         const timer = setTimeout(() => setIsVisible(true), 500);
@@ -139,11 +138,6 @@ const AnnouncementBar: FC<AnnouncementBarProps> = memo(({ onNavigateToEvents }) 
         }, 300);
     }, []);
 
-    const toggleExpanded = useCallback((e: React.MouseEvent) => {
-        e.stopPropagation();
-        setIsExpanded(!isExpanded);
-    }, [isExpanded]);
-
     const backgroundDots = useMemo(() => (
         Array.from({ length: 8 }).map((_, i) => ({
             id: i,
@@ -157,7 +151,7 @@ const AnnouncementBar: FC<AnnouncementBarProps> = memo(({ onNavigateToEvents }) 
 
     return (
         <div
-            className={`relative bg-gradient-to-r from-sky-600 via-sky-700 to-indigo-700 text-white shadow-lg border-b border-sky-500 overflow-hidden transition-all duration-500 ease-out will-change-transform cursor-pointer ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full'} ${isExpanded ? 'py-4' : 'py-3 sm:py-3'}`}
+            className={`relative bg-gradient-to-r from-sky-600 via-sky-700 to-indigo-700 text-white shadow-lg border-b border-sky-500 overflow-hidden transition-all duration-500 ease-out will-change-transform cursor-pointer ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full'}`}
             onClick={onNavigateToEvents}
             style={{ transform: 'translateZ(0)' }}
         >
@@ -181,10 +175,10 @@ const AnnouncementBar: FC<AnnouncementBarProps> = memo(({ onNavigateToEvents }) 
                 </div>
             </div>
 
-            <div className="relative z-10 container mx-auto px-4 py-0 sm:py-0">
+            <div className="relative z-10 container mx-auto px-4 py-3">
                 {/* Desktop Layout */}
                 <div className="hidden sm:block">
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-center">
                         <div className="flex items-center space-x-3">
                             {/* Animated pulse dot */}
                             <div className="flex-shrink-0">
@@ -270,6 +264,7 @@ const AnnouncementBar: FC<AnnouncementBarProps> = memo(({ onNavigateToEvents }) 
                                 </div>
                             </div>
                         </div>
+
                         {/* Mobile dismiss button only */}
                         <button
                             onClick={handleDismiss}
@@ -279,39 +274,11 @@ const AnnouncementBar: FC<AnnouncementBarProps> = memo(({ onNavigateToEvents }) 
                             <IconClose className="h-4 w-4" />
                         </button>
                     </div>
-                    {/* Mobile expanded details */}
-                    <div className={`${isExpanded ? 'block' : 'hidden'} mt-3 border-t border-sky-500 border-opacity-30 pt-3`}>
-                        <div className="text-xs text-sky-100 space-y-2">
-                            <div className="flex items-center">
-                                <IconMapMarker className="h-3 w-3 mr-2" />
-                                <span>Kelsey Theatre</span>
-                            </div>
-                            <div className="flex items-start">
-                                <IconUsers className="h-3 w-3 mr-2 mt-1" />
-                                <span>Meet mayoral & council candidates, plus community Q&A.</span>
-                            </div>
-                            <div className="flex items-center">
-                                <IconDocument className="h-3 w-3 mr-2" />
-                                <span>Free admission & live stream available.</span>
-                            </div>
-                        </div>
-                    </div>
-                    {/* Expand/collapse button */}
-                    <div className="flex justify-center mt-2">
-                        <button
-                            onClick={toggleExpanded}
-                            className="text-sky-200 hover:text-white p-1 rounded-md transition-colors hover:bg-white hover:bg-opacity-20"
-                            aria-label={isExpanded ? "Collapse details" : "Expand details"}
-                        >
-                            {isExpanded ? <IconChevronUp className="h-4 w-4" /> : <IconChevronDown className="h-4 w-4" />}
-                        </button>
-                    </div>
                 </div>
             </div>
         </div>
     );
 });
-
 
 // --- Google Form Integration Components ---
 
@@ -1214,13 +1181,12 @@ const EventsPage: FC<PageProps> = ({ setActivePage }) => (
     <div className="min-h-screen bg-slate-100 font-body text-slate-700">
         <ForumHeader />
         <div className="container mx-auto px-4 py-8 space-y-8">
+            <PressCoverageSection />
             <ProgressSection />
             <ForumFormatSection />
             <PanelistSection />
             <InteractiveSection />
             <KeyInformationSection />
-            {/* Moved "In the News" section here */}
-            <PressCoverageSection />
             <Card className="text-center bg-gradient-to-r from-sky-600 to-indigo-600 text-white p-0">
                 <div className="p-4 sm:p-6 md:p-8">
                     <h2 className="text-xl sm:text-2xl font-bold mb-4"> Be Part of West Windsor's Democratic Process </h2>
