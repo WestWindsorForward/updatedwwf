@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, FC, ReactNode, useCallback, useMemo, memo } from "react";
 
 // --- Asset URLs ---
-const logoUrl = "/WW Forward.png";
+const logoUrl = "https://placehold.co/48x48/FFFFFF/0C4A6E?text=WWF";
 
 // --- SVG Icons (as functional components) ---
 const IconMail: FC = () => ( <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"> <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" /> <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" /> </svg> );
@@ -38,7 +38,6 @@ interface ProjectCardProps { project: Project; setActivePage: (page: PageName, p
 interface ProjectDetailPageProps { project: Project | null; setActivePage: (page: PageName, project?: Project | null) => void; }
 interface AnnouncementBarProps { onNavigateToEvents: () => void; }
 interface FooterProps { setActivePage: (page: PageName) => void; }
-
 
 // --- Helper Components ---
 const DotPattern: FC<DotPatternProps> = memo(({ className = "", dotColor = "text-sky-200 opacity-5", rows = 6, cols = 8 }) => {
@@ -125,40 +124,28 @@ const debounce = (func: Function, wait: number) => {
 const AnnouncementBar: FC<AnnouncementBarProps> = memo(({ onNavigateToEvents }) => {
     const [isDismissed, setIsDismissed] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
-    const [isMobile, setIsMobile] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(false);
 
     useEffect(() => {
-        // Animate in after a short delay
         const timer = setTimeout(() => setIsVisible(true), 500);
         return () => clearTimeout(timer);
     }, []);
 
-    const checkMobile = useCallback(
-        debounce(() => setIsMobile(window.innerWidth < 640), 100),
-        []
-    );
-
-    useEffect(() => {
-        checkMobile();
-        window.addEventListener('resize', checkMobile, { passive: true });
-        return () => window.removeEventListener('resize', checkMobile);
-    }, [checkMobile]);
-
-    const handleDismiss = useCallback(() => {
+    const handleDismiss = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation();
         setIsVisible(false);
         setTimeout(() => {
             setIsDismissed(true);
         }, 300);
     }, []);
 
-    const handleMobileClick = useCallback(() => {
-        if (isMobile) {
-            onNavigateToEvents();
-        }
-    }, [isMobile, onNavigateToEvents]);
+    const toggleExpanded = useCallback((e: React.MouseEvent) => {
+        e.stopPropagation();
+        setIsExpanded(!isExpanded);
+    }, [isExpanded]);
 
     const backgroundDots = useMemo(() => (
-        Array.from({ length: 8 }).map((_, i) => ({ // Reduced from 12 to 8
+        Array.from({ length: 8 }).map((_, i) => ({
             id: i,
             left: `${(i * 12.5) + Math.random() * 5}%`,
             top: `${20 + Math.random() * 60}%`,
@@ -170,8 +157,8 @@ const AnnouncementBar: FC<AnnouncementBarProps> = memo(({ onNavigateToEvents }) 
 
     return (
         <div
-            className={`relative bg-gradient-to-r from-sky-600 via-sky-700 to-indigo-700 text-white shadow-lg border-b border-sky-500 overflow-hidden transition-all duration-500 ease-out will-change-transform ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full'} ${isMobile ? 'cursor-pointer' : ''}`}
-            onClick={handleMobileClick}
+            className={`relative bg-gradient-to-r from-sky-600 via-sky-700 to-indigo-700 text-white shadow-lg border-b border-sky-500 overflow-hidden transition-all duration-500 ease-out will-change-transform cursor-pointer ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full'} ${isExpanded ? 'py-4' : 'py-3 sm:py-3'}`}
+            onClick={onNavigateToEvents}
             style={{ transform: 'translateZ(0)' }}
         >
             {/* Optimized background pattern */}
@@ -194,10 +181,10 @@ const AnnouncementBar: FC<AnnouncementBarProps> = memo(({ onNavigateToEvents }) 
                 </div>
             </div>
 
-            <div className="relative z-10 container mx-auto px-4 py-3">
+            <div className="relative z-10 container mx-auto px-4 py-0 sm:py-0">
                 {/* Desktop Layout */}
                 <div className="hidden sm:block">
-                    <div className="flex items-center justify-center">
+                    <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
                             {/* Animated pulse dot */}
                             <div className="flex-shrink-0">
@@ -228,16 +215,8 @@ const AnnouncementBar: FC<AnnouncementBarProps> = memo(({ onNavigateToEvents }) 
                             </div>
                         </div>
 
-                        {/* Desktop Action buttons */}
-                        <div className="flex items-center space-x-2 ml-6">
-                            <button
-                                onClick={onNavigateToEvents}
-                                className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-2 rounded-md font-medium text-sm transition-all duration-200 transform hover:scale-105 flex items-center space-x-1 group"
-                            >
-                                <span>Learn More</span>
-                                <IconArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                            </button>
-                            
+                        {/* Desktop Action button */}
+                        <div className="flex items-center space-x-2 ml-6">                            
                             <button
                                 onClick={handleDismiss}
                                 className="text-sky-200 hover:text-white p-1 rounded-md transition-colors hover:bg-white hover:bg-opacity-20"
@@ -291,17 +270,40 @@ const AnnouncementBar: FC<AnnouncementBarProps> = memo(({ onNavigateToEvents }) 
                                 </div>
                             </div>
                         </div>
-
                         {/* Mobile dismiss button only */}
                         <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                handleDismiss();
-                            }}
+                            onClick={handleDismiss}
                             className="text-sky-200 hover:text-white p-2 rounded-md transition-colors hover:bg-white hover:bg-opacity-20 ml-2 flex-shrink-0"
                             aria-label="Dismiss announcement"
                         >
                             <IconClose className="h-4 w-4" />
+                        </button>
+                    </div>
+                    {/* Mobile expanded details */}
+                    <div className={`${isExpanded ? 'block' : 'hidden'} mt-3 border-t border-sky-500 border-opacity-30 pt-3`}>
+                        <div className="text-xs text-sky-100 space-y-2">
+                            <div className="flex items-center">
+                                <IconMapMarker className="h-3 w-3 mr-2" />
+                                <span>Kelsey Theatre</span>
+                            </div>
+                            <div className="flex items-start">
+                                <IconUsers className="h-3 w-3 mr-2 mt-1" />
+                                <span>Meet mayoral & council candidates, plus community Q&A.</span>
+                            </div>
+                            <div className="flex items-center">
+                                <IconDocument className="h-3 w-3 mr-2" />
+                                <span>Free admission & live stream available.</span>
+                            </div>
+                        </div>
+                    </div>
+                    {/* Expand/collapse button */}
+                    <div className="flex justify-center mt-2">
+                        <button
+                            onClick={toggleExpanded}
+                            className="text-sky-200 hover:text-white p-1 rounded-md transition-colors hover:bg-white hover:bg-opacity-20"
+                            aria-label={isExpanded ? "Collapse details" : "Expand details"}
+                        >
+                            {isExpanded ? <IconChevronUp className="h-4 w-4" /> : <IconChevronDown className="h-4 w-4" />}
                         </button>
                     </div>
                 </div>
@@ -309,6 +311,7 @@ const AnnouncementBar: FC<AnnouncementBarProps> = memo(({ onNavigateToEvents }) 
         </div>
     );
 });
+
 
 // --- Google Form Integration Components ---
 
@@ -324,6 +327,7 @@ interface FormFieldsProps {
     handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
     formData: { [key: string]: string | string[] };
     status?: string;
+    handleSubmit?: (e: React.FormEvent<HTMLFormElement> | undefined) => void;
 }
 
 const GoogleFormComponent: FC<GoogleFormComponentProps> = ({ formUrl, fieldMapping, children, onSuccess, onError }) => {
@@ -488,9 +492,9 @@ const NewsletterForm: FC<FormFieldsProps & {handleSubmit?: () => void}> = ({ han
 const forumData = {
     title: "West Windsor Forward 2025 Candidate Forum", date: "Thursday, September 25th, 2025", time: "7:00 PM - 9:15 PM", arrivalTime: "6:30 PM for candidates", location: "Kelsey Theatre @ Mercer County Community College", positions: ["Mayor of West Windsor Township", "2 seats on West Windsor Township Council"], status: "upcoming",
     panelists: [
-        { id: "micah-rasmussen", name: "Micah Rasmussen", title: "Director, Rebovich Institute for NJ Politics", imageUrl: "/micah.png", bio: 'Micah Rasmussen is the director of the Rebovich Institute for New Jersey Politics at Rider University. He has worked in the New Jersey General Assembly and managed several political campaigns. After completing his undergraduate studies at Rider under his mentor David Rebovich, the namesake of the institute he now leads, Rasmussen earned his Master of Arts in Political Science from the Eagleton Institute of Politics at Rutgers University. Rasmussen is a panelist for the state\'s biggest political debates-- twice so far this year in the race to elect New Jersey\'s next governor, and in the only debate last year between now Senator Andy Kim and First Lady Tammy Murphy. He is regularly included on New Jersey\'s political power and higher education influencer lists. One called him "the go-to guy for the media to comment on what\'s happening in New Jersey politics-- and what it means".', note: "" },
-        { id: "david-matthau", name: "David Matthau", title: "WHYY NJ Reporter", imageUrl: "/matthau.png", bio: "David Matthau is a WHYY New Jersey reporter covering the Statehouse and general assignments in the Garden State. Prior to joining WHYY, David was lead investigative reporter for NJ 101.5 News, winning multiple Associated Press and Society of Professional Journalists awards, the National Association of Broadcasters Service to Community Award, and contributed to the National Edward R. Murrow Best Newscast award. David is a graduate of the University of Southern California." },
-        { id: "rhea-biswas", name: "Rhea Biswas", title: "West Windsor HS Student & Journalist", imageUrl: "/rhea.png", bio: "Rhea Biswas is a West Windsor high school student passionate about politics and social justice, with hopes of pursuing a career in law. She regularly competes in debate competitions and Model Congress conferences, as well as writes for her school newspaper and a local newspaper, The West Windsor Voice. She is committed to transparent debate and honest discussion in order to better advocate for meaningful change in her community." },
+        { id: "micah-rasmussen", name: "Micah Rasmussen", title: "Director, Rebovich Institute for NJ Politics", imageUrl: "https://placehold.co/150x150/E0F2FE/0C4A6E?text=MR", bio: 'Micah Rasmussen is the director of the Rebovich Institute for New Jersey Politics at Rider University. He has worked in the New Jersey General Assembly and managed several political campaigns. After completing his undergraduate studies at Rider under his mentor David Rebovich, the namesake of the institute he now leads, Rasmussen earned his Master of Arts in Political Science from the Eagleton Institute of Politics at Rutgers University. Rasmussen is a panelist for the state\'s biggest political debates-- twice so far this year in the race to elect New Jersey\'s next governor, and in the only debate last year between now Senator Andy Kim and First Lady Tammy Murphy. He is regularly included on New Jersey\'s political power and higher education influencer lists. One called him "the go-to guy for the media to comment on what\'s happening in New Jersey politics-- and what it means".', note: "" },
+        { id: "david-matthau", name: "David Matthau", title: "WHYY NJ Reporter", imageUrl: "https://placehold.co/150x150/E0F2FE/0C4A6E?text=DM", bio: "David Matthau is a WHYY New Jersey reporter covering the Statehouse and general assignments in the Garden State. Prior to joining WHYY, David was lead investigative reporter for NJ 101.5 News, winning multiple Associated Press and Society of Professional Journalists awards, the National Association of Broadcasters Service to Community Award, and contributed to the National Edward R. Murrow Best Newscast award. David is a graduate of the University of Southern California." },
+        { id: "rhea-biswas", name: "Rhea Biswas", title: "West Windsor HS Student & Journalist", imageUrl: "https://placehold.co/150x150/E0F2FE/0C4A6E?text=RB", bio: "Rhea Biswas is a West Windsor high school student passionate about politics and social justice, with hopes of pursuing a career in law. She regularly competes in debate competitions and Model Congress conferences, as well as writes for her school newspaper and a local newspaper, The West Windsor Voice. She is committed to transparent debate and honest discussion in order to better advocate for meaningful change in her community." },
     ],
     forumParts: [
         { id: 1, title: "Panelist Q&A Sessions", description: "Equal time Q&A sessions for Mayoral and Council candidates with questions from our distinguished panelists", location: "Main Theatre", iconType: "microphone" },
@@ -505,11 +509,16 @@ const forumData = {
     ],
     requirements: { council: "At least 3 council candidates participating OR candidates from at least 2 different tickets with minimum 3 total candidates running", mayor: "At least 2 mayoral candidates participating" },
     volunteerRoles: ["Event Setup & Logistics", "Attendee Greeting & Check-in", "Camera & Live Stream Operation", "Question Collection & Management", "Community Organization Coordination", "Post-Event Cleanup"],
+    pressCoverage: [
+        { id: 1, title: "West Windsor Forward to Host 2025 Candidate Forum", source: "West Windsor Plainsboro News", url: "https://placehold.co/100x100/CCCCCC/FFFFFF?text=Article+Link" },
+        { id: 2, title: "West Windsor Forward Announces Candidate Forum", source: "West Windsor Peeps", url: "https://westwindsorpeeps.com/west-windsor-candidate-forum/" },
+        { id: 3, title: "West Windsor Candidate Forum at Kelsey Theatre", source: "CentralJersey.com", url: "https://centraljersey.com/2025/05/05/west-windsor-candidate-forum-kelsey-theatre/" },
+    ],
 };
 
 const projectsData: Project[] = [
-    { id: 1, slug: "candidate-forum-2025", title: "2025 Candidate Forum", shortGoal: "Fostering informed civic participation.", status: "Upcoming: September 25, 2025", description: "Providing a non-partisan platform for Mayoral and Council candidates to engage with residents, ensuring informed participation in our local democracy.", image: "/2025 Forum Graphic.png", partnerOrganizations: ["League of Women Voters of the Greater Princeton Area"], redirectTo: "Events" },
-    { id: 2, slug: "princeton-junction-station-improvement", title: "Princeton Junction Station Improvement Project", shortGoal: "Revitalizing our key transit hub.", goal: "To transform the Princeton Junction Station into a welcoming, aesthetically appealing, and culturally reflective community hub that serves all users.", status: "Early Planning & Proposal Development", description: "This is a proposed comprehensive project to transform Princeton Junction Station—a vital asset serving over 4,000 NJ TRANSIT passengers daily and 123,000+ Amtrak passengers annually—into a vibrant community hub. We are developing plans for beautification efforts, community art installations, environmental initiatives, and programming to enhance the daily experience for thousands of commuters while fostering community pride and connectivity. Currently in early planning stages with proposals being developed for potential partnerships.", impact: "Enhanced commuter experience for thousands of daily users, strengthened community identity through public art, environmental benefits through recycling and beautification programs, increased community engagement through events and programming, and preserved infrastructure value through maintenance and improvements.", timeline: [{ stage: "Completed: Concept Development & Research", details: "Initial research completed on station usage, community needs, and potential improvement opportunities. Concept proposal drafted.", completed: true }, { stage: "In Progress: Stakeholder Outreach & Partnership Development", details: "Reaching out to NJ TRANSIT, West Windsor Parking Authority, and community organizations to gauge interest and explore potential partnerships.", completed: false }, { stage: "Upcoming: Community Input & Proposal Refinement", details: "Gathering community feedback on proposed improvements and refining plans based on resident input and partnership possibilities.", completed: false }, { stage: "Upcoming: Implementation Planning", details: "If partnerships are established, develop detailed implementation timeline and begin coordination with relevant authorities.", completed: false }], getInvolved: "Share your ideas for station improvements, express interest in volunteering for future cleanup or beautification efforts, connect us with relevant community organizations, or let us know what would make your commuting experience better.", image: "https://www.westwindsorhistory.com/uploads/1/2/3/1/123111196/2018-12-08-pj-train-station-ticket-building_orig.jpg", partnerOrganizations: [], fundingSources: [], initiatives: [{ title: "Beautification & Maintenance", description: "Potential regular cleanup, landscaping, and seasonal decorations", icon: <IconLightBulb />, status: "Concept Phase" }, { title: "Art & Cultural Enhancement", description: "Proposed community murals, decorative elements, and cultural programming", icon: <IconPhotograph />, status: "Concept Phase" }, { title: "Environmental Initiatives", description: "Exploring recycling programs and sustainable improvements", icon: <IconRecycle />, status: "Concept Phase" }, { title: "Community Programming", description: "Ideas for events and community engagement opportunities", icon: <IconUsers />, status: "Concept Phase" }] },
+    { id: 1, slug: "candidate-forum-2025", title: "2025 Candidate Forum", shortGoal: "Fostering informed civic participation.", status: "Upcoming: September 25, 2025", description: "Providing a non-partisan platform for Mayoral and Council candidates to engage with residents, ensuring informed participation in our local democracy.", image: "https://placehold.co/600x400/CCCCCC/FFFFFF?text=Candidate+Forum", partnerOrganizations: ["League of Women Voters of the Greater Princeton Area"], redirectTo: "Events" },
+    { id: 2, slug: "princeton-junction-station-improvement", title: "Princeton Junction Station Improvement Project", shortGoal: "Revitalizing our key transit hub.", goal: "To transform the Princeton Junction Station into a welcoming, aesthetically appealing, and culturally reflective community hub that serves all users.", status: "Early Planning & Proposal Development", description: "This is a proposed comprehensive project to transform Princeton Junction Station—a vital asset serving over 4,000 NJ TRANSIT passengers daily and 123,000+ Amtrak passengers annually—into a vibrant community hub. We are developing plans for beautification efforts, community art installations, environmental initiatives, and programming to enhance the daily experience for thousands of commuters while fostering community pride and connectivity. Currently in early planning stages with proposals being developed for potential partnerships.", impact: "Enhanced commuter experience for thousands of daily users, strengthened community identity through public art, environmental benefits through recycling and beautification programs, increased community engagement through events and programming, and preserved infrastructure value through maintenance and improvements.", timeline: [{ stage: "Completed: Concept Development & Research", details: "Initial research completed on station usage, community needs, and potential improvement opportunities. Concept proposal drafted.", completed: true }, { stage: "In Progress: Stakeholder Outreach & Partnership Development", details: "Reaching out to NJ TRANSIT, West Windsor Parking Authority, and community organizations to gauge interest and explore potential partnerships.", completed: false }, { stage: "Upcoming: Community Input & Proposal Refinement", details: "Gathering community feedback on proposed improvements and refining plans based on resident input and partnership possibilities.", completed: false }, { stage: "Upcoming: Implementation Planning", details: "If partnerships are established, develop detailed implementation timeline and begin coordination with relevant authorities.", completed: false }], getInvolved: "Share your ideas for station improvements, express interest in volunteering for future cleanup or beautification efforts, connect us with relevant community organizations, or let us know what would make your commuting experience better.", image: "https://placehold.co/600x400/E0F2FE/0C4A6E?text=Princeton+Junction", partnerOrganizations: [], fundingSources: [], initiatives: [{ title: "Beautification & Maintenance", description: "Potential regular cleanup, landscaping, and seasonal decorations", icon: <IconLightBulb />, status: "Concept Phase" }, { title: "Art & Cultural Enhancement", description: "Proposed community murals, decorative elements, and cultural programming", icon: <IconPhotograph />, status: "Concept Phase" }, { title: "Environmental Initiatives", description: "Exploring recycling programs and sustainable improvements", icon: <IconRecycle />, status: "Concept Phase" }, { title: "Community Programming", description: "Ideas for events and community engagement opportunities", icon: <IconUsers />, status: "Concept Phase" }] },
 ];
 
 // --- Main Page Components ---
@@ -544,7 +553,7 @@ const Navbar: FC<NavbarProps> = ({ setActivePage, activePage, selectedProject })
                         decoding="async"
                         onError={(e) => {
                             (e.target as HTMLImageElement).onerror = null;
-                            (e.target as HTMLImageElement).src = `https://placehold.co/48x48/FFFFFF/0C4A6E?text=WWF&font=Lora`;
+                            (e.target as HTMLImageElement).src = `https://placehold.co/48x48/FFFFFF/0C4A6E?text=WWF`;
                         }}
                     />
                 </div>
@@ -596,7 +605,7 @@ const Footer: FC<FooterProps> = memo(({ setActivePage }) => {
                                 decoding="async"
                                 onError={(e) => {
                                     (e.target as HTMLImageElement).onerror = null;
-                                    (e.target as HTMLImageElement).src = `https://placehold.co/40x40/FFFFFF/0C4A6E?text=WWF&font=Lora`;
+                                    (e.target as HTMLImageElement).src = `https://placehold.co/40x40/FFFFFF/0C4A6E?text=WWF`;
                                 }}
                             />
                             <span className="text-xl font-bold text-white">West Windsor Forward</span>
@@ -628,16 +637,16 @@ const Footer: FC<FooterProps> = memo(({ setActivePage }) => {
 
                     {/* Column 3: Get In Touch */}
                     <div className="md:col-span-1">
-                           <h3 className="text-md font-semibold text-white uppercase tracking-wider mb-4">Get In Touch</h3>
-                           <p className="text-sm text-slate-400 mb-4">Have questions, ideas, or want to volunteer? We'd love to hear from you.</p>
-                           <Button
-                               onClick={() => setActivePage('Contact')}
-                               type="primary"
-                               className="w-full sm:w-auto"
-                               icon={<IconMail />}
-                           >
-                               Contact Us
-                           </Button>
+                            <h3 className="text-md font-semibold text-white uppercase tracking-wider mb-4">Get In Touch</h3>
+                            <p className="text-sm text-slate-400 mb-4">Have questions, ideas, or want to volunteer? We'd love to hear from you.</p>
+                            <Button
+                                onClick={() => setActivePage('Contact')}
+                                type="primary"
+                                className="w-full sm:w-auto"
+                                icon={<IconMail />}
+                            >
+                                Contact Us
+                            </Button>
                     </div>
                 </div>
 
@@ -649,13 +658,106 @@ const Footer: FC<FooterProps> = memo(({ setActivePage }) => {
     );
 });
 
+// A new component for the calendar dropdown
+const CalendarDropdown: FC = () => {
+    const [isOpen, setIsOpen] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    // Close dropdown on outside click
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [dropdownRef]);
+
+    // Function to open Google Calendar in a new tab
+    const addToGoogleCalendar = useCallback(() => {
+        const eventTitle = encodeURIComponent("West Windsor Forward 2025 Candidate Forum");
+        const eventDescription = encodeURIComponent("Join us for a non-partisan candidate forum to meet mayoral and council candidates and engage in a community Q&A session. This event fosters informed civic participation and transparent leadership.\n\nDate: Thursday, September 25th, 2025\nTime: 7:00 PM - 9:15 PM\nLocation: Kelsey Theatre at Mercer County Community College\n\nFor more details, visit our website: https://www.westwindsorforward.org/events");
+        const eventLocation = encodeURIComponent("Kelsey Theatre at Mercer County Community College, West Windsor, NJ");
+        const startDate = "20250925T190000";
+        const endDate = "20250925T211500";
+
+        const googleCalendarUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${eventTitle}&dates=${startDate}/${endDate}&details=${eventDescription}&location=${eventLocation}`;
+        window.open(googleCalendarUrl, '_blank');
+        setIsOpen(false);
+    }, []);
+
+    // Function to generate and download an ICS file for iCal and Outlook
+    const downloadIcsFile = useCallback(() => {
+        const eventTitle = "West Windsor Forward 2025 Candidate Forum";
+        const eventDetails = "Join us for a non-partisan candidate forum to meet mayoral and council candidates and engage in a community Q&A session. This event fosters informed civic participation and transparent leadership.\n\nDate: September 25th, 2025\nTime: 7:00 PM - 9:15 PM\nLocation: Kelsey Theatre at Mercer County Community College\n\nFor more details, visit: https://www.westwindsorforward.org/events";
+        const eventLocation = "Kelsey Theatre at Mercer County Community College";
+        const startDate = "20250925T190000";
+        const endDate = "20250925T211500";
+        
+        const icsData = [
+            "BEGIN:VCALENDAR",
+            "VERSION:2.0",
+            "PRODID:-//WestWindsorForward//WWF Events//EN",
+            "BEGIN:VEVENT",
+            `UID:wwf-forum-2025@westwindsorforward.org`,
+            `DTSTAMP:${new Date().toISOString().replace(/[-:.]/g, "").substring(0, 15)}Z`,
+            `DTSTART:${startDate}`,
+            `DTEND:${endDate}`,
+            `SUMMARY:${eventTitle}`,
+            `DESCRIPTION:${eventDetails}`,
+            `LOCATION:${eventLocation}`,
+            "END:VEVENT",
+            "END:VCALENDAR"
+        ].join("\n");
+        
+        const blob = new Blob([icsData], { type: "text/calendar;charset=utf-8" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.setAttribute("download", "wwf_candidate_forum_2025.ics");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(link.href);
+
+        setIsOpen(false);
+    }, []);
+
+    return (
+        <div className="relative" ref={dropdownRef}>
+            <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="inline-flex items-center justify-center rounded-lg font-semibold transition-all duration-200 ease-in-out transform hover:scale-103 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-opacity-75 shadow-md hover:shadow-lg will-change-transform bg-sky-600 hover:bg-sky-700 text-white focus:ring-sky-500 px-6 py-3 text-sm sm:text-base"
+                aria-haspopup="true"
+                aria-expanded={isOpen}
+            >
+                <IconCalendar className="mr-2 h-5 w-5" />
+                Add to Calendar
+                <IconChevronDown className={`ml-2 -mr-1 h-5 w-5 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+            </button>
+            {isOpen && (
+                <div className="absolute right-0 top-full mt-2 w-full sm:w-64 origin-top-right bg-white rounded-lg shadow-xl ring-1 ring-black ring-opacity-5 focus:outline-none animate-fadeIn z-20">
+                    <div className="py-1">
+                        <button
+                            onClick={addToGoogleCalendar}
+                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                            Google Calendar
+                        </button>
+                        <button
+                            onClick={downloadIcsFile}
+                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                            iCal / Outlook
+                        </button>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
 
 const ForumHeader: FC = () => {
-    const generateICSData = () => {
-        const startDate = "20250925T190000"; const endDate = "20250925T211500"; const timezone = "America/New_York";
-        const icsData = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//WestWindsorForward//WWF Events//EN", "BEGIN:VEVENT", `UID:wwf-forum-2025@westwindsorforward.org`, `DTSTAMP:${new Date().toISOString().replace(/[-:.]/g, "").substring(0, 15)}Z`, `DTSTART;TZID=${timezone}:${startDate}`, `DTEND;TZID=${timezone}:${endDate}`, `SUMMARY:West Windsor Forward 2025 Candidate Forum`, `DESCRIPTION:Non-partisan candidate forum for West Windsor Township elections`, `LOCATION:Kelsey Theatre @ Mercer County Community College`, "END:VEVENT", "END:VCALENDAR"].join("\r\n");
-        const blob = new Blob([icsData], { type: "text/calendar;charset=utf-8" }); const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.setAttribute("download", "wwf_candidate_forum_2025.ics"); document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(link.href);
-    };
     return (
         <header className="relative bg-gradient-to-br from-slate-900 via-sky-800 to-indigo-900 text-white py-12 sm:py-16 md:py-20 px-4 rounded-b-2xl shadow-2xl overflow-hidden">
             <DotPattern dotColor="text-sky-700 opacity-10" rows={8} cols={10} />
@@ -669,8 +771,8 @@ const ForumHeader: FC = () => {
                     <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4"> <div className="font-semibold">Live Streamed</div> <div className="text-sm text-sky-200">YouTube & Recording</div> </div>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                    <Button onClick={generateICSData} size="lg" icon={<IconCalendar />}> Add to Calendar </Button>
-                    <Button type="secondary" size="lg" icon={<IconDocument />} onClick={() => window.open("/WWF_Candidate_Forum_Public_Release.pdf", "_blank")}> View Official Release </Button>
+                    <CalendarDropdown />
+                    <Button type="secondary" size="lg" icon={<IconDocument />} onClick={() => window.open("https://placehold.co/100x100/CCCCCC/FFFFFF?text=Document", "_blank")}> View Official Release </Button>
                 </div>
             </div>
         </header>
@@ -735,6 +837,28 @@ const ForumFormatSection: FC = () => {
     );
 };
 
+// New component for press coverage
+const PressCoverageSection: FC = () => (
+    <Card className="p-0">
+        <div className="p-4 sm:p-6 md:p-8">
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-6 text-center"> In the News </h2>
+            <div className="grid md:grid-cols-3 gap-6">
+                {forumData.pressCoverage.map((article) => (
+                    <a key={article.id} href={article.url} target="_blank" rel="noopener noreferrer" className="block">
+                        <div className="bg-slate-50 p-6 rounded-xl border border-slate-200 text-center transition-all duration-300 hover:shadow-lg hover:border-sky-300 flex flex-col h-full">
+                            <h3 className="text-lg font-semibold text-sky-700 mb-2 flex-grow">{article.title}</h3>
+                            <p className="text-sm text-slate-500 italic mb-4">Source: {article.source}</p>
+                            <Button type="secondary" size="sm" className="mt-auto mx-auto" icon={<IconExternalLink />}>
+                                Read Article
+                            </Button>
+                        </div>
+                    </a>
+                ))}
+            </div>
+        </div>
+    </Card>
+);
+
 const PanelistSection: FC = () => {
     const [selectedPanelistId, setSelectedPanelistId] = useState<string | null>(null);
     return (
@@ -748,9 +872,9 @@ const PanelistSection: FC = () => {
                                 <img src={panelist.imageUrl || `https://placehold.co/150x150/E0F2FE/0C4A6E?text=${panelist.name.substring(0, 1)}${panelist.name.split(" ")[1]?.substring(0, 1) || ""}&font=Lora`} alt={panelist.name} className="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-sky-200 object-cover shadow-sm" onError={(e) => { (e.target as HTMLImageElement).onerror = null; (e.target as HTMLImageElement).src = `https://placehold.co/150x150/CCCCCC/FFFFFF?text=Panelist&font=Lora`; }} />
                                 <div className="flex-grow flex flex-col">
                                     <h3 className="font-semibold text-sky-700 mb-1 min-h-[1.5rem]">{panelist.name}</h3>
-                                    <p className="text-sm text-slate-600 mb-1 flex-grow">{panelist.title}</p> {/* Changed mb-3 to mb-1 */}
-                                    {panelist.note && <p className="text-xs text-amber-600 italic mb-1 flex items-center justify-center">{panelist.note}</p>} {/* Changed mb-3 and removed min-h */}
-                                    {!panelist.note && <div className="mb-1"></div>} {/* Changed mb-3 and removed min-h */}
+                                    <p className="text-sm text-slate-600 mb-1 flex-grow">{panelist.title}</p>
+                                    {panelist.note && <p className="text-xs text-amber-600 italic mb-1 flex items-center justify-center">{panelist.note}</p>}
+                                    {!panelist.note && <div className="mb-1"></div>}
                                 </div>
                                 <button className="text-xs text-sky-600 hover:text-sky-700 font-medium flex items-center justify-center mx-auto mt-auto">
                                     {selectedPanelistId === panelist.id ? "Hide Bio" : "View Bio"}
@@ -845,8 +969,8 @@ const KeyInformationSection: FC = () => {
                     <h3 className="font-semibold text-blue-800 mb-2 flex items-center"> <IconExternalLink className="h-4 w-4 mr-2" /> Complete Documentation </h3>
                     <p className="text-sm text-blue-700 mb-3"> For complete ground rules, candidate agreements, and detailed guidelines, view our official documents. </p>
                     <div className="flex flex-col sm:flex-row gap-2">
-                        <Button type="secondary" size="sm" onClick={() => window.open("/WWF_Candidate_Forum_Public_Release.pdf", "_blank")} icon={<IconDocument />}> Public Release PDF </Button>
-                        <Button type="secondary" size="sm" onClick={() => window.open("/WWF_Candidate_Forum_Candidate_Agreement.pdf", "_blank")} icon={<IconDocument />}> Candidate Agreement </Button>
+                        <Button type="secondary" size="sm" onClick={() => window.open("https://placehold.co/100x100/CCCCCC/FFFFFF?text=Document", "_blank")} icon={<IconDocument />}> Public Release PDF </Button>
+                        <Button type="secondary" size="sm" onClick={() => window.open("https://placehold.co/100x100/CCCCCC/FFFFFF?text=Document", "_blank")} icon={<IconDocument />}> Candidate Agreement </Button>
                     </div>
                 </div>
             </div>
@@ -868,7 +992,7 @@ const HomePage: FC<PageProps> = memo(({ setActivePage }) => (
                     decoding="async"
                     onError={(e) => {
                         (e.target as HTMLImageElement).onerror = null;
-                        (e.target as HTMLImageElement).src = `https://placehold.co/96x96/FFFFFF/0C4A6E?text=WWF&font=Lora`;
+                        (e.target as HTMLImageElement).src = `https://placehold.co/96x96/FFFFFF/0C4A6E?text=WWF`;
                     }}
                 />
                 <h1 className="text-2xl sm:text-3xl md:text-5xl font-extrabold mb-3 sm:mb-4 tracking-tight"> West Windsor Forward </h1>
@@ -929,8 +1053,8 @@ const HomePage: FC<PageProps> = memo(({ setActivePage }) => (
 
 const AboutPage: FC = memo(() => {
     const teamMembers = useMemo(() => [
-        { name: "Parth Gupta", role: "Co-Founder", bio: "A West Windsor resident for 14 years and student at the Lawrenceville School. Parth is a runner for the Lawrenceville School as part of their cross-country and track and field teams. Parth has been playing piano for 10 years and has co-organized piano Performathons to raise money for the Children's Hospital of Philadelphia.", image: "parth.png" },
-        { name: "Darshan Chidambaram", role: "Co-Founder", bio: "A West Windsor resident for 8 years and a student at the Lawrenceville School. Darshan is an active tennis player for the Lawrenceville School and debater on the national debate circuit.", image: "darshan.png" },
+        { name: "Parth Gupta", role: "Co-Founder", bio: "A West Windsor resident for 14 years and student at the Lawrenceville School. Parth is a runner for the Lawrenceville School as part of their cross-country and track and field teams. Parth has been playing piano for 10 years and has co-organized piano Performathons to raise money for the Children's Hospital of Philadelphia.", image: "https://placehold.co/150x150/E0F2FE/0C4A6E?text=PG" },
+        { name: "Darshan Chidambaram", role: "Co-Founder", bio: "A West Windsor resident for 8 years and a student at the Lawrenceville School. Darshan is an active tennis player for the Lawrenceville School and debater on the national debate circuit.", image: "https://placehold.co/150x150/E0F2FE/0C4A6E?text=DC" },
     ], []);
 
     return (
@@ -1076,7 +1200,7 @@ const ProjectDetailPage: FC<ProjectDetailPageProps> = ({ project, setActivePage 
                             <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-sky-700 mb-3"> How You Can Contribute </h2> <p className="text-gray-700 leading-relaxed mb-4 text-xs sm:text-sm md:text-base">{project.getInvolved}</p>
                             <div className="flex flex-col sm:flex-row gap-3">
                                 <Button onClick={() => setActivePage("Contact")} icon={<IconUsers />} className="text-xs sm:text-sm"> Volunteer or Offer Support </Button>
-                                {project.id === 2 && <Button onClick={() => window.open("/WWF_Station_Proposal[V1].pdf", "_blank")} type="secondary" icon={<IconDocument />} className="text-xs sm:text-sm"> Read Full Proposal </Button>}
+                                {project.id === 2 && <Button onClick={() => window.open("https://placehold.co/100x100/CCCCCC/FFFFFF?text=Document", "_blank")} type="secondary" icon={<IconDocument />} className="text-xs sm:text-sm"> Read Full Proposal </Button>}
                             </div>
                         </div>
                     </div>
@@ -1095,6 +1219,8 @@ const EventsPage: FC<PageProps> = ({ setActivePage }) => (
             <PanelistSection />
             <InteractiveSection />
             <KeyInformationSection />
+            {/* Moved "In the News" section here */}
+            <PressCoverageSection />
             <Card className="text-center bg-gradient-to-r from-sky-600 to-indigo-600 text-white p-0">
                 <div className="p-4 sm:p-6 md:p-8">
                     <h2 className="text-xl sm:text-2xl font-bold mb-4"> Be Part of West Windsor's Democratic Process </h2>
