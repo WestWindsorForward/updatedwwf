@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, FC, ReactNode, useCallback, useMemo, memo } from "react";
 
 // --- Asset URLs ---
-const logoUrl = "/WW Forward.png";
+const logoUrl = "https://placehold.co/48x48/FFFFFF/0C4A6E?text=WWF";
 
 // --- SVG Icons (as functional components) ---
 const IconMail: FC = () => ( <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"> <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" /> <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" /> </svg> );
@@ -281,16 +281,16 @@ const AnnouncementBar: FC<AnnouncementBarProps> = memo(({ onNavigateToEvents }) 
                     </div>
                     {/* Mobile expanded details */}
                     <div className={`${isExpanded ? 'block' : 'hidden'} mt-3 border-t border-sky-500 border-opacity-30 pt-3`}>
-                        <div className="text-xs text-sky-100 space-y-2">
-                            <div className="flex items-center">
+                        <div className="text-xs text-sky-100 space-y-2 flex flex-col items-center text-center">
+                            <div className="flex items-center justify-center">
                                 <IconMapMarker className="h-3 w-3 mr-2" />
                                 <span>Kelsey Theatre</span>
                             </div>
-                            <div className="flex items-start">
-                                <IconUsers className="h-3 w-3 mr-2 mt-1" />
+                            <div className="flex items-center justify-center">
+                                <IconUsers className="h-3 w-3 mr-2" />
                                 <span>Meet mayoral & council candidates, plus community Q&A.</span>
                             </div>
-                            <div className="flex items-center">
+                            <div className="flex items-center justify-center">
                                 <IconDocument className="h-3 w-3 mr-2" />
                                 <span>Free admission & live stream available.</span>
                             </div>
