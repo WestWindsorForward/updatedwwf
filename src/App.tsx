@@ -182,135 +182,126 @@ const AnnouncementBar: FC<AnnouncementBarProps> = memo(({ onNavigateToEvents }) 
             </div>
 
             <div className="relative z-10 container mx-auto px-4 py-0 sm:py-0">
-                {/* Desktop Layout */}
-                <div className="hidden sm:block">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                            {/* Animated pulse dot */}
-                            <div className="flex-shrink-0">
-                                <div className="relative">
-                                    <div className="w-3 h-3 bg-red-400 rounded-full animate-ping"></div>
-                                    <div className="absolute inset-0 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                                </div>
-                            </div>
-
-                            <div className="flex items-center space-x-2">
-                                <IconSpeakerPhone />
-                                <span className="font-semibold text-base">Join us for the 2025 Candidate Forum</span>
-                            </div>
-                            
-                            <div className="flex items-center text-sm text-sky-100 space-x-4 ml-6">
-                                <div className="flex items-center space-x-1">
-                                    <IconCalendar className="h-4 w-4" />
-                                    <span>Sept 25th</span>
-                                </div>
-                                <div className="flex items-center space-x-1">
-                                    <IconClock className="h-4 w-4" />
-                                    <span>7:00 PM</span>
-                                </div>
-                                <div className="flex items-center space-x-1">
-                                    <IconMapMarker className="h-4 w-4" />
-                                    <span>Kelsey Theatre</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Desktop Action button */}
-                        <div className="flex items-center space-x-2 ml-6">                            
-                            <button
-                                onClick={handleDismiss}
-                                className="text-sky-200 hover:text-white p-1 rounded-md transition-colors hover:bg-white hover:bg-opacity-20"
-                                aria-label="Dismiss announcement"
-                            >
-                                <IconClose className="h-4 w-4" />
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Secondary info line for larger screens */}
-                    <div className="hidden lg:flex items-center justify-center mt-2 pt-2 border-t border-sky-500 border-opacity-30">
-                        <div className="text-xs text-sky-100 flex items-center space-x-6">
-                            <span className="flex items-center space-x-1">
-                                <IconUsers className="h-4 w-4" />
-                                <span>Meet mayoral & council candidates</span>
-                            </span>
-                            <span className="flex items-center space-x-1">
-                                <IconMicrophone className="h-4 w-4" />
-                                <span>Q&A with community questions</span>
-                            </span>
-                            <span className="flex items-center space-x-1">
-                                <IconDocument className="h-4 w-4" />
-                                <span>Free admission & live stream available</span>
-                            </span>
-                        </div>
+    {/* Desktop Layout */}
+    <div className="hidden sm:block">
+        <div className="flex items-center justify-center">
+            <div className="flex items-center space-x-3">
+                {/* Animated pulse dot */}
+                <div className="flex-shrink-0">
+                    <div className="relative">
+                        <div className="w-3 h-3 bg-red-400 rounded-full animate-ping"></div>
+                        <div className="absolute inset-0 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
                     </div>
                 </div>
-
-                {/* Mobile Layout */}
-                <div className="sm:hidden">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3 flex-1">
-                            {/* Animated pulse dot */}
-                            <div className="flex-shrink-0">
-                                <div className="relative">
-                                    <div className="w-2.5 h-2.5 bg-red-400 rounded-full animate-ping"></div>
-                                    <div className="absolute inset-0 w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse"></div>
-                                </div>
-                            </div>
-
-                            <div className="flex-1 text-center">
-                                <div className="flex items-center justify-center space-x-2 mb-1">
-                                    <IconSpeakerPhone className="h-4 w-4" />
-                                    <span className="font-semibold text-sm">2025 Candidate Forum</span>
-                                </div>
-                                <div className="flex items-center justify-center text-xs text-sky-100 space-x-3">
-                                    <span>Sept 25th</span>
-                                    <span>•</span>
-                                    <span>7:00 PM</span>
-                                </div>
-                            </div>
-                        </div>
-                        {/* Mobile dismiss button only */}
-                        <button
-                            onClick={handleDismiss}
-                            className="text-sky-200 hover:text-white p-2 rounded-md transition-colors hover:bg-white hover:bg-opacity-20 ml-2 flex-shrink-0"
-                            aria-label="Dismiss announcement"
-                        >
-                            <IconClose className="h-4 w-4" />
-                        </button>
+                <div className="flex items-center space-x-2">
+                    <IconSpeakerPhone />
+                    <span className="font-semibold text-base">Join us for the 2025 Candidate Forum</span>
+                </div>
+                <div className="flex items-center text-sm text-sky-100 space-x-4 ml-6">
+                    <div className="flex items-center space-x-1">
+                        <IconCalendar className="h-4 w-4" />
+                        <span>Sept 25th</span>
                     </div>
-                    {/* Mobile expanded details */}
-                    <div className={`${isExpanded ? 'block' : 'hidden'} mt-3 border-t border-sky-500 border-opacity-30 pt-3`}>
-                        <div className="text-xs text-sky-100 space-y-2 flex flex-col items-center text-center">
-                            <div className="flex items-center justify-center">
-                                <IconMapMarker className="h-3 w-3 mr-2" />
-                                <span>Kelsey Theatre</span>
-                            </div>
-                            <div className="flex items-center justify-center">
-                                <IconUsers className="h-3 w-3 mr-2" />
-                                <span>Meet mayoral & council candidates, plus community Q&A.</span>
-                            </div>
-                            <div className="flex items-center justify-center">
-                                <IconDocument className="h-3 w-3 mr-2" />
-                                <span>Free admission & live stream available.</span>
-                            </div>
-                        </div>
+                    <div className="flex items-center space-x-1">
+                        <IconClock className="h-4 w-4" />
+                        <span>7:00 PM</span>
                     </div>
-                    {/* Expand/collapse button */}
-                    <div className="flex justify-center mt-2">
-                        <button
-                            onClick={toggleExpanded}
-                            className="text-sky-200 hover:text-white p-1 rounded-md transition-colors hover:bg-white hover:bg-opacity-20"
-                            aria-label={isExpanded ? "Collapse details" : "Expand details"}
-                        >
-                            {isExpanded ? <IconChevronUp className="h-4 w-4" /> : <IconChevronDown className="h-4 w-4" />}
-                        </button>
+                    <div className="flex items-center space-x-1">
+                        <IconMapMarker className="h-4 w-4" />
+                        <span>Kelsey Theatre</span>
                     </div>
                 </div>
             </div>
+            {/* Desktop Action button */}
+            <div className="flex items-center space-x-2 ml-6">
+                <button
+                    onClick={handleDismiss}
+                    className="text-sky-200 hover:text-white p-1 rounded-md transition-colors hover:bg-white hover:bg-opacity-20"
+                    aria-label="Dismiss announcement"
+                >
+                    <IconClose className="h-4 w-4" />
+                </button>
+            </div>
         </div>
-    );
-});
+        {/* Secondary info line for larger screens */}
+        <div className="hidden lg:flex items-center justify-center mt-2 pt-2 border-t border-sky-500 border-opacity-30">
+            <div className="text-xs text-sky-100 flex items-center space-x-6">
+                <span className="flex items-center space-x-1">
+                    <IconUsers className="h-4 w-4" />
+                    <span>Meet mayoral & council candidates</span>
+                </span>
+                <span className="flex items-center space-x-1">
+                    <IconMicrophone className="h-4 w-4" />
+                    <span>Q&A with community questions</span>
+                </span>
+                <span className="flex items-center space-x-1">
+                    <IconDocument className="h-4 w-4" />
+                    <span>Free admission & live stream available</span>
+                </span>
+            </div>
+        </div>
+    </div>
+    {/* Mobile Layout */}
+    <div className="sm:hidden">
+        <div className="flex items-center justify-center">
+            <div className="flex items-center space-x-3 flex-1">
+                {/* Animated pulse dot */}
+                <div className="flex-shrink-0">
+                    <div className="relative">
+                        <div className="w-2.5 h-2.5 bg-red-400 rounded-full animate-ping"></div>
+                        <div className="absolute inset-0 w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse"></div>
+                    </div>
+                </div>
+                <div className="flex-1 text-center">
+                    <div className="flex items-center justify-center space-x-2 mb-1">
+                        <IconSpeakerPhone className="h-4 w-4" />
+                        <span className="font-semibold text-sm">2025 Candidate Forum</span>
+                    </div>
+                    <div className="flex items-center justify-center text-xs text-sky-100 space-x-3">
+                        <span>Sept 25th</span>
+                        <span>•</span>
+                        <span>7:00 PM</span>
+                    </div>
+                </div>
+            </div>
+            {/* Mobile dismiss button only */}
+            <button
+                onClick={handleDismiss}
+                className="text-sky-200 hover:text-white p-2 rounded-md transition-colors hover:bg-white hover:bg-opacity-20 ml-2 flex-shrink-0"
+                aria-label="Dismiss announcement"
+            >
+                <IconClose className="h-4 w-4" />
+            </button>
+        </div>
+        {/* Mobile expanded details */}
+        <div className={`${isExpanded ? 'block' : 'hidden'} mt-3 border-t border-sky-500 border-opacity-30 pt-3`}>
+            <div className="text-xs text-sky-100 space-y-2 flex flex-col items-center text-center">
+                <div className="flex items-center justify-center">
+                    <IconMapMarker className="h-3 w-3 mr-2" />
+                    <span>Kelsey Theatre</span>
+                </div>
+                <div className="flex items-center justify-center">
+                    <IconUsers className="h-3 w-3 mr-2" />
+                    <span>Meet mayoral & council candidates, plus community Q&A.</span>
+                </div>
+                <div className="flex items-center justify-center">
+                    <IconDocument className="h-3 w-3 mr-2" />
+                    <span>Free admission & live stream available.</span>
+                </div>
+            </div>
+        </div>
+        {/* Expand/collapse button */}
+        <div className="flex justify-center mt-2">
+            <button
+                onClick={toggleExpanded}
+                className="text-sky-200 hover:text-white p-1 rounded-md transition-colors hover:bg-white hover:bg-opacity-20"
+                aria-label={isExpanded ? "Collapse details" : "Expand details"}
+            >
+                {isExpanded ? <IconChevronUp className="h-4 w-4" /> : <IconChevronDown className="h-4 w-4" />}
+            </button>
+        </div>
+    </div>
+</div>
 
 
 // --- Google Form Integration Components ---
