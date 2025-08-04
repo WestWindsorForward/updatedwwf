@@ -185,7 +185,7 @@ const AnnouncementBar: FC<AnnouncementBarProps> = memo(({ onNavigateToEvents }) 
                 {/* Desktop Layout */}
                 <div className="hidden sm:block">
                     <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
+                        <div className="flex-1 flex items-center justify-center space-x-3">
                             {/* Animated pulse dot */}
                             <div className="flex-shrink-0">
                                 <div className="relative">
@@ -587,7 +587,7 @@ const Navbar: FC<NavbarProps> = ({ setActivePage, activePage, selectedProject })
             )}
         </nav>
     );
-};
+});
 
 const Footer: FC<FooterProps> = memo(({ setActivePage }) => {
     return (
