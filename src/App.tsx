@@ -1322,7 +1322,7 @@ const ContactPage: FC = () => {
                                                     </a>
                                                     <a href="https://x.com/westwindsorfwd" target="_blank" rel="noopener noreferrer" className="inline-flex items-center bg-white bg-opacity-20 hover:bg-opacity-30 px-3 py-2 sm:px-4 sm:py-2 rounded-lg transition-all duration-200 group text-sm sm:text-base">
                                                         <IconX className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                                                        <span>   X/Twitter</span>
+                                                        <span>     X/Twitter</span>
                                                         <IconExternalLink className="h-3 w-3 sm:h-4 sm:w-4 ml-2 group-hover:translate-x-1 transition-transform" />
                                                     </a>
                                                 </div>
