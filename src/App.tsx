@@ -1,46 +1,48 @@
- import React, { useState, useEffect, useRef, FC, ReactNode, useCallback, useMemo, memo } from "react";
+import React, { useState, useEffect, useRef, FC, ReactNode, useCallback, useMemo, memo } from "react";
 
- // --- Asset URLs ---
- const logoUrl = "/WW Forward.png";
+// --- Asset URLs ---
+const logoUrl = "/WW Forward.png";
 
- // --- SVG Icons (as functional components) ---
- const IconMail: FC = () => ( <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"> <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" /> <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" /> </svg> );
- const IconCalendar: FC = () => ( <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"> <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" /> </svg> );
- const IconClock: FC = () => ( <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"> <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" /> </svg> );
- const IconMapMarker: FC = () => ( <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"> <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" /> </svg> );
- const IconUsers: FC = () => ( <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"> <path d="M4.5 6.375a4.125 4.125 0 1 1 8.25 0 4.125 4.125 0 0 1-8.25 0ZM14.25 8.625a3.375 3.375 0 1 1 6.75 0 3.375 3.375 0 0 1-6.75 0ZM1.5 19.125a7.125 7.125 0 0 1 14.25 0v.003l-.001.119a.75.75 0 0 1-.363.63 13.067 13.067 0 0 1-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 0 1-.364-.63l-.001-.122ZM17.25 19.128l-.001.144a2.25 2.25 0 0 1-.233.96 10.088 10.088 0 0 0 5.06-1.01.75.75 0 0 0 .42-.643 4.875 4.875 0 0 0-6.957-4.611 8.586 8.586 0 0 1 1.71 5.157v.003Z" /> </svg> );
- const IconCheckCircle: FC<{className?: string}> = ({className}) => ( <svg xmlns="http://www.w3.org/2000/svg" className={`h-6 w-6 ${className}`} viewBox="0 0 20 20" fill="currentColor"> <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /> </svg> );
- const IconChevronDown: FC<{className?: string}> = ({className}) => ( <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${className}`} viewBox="0 0 20 20" fill="currentColor"> <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" /> </svg> );
- const IconChevronUp: FC<{className?: string}> = ({className}) => ( <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${className}`} viewBox="0 0 20 20" fill="currentColor"> <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" /> </svg> );
- const IconExternalLink: FC<{className?: string}> = ({className}) => ( <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 ${className}`} viewBox="0 0 20 20" fill="currentColor"> <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" /> <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" /> </svg> );
- const IconQuestionMark: FC<{className?: string}> = ({className}) => ( <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${className}`} viewBox="0 0 20 20" fill="currentColor"> <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" /> </svg> );
- const IconLightBulb: FC = () => ( <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"> <path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1h4v1a2 2 0 11-4 0zM12 14c.015-.34.208-.646.477-.859a4 4 0 10-4.954 0c.27.213.462.519.477.859h4z" /> </svg> );
- const IconMicrophone: FC = () => ( <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"> <path fillRule="evenodd" d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm4 10.93A7.001 7.001 0 0017 8a1 1 0 10-2 0A5 5 0 015 8a1 1 0 00-2 0 7.001 7.001 0 006 6.93V17H6a1 1 0 100 2h8a1 1 0 100-2h-3v-2.07z" clipRule="evenodd" /> </svg> );
- const IconDocument: FC<{className?: string}> = ({className}) => ( <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${className}`} viewBox="0 0 20 20" fill="currentColor"> <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" /> </svg> );
- const IconRecycle: FC = () => ( <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"> <path d="M5.5 16a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.977A4.5 4.5 0 1113.5 16h-8z" /> </svg> );
- const IconPhotograph: FC = () => ( <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"> <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" /> </svg> );
- const IconInfo: FC<{className?: string}> = ({className}) => ( <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 sm:h-5 sm:w-5 mr-2 ${className}`} viewBox="0 0 20 20" fill="currentColor"> <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" /> </svg> );
- const IconFacebook: FC = () => ( <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"> <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" /> </svg> );
- const IconMenu: FC = () => ( <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}> <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" /> </svg> );
- const IconClose: FC = () => ( <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}> <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /> </svg> );
- const IconSpeakerPhone: FC = () => ( <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"> <path fillRule="evenodd" d="M18 3a1 1 0 00-1.447-.894L8.763 6H5a3 3 0 000 6h.28l1.771 5.316A1 1 0 008 18h1a1 1 0 001-1v-4.382l6.553 3.894A1 1 0 0018 16V3z" clipRule="evenodd" /> </svg> );
- const IconArrowRight: FC<{className?: string}> = ({className}) => ( <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 ${className}`} viewBox="0 0 20 20" fill="currentColor"> <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" /> </svg> );
+// --- SVG Icons (as functional components) ---
+const IconMail: FC = () => ( <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"> <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" /> <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" /> </svg> );
+const IconCalendar: FC = () => ( <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"> <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" /> </svg> );
+const IconClock: FC = () => ( <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"> <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" /> </svg> );
+const IconMapMarker: FC = () => ( <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"> <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" /> </svg> );
+const IconUsers: FC = () => ( <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"> <path d="M4.5 6.375a4.125 4.125 0 1 1 8.25 0 4.125 4.125 0 0 1-8.25 0ZM14.25 8.625a3.375 3.375 0 1 1 6.75 0 3.375 3.375 0 0 1-6.75 0ZM1.5 19.125a7.125 7.125 0 0 1 14.25 0v.003l-.001.119a.75.75 0 0 1-.363.63 13.067 13.067 0 0 1-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 0 1-.364-.63l-.001-.122ZM17.25 19.128l-.001.144a2.25 2.25 0 0 1-.233.96 10.088 10.088 0 0 0 5.06-1.01.75.75 0 0 0 .42-.643 4.875 4.875 0 0 0-6.957-4.611 8.586 8.586 0 0 1 1.71 5.157v.003Z" /> </svg> );
+const IconCheckCircle: FC<{className?: string}> = ({className}) => ( <svg xmlns="http://www.w3.org/2000/svg" className={`h-6 w-6 ${className}`} viewBox="0 0 20 20" fill="currentColor"> <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /> </svg> );
+const IconChevronDown: FC<{className?: string}> = ({className}) => ( <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${className}`} viewBox="0 0 20 20" fill="currentColor"> <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" /> </svg> );
+const IconChevronUp: FC<{className?: string}> = ({className}) => ( <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${className}`} viewBox="0 0 20 20" fill="currentColor"> <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" /> </svg> );
+const IconExternalLink: FC<{className?: string}> = ({className}) => ( <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 ${className}`} viewBox="0 0 20 20" fill="currentColor"> <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" /> <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" /> </svg> );
+const IconQuestionMark: FC<{className?: string}> = ({className}) => ( <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${className}`} viewBox="0 0 20 20" fill="currentColor"> <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" /> </svg> );
+const IconLightBulb: FC = () => ( <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"> <path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1h4v1a2 2 0 11-4 0zM12 14c.015-.34.208-.646.477-.859a4 4 0 10-4.954 0c.27.213.462.519.477.859h4z" /> </svg> );
+const IconMicrophone: FC = () => ( <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"> <path fillRule="evenodd" d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm4 10.93A7.001 7.001 0 0017 8a1 1 0 10-2 0A5 5 0 015 8a1 1 0 00-2 0 7.001 7.001 0 006 6.93V17H6a1 1 0 100 2h8a1 1 0 100-2h-3v-2.07z" clipRule="evenodd" /> </svg> );
+const IconDocument: FC<{className?: string}> = ({className}) => ( <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${className}`} viewBox="0 0 20 20" fill="currentColor"> <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" /> </svg> );
+const IconRecycle: FC = () => ( <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"> <path d="M5.5 16a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.977A4.5 4.5 0 1113.5 16h-8z" /> </svg> );
+const IconPhotograph: FC = () => ( <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"> <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" /> </svg> );
+const IconInfo: FC<{className?: string}> = ({className}) => ( <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 sm:h-5 sm:w-5 mr-2 ${className}`} viewBox="0 0 20 20" fill="currentColor"> <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" /> </svg> );
+const IconFacebook: FC = () => ( <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"> <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" /> </svg> );
+const IconInstagram: FC = () => ( <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"> <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.772 1.684 4.976 4.976.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.148 3.252-1.684 4.772-4.976 4.976-.058.028-1.266.07-4.85.07s-3.584-.012-4.85-.07c-3.252-.148-4.772-1.684-4.976-4.976-.058-1.266-.07-1.646-.07-4.85s.012-3.584.07-4.85c.148-3.252 1.684-4.772 4.976-4.976.058-.028 1.266-.07 4.85-.07zm0-2.163c-3.259 0-3.666.014-4.943.072-4.438.204-6.72 2.486-6.924 6.924-.058 1.277-.07 1.684-.07 4.943s.014 3.666.072 4.943c.204 4.438 2.486 6.72 6.924 6.924 1.277.058 1.684.072 4.943.072s3.666-.014 4.943-.072c4.438-.204 6.72-2.486 6.924-6.924.058-1.277.072-1.684.072-4.943s-.014-3.666-.072-4.943c-.204-4.438-2.486-6.72-6.924-6.924-1.277-.058-1.684-.072-4.943-.072zM12 6.865c-2.81 0-5.135 2.325-5.135 5.135s2.325 5.135 5.135 5.135c2.81 0 5.135-2.325 5.135-5.135s-2.325-5.135-5.135-5.135zM12 17.135c-2.817 0-5.135-2.318-5.135-5.135s2.318-5.135 5.135-5.135 5.135 2.318 5.135 5.135-2.318 5.135-5.135 5.135zm7.337-11.844c-.645 0-1.17.525-1.17 1.17s.525 1.17 1.17 1.17c.645 0 1.17-.525 1.17-1.17s-.525-1.17-1.17-1.17z" /> </svg> );
+const IconX: FC = () => ( <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"> <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm6.064 7.039l-4.743 4.957 5.767 7.954h-2.12l-4.42-6.115-3.328 6.115h-1.656l5.748-9.988-5.749-4.941h2.174l3.856 3.995 2.946-3.995h1.656z" /> </svg> );
+const IconMenu: FC = () => ( <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}> <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" /> </svg> );
+const IconClose: FC = () => ( <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}> <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /> </svg> );
+const IconSpeakerPhone: FC = () => ( <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"> <path fillRule="evenodd" d="M18 3a1 1 0 00-1.447-.894L8.763 6H5a3 3 0 000 6h.28l1.771 5.316A1 1 0 008 18h1a1 1 0 001-1v-4.382l6.553 3.894A1 1 0 0018 16V3z" clipRule="evenodd" /> </svg> );
+const IconArrowRight: FC<{className?: string}> = ({className}) => ( <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 ${className}`} viewBox="0 0 20 20" fill="currentColor"> <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" /> </svg> );
 
- // --- Type Definitions ---
- interface DotPatternProps { className?: string; dotColor?: string; rows?: number; cols?: number; }
- interface CardProps { children: ReactNode; className?: string; noHoverEffect?: boolean; hasDotPattern?: boolean; onClick?: (e: React.MouseEvent<HTMLDivElement>) => void; }
- interface ButtonProps { children?: ReactNode; onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void; type?: 'primary' | 'secondary' | 'success' | 'warning'; className?: string; icon?: ReactNode; isSubmit?: boolean; disabled?: boolean; size?: 'sm' | 'md' | 'lg'; }
- type PageName = "Home" | "About" | "Projects" | "Events" | "Contact" | "ProjectDetails";
- interface Project { id: number; slug: string; title: string; shortGoal: string; status: string; description: string; image: string; partnerOrganizations: string[]; redirectTo?: PageName; goal?: string; impact?: string; timeline?: { stage: string; details: string; completed: boolean; }[]; getInvolved?: string; fundingSources?: string[]; initiatives?: { title: string; description: string; icon: ReactNode; status: string; }[]; }
- interface NavbarProps { setActivePage: (page: PageName, project?: Project | null) => void; activePage: PageName; selectedProject: Project | null; }
- interface PageProps { setActivePage: (page: PageName, project?: Project | null) => void; }
- interface ProjectCardProps { project: Project; setActivePage: (page: PageName, project?: Project | null) => void; }
- interface ProjectDetailPageProps { project: Project | null; setActivePage: (page: PageName, project?: Project | null) => void; }
- interface AnnouncementBarProps { onNavigateToEvents: () => void; }
- interface FooterProps { setActivePage: (page: PageName) => void; }
+// --- Type Definitions ---
+interface DotPatternProps { className?: string; dotColor?: string; rows?: number; cols?: number; }
+interface CardProps { children: ReactNode; className?: string; noHoverEffect?: boolean; hasDotPattern?: boolean; onClick?: (e: React.MouseEvent<HTMLDivElement>) => void; }
+interface ButtonProps { children?: ReactNode; onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void; type?: 'primary' | 'secondary' | 'success' | 'warning'; className?: string; icon?: ReactNode; isSubmit?: boolean; disabled?: boolean; size?: 'sm' | 'md' | 'lg'; }
+type PageName = "Home" | "About" | "Projects" | "Events" | "Contact" | "ProjectDetails";
+interface Project { id: number; slug: string; title: string; shortGoal: string; status: string; description: string; image: string; partnerOrganizations: string[]; redirectTo?: PageName; goal?: string; impact?: string; timeline?: { stage: string; details: string; completed: boolean; }[]; getInvolved?: string; fundingSources?: string[]; initiatives?: { title: string; description: string; icon: ReactNode; status: string; }[]; }
+interface NavbarProps { setActivePage: (page: PageName, project?: Project | null) => void; activePage: PageName; selectedProject: Project | null; }
+interface PageProps { setActivePage: (page: PageName, project?: Project | null) => void; }
+interface ProjectCardProps { project: Project; setActivePage: (page: PageName, project?: Project | null) => void; }
+interface ProjectDetailPageProps { project: Project | null; setActivePage: (page: PageName, project?: Project | null) => void; }
+interface AnnouncementBarProps { onNavigateToEvents: () => void; }
+interface FooterProps { setActivePage: (page: PageName) => void; }
 
- // --- Helper Components ---
- const DotPattern: FC<DotPatternProps> = memo(({ className = "", dotColor = "text-sky-200 opacity-5", rows = 6, cols = 8 }) => {
+// --- Helper Components ---
+const DotPattern: FC<DotPatternProps> = memo(({ className = "", dotColor = "text-sky-200 opacity-5", rows = 6, cols = 8 }) => {
     const dots = useMemo(() => {
         const totalDots = Math.min(rows * cols * 4, 100); // Limit total dots for performance
         return Array.from({ length: totalDots }).map((_, i) => ({
@@ -69,9 +71,9 @@
             </div>
         </div>
     );
- });
+});
 
- const Card: FC<CardProps> = memo(({ children, className = "", noHoverEffect = false, hasDotPattern = false, onClick }) => (
+const Card: FC<CardProps> = memo(({ children, className = "", noHoverEffect = false, hasDotPattern = false, onClick }) => (
     <div
         className={`relative bg-white shadow-lg rounded-xl mb-6 sm:mb-8 border border-gray-200 ${hasDotPattern ? "overflow-hidden" : ""} ${noHoverEffect ? "" : "transition-all duration-300 hover:shadow-2xl hover:border-sky-400 hover:scale-[1.01] will-change-transform"} ${onClick ? "cursor-pointer" : ""} ${className}`}
         onClick={onClick}
@@ -80,9 +82,9 @@
         {hasDotPattern && <DotPattern dotColor="text-sky-500 opacity-5" />}
         <div className="relative z-10 h-full flex flex-col">{children}</div>
     </div>
- ));
+));
 
- const Button: FC<ButtonProps> = memo(({ children, onClick, type = "primary", className = "", icon, isSubmit = false, disabled = false, size = "md" }) => {
+const Button: FC<ButtonProps> = memo(({ children, onClick, type = "primary", className = "", icon, isSubmit = false, disabled = false, size = "md" }) => {
     const baseStyle = `inline-flex items-center justify-center rounded-lg font-semibold transition-all duration-200 ease-in-out transform hover:scale-103 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-opacity-75 shadow-md hover:shadow-lg will-change-transform ${disabled ? "opacity-50 cursor-not-allowed" : ""}`;
     const sizeStyles = { sm: "px-3 py-1.5 text-xs", md: "px-4 py-2 sm:px-5 sm:py-2.5 text-xs sm:text-sm", lg: "px-6 py-3 text-sm sm:text-base" };
     const typeStyle = type === "primary" ? "bg-sky-600 hover:bg-sky-700 text-white focus:ring-sky-500" : type === "secondary" ? "bg-slate-200 hover:bg-slate-300 text-slate-800 focus:ring-slate-400" : type === "success" ? "bg-green-600 hover:bg-green-700 text-white focus:ring-green-500" : type === "warning" ? "bg-amber-600 hover:bg-amber-700 text-white focus:ring-amber-500" : "bg-slate-200 hover:bg-slate-300 text-slate-800 focus:ring-slate-400";
@@ -105,10 +107,10 @@
             {children}
         </button>
     );
- });
+});
 
- // --- Utility Functions ---
- const debounce = (func: Function, wait: number) => {
+// --- Utility Functions ---
+const debounce = (func: Function, wait: number) => {
     let timeout: NodeJS.Timeout;
     return function executedFunction(...args: any[]) {
         const later = () => {
@@ -118,10 +120,10 @@
         clearTimeout(timeout);
         timeout = setTimeout(later, wait);
     };
- };
+};
 
- // --- Announcement Bar Component ---
- const AnnouncementBar: FC<AnnouncementBarProps> = memo(({ onNavigateToEvents }) => {
+// --- Announcement Bar Component ---
+const AnnouncementBar: FC<AnnouncementBarProps> = memo(({ onNavigateToEvents }) => {
     const [isDismissed, setIsDismissed] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
 
@@ -278,26 +280,26 @@
             </div>
         </div>
     );
- });
+});
 
- // --- Google Form Integration Components ---
+// --- Google Form Integration Components ---
 
- interface GoogleFormComponentProps {
+interface GoogleFormComponentProps {
     formUrl: string;
     fieldMapping: { [key: string]: string };
     children: ReactNode;
     onSuccess?: () => void;
     onError?: () => void;
- }
+}
 
- interface FormFieldsProps {
+interface FormFieldsProps {
     handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
     formData: { [key: string]: string | string[] };
     status?: string;
     handleSubmit?: (e: React.FormEvent<HTMLFormElement> | undefined) => void;
- }
+}
 
- const GoogleFormComponent: FC<GoogleFormComponentProps> = ({ formUrl, fieldMapping, children, onSuccess, onError }) => {
+const GoogleFormComponent: FC<GoogleFormComponentProps> = ({ formUrl, fieldMapping, children, onSuccess, onError }) => {
     const [formData, setFormData] = useState<{ [key: string]: string | string[] }>({});
     const [status, setStatus] = useState('');
 
@@ -384,9 +386,9 @@
             {childrenWithProps}
         </div>
     );
- };
+};
 
- const CandidateQuestionForm: FC<FormFieldsProps & {handleSubmit?: () => void}> = ({ handleChange, formData, handleSubmit }) => {
+const CandidateQuestionForm: FC<FormFieldsProps & {handleSubmit?: () => void}> = ({ handleChange, formData, handleSubmit }) => {
     const positionOptions = [ "Mayor of West Windsor Township", "West Windsor Township Council", "Both Mayoral and Council Candidates" ];
     return (
         <>
@@ -424,9 +426,9 @@
             </div>
         </>
     );
- };
+};
 
- const NewsletterForm: FC<FormFieldsProps & {handleSubmit?: () => void}> = ({ handleChange, formData, handleSubmit, status }) => {
+const NewsletterForm: FC<FormFieldsProps & {handleSubmit?: () => void}> = ({ handleChange, formData, handleSubmit, status }) => {
     const isSubmitting = status === 'Sending...';
     return (
         <>
@@ -453,10 +455,10 @@
             )}
         </>
     );
- };
+};
 
- // --- Data ---
- const forumData = {
+// --- Data ---
+const forumData = {
     title: "West Windsor Forward 2025 Candidate Forum", date: "Thursday, September 25th, 2025", time: "7:00 PM - 9:15 PM", arrivalTime: "6:30 PM for candidates", location: "Kelsey Theatre @ Mercer County Community College", positions: ["Mayor of West Windsor Township", "2 seats on West Windsor Township Council"], status: "upcoming",
     panelists: [
         { id: "micah-rasmussen", name: "Micah Rasmussen", title: "Director, Rebovich Institute for NJ Politics", imageUrl: "/micah.png", bio: 'Micah Rasmussen is the director of the Rebovich Institute for New Jersey Politics at Rider University. He has worked in the New Jersey General Assembly and managed several political campaigns. After completing his undergraduate studies at Rider under his mentor David Rebovich, the namesake of the institute he now leads, Rasmussen earned his Master of Arts in Political Science from the Eagleton Institute of Politics at Rutgers University. Rasmussen is a panelist for the state\'s biggest political debates-- twice so far this year in the race to elect New Jersey\'s next governor, and in the only debate last year between now Senator Andy Kim and First Lady Tammy Murphy. He is regularly included on New Jersey\'s political power and higher education influencer lists. One called him "the go-to guy for the media to comment on what\'s happening in New Jersey politics-- and what it means".', note: "" },
@@ -481,15 +483,15 @@
         { id: 2, title: "2025 West Windsor Candidate Forum Announced", source: "West Windsor Peeps", url: "https://westwindsorpeeps.com/west-windsor-candidate-forum/" },
         { id: 3, title: "West Windsor to Host First Candidate Forum in Over a Decade at the Kelsey Theatre", source: "CentralJersey.com", url: "https://centraljersey.com/2025/05/05/west-windsor-candidate-forum-kelsey-theatre/" },
     ],
- };
+};
 
- const projectsData: Project[] = [
+const projectsData: Project[] = [
     { id: 1, slug: "candidate-forum-2025", title: "2025 Candidate Forum", shortGoal: "Fostering informed civic participation.", status: "Upcoming: September 25, 2025", description: "Providing a non-partisan platform for Mayoral and Council candidates to engage with residents, ensuring informed participation in our local democracy.", image: "/2025 Forum Graphic.png", partnerOrganizations: ["League of Women Voters of the Greater Princeton Area"], redirectTo: "Events" },
     { id: 2, slug: "princeton-junction-station-improvement", title: "Princeton Junction Station Improvement Project", shortGoal: "Revitalizing our key transit hub.", goal: "To transform the Princeton Junction Station into a welcoming, aesthetically appealing, and culturally reflective community hub that serves all users.", status: "Early Planning & Proposal Development", description: "This is a proposed comprehensive project to transform Princeton Junction Station—a vital asset serving over 4,000 NJ TRANSIT passengers daily and 123,000+ Amtrak passengers annually—into a vibrant community hub. We are developing plans for beautification efforts, community art installations, environmental initiatives, and programming to enhance the daily experience for thousands of commuters while fostering community pride and connectivity. Currently in early planning stages with proposals being developed for potential partnerships.", impact: "Enhanced commuter experience for thousands of daily users, strengthened community identity through public art, environmental benefits through recycling and beautification programs, increased community engagement through events and programming, and preserved infrastructure value through maintenance and improvements.", timeline: [{ stage: "Completed: Concept Development & Research", details: "Initial research completed on station usage, community needs, and potential improvement opportunities. Concept proposal drafted.", completed: true }, { stage: "In Progress: Stakeholder Outreach & Partnership Development", details: "Reaching out to NJ TRANSIT, West Windsor Parking Authority, and community organizations to gauge interest and explore potential partnerships.", completed: false }, { stage: "Upcoming: Community Input & Proposal Refinement", details: "Gathering community feedback on proposed improvements and refining plans based on resident input and partnership possibilities.", completed: false }, { stage: "Upcoming: Implementation Planning", details: "If partnerships are established, develop detailed implementation timeline and begin coordination with relevant authorities.", completed: false }], getInvolved: "Share your ideas for station improvements, express interest in volunteering for future cleanup or beautification efforts, connect us with relevant community organizations, or let us know what would make your commuting experience better.", image: "https://www.westwindsorhistory.com/uploads/1/2/3/1/123111196/2018-12-08-pj-train-station-ticket-building_orig.jpg", partnerOrganizations: [], fundingSources: [], initiatives: [{ title: "Beautification & Maintenance", description: "Potential regular cleanup, landscaping, and seasonal decorations", icon: <IconLightBulb />, status: "Concept Phase" }, { title: "Art & Cultural Enhancement", description: "Proposed community murals, decorative elements, and cultural programming", icon: <IconPhotograph />, status: "Concept Phase" }, { title: "Environmental Initiatives", description: "Exploring recycling programs and sustainable improvements", icon: <IconRecycle />, status: "Concept Phase" }, { title: "Community Programming", description: "Ideas for events and community engagement opportunities", icon: <IconUsers />, status: "Concept Phase" }] },
- ];
+];
 
- // --- Main Page Components ---
- const Navbar: FC<NavbarProps> = ({ setActivePage, activePage, selectedProject }) => {
+// --- Main Page Components ---
+const Navbar: FC<NavbarProps> = ({ setActivePage, activePage, selectedProject }) => {
     const navItems: PageName[] = ["Home", "About", "Projects", "Events", "Contact"];
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const mobileMenuRef = useRef<HTMLDivElement>(null);
@@ -554,9 +556,9 @@
             )}
         </nav>
     );
- };
+};
 
- const Footer: FC<FooterProps> = memo(({ setActivePage }) => {
+const Footer: FC<FooterProps> = memo(({ setActivePage }) => {
     return (
         <footer className="bg-slate-900 text-gray-300 print:hidden">
             <div className="container mx-auto px-6 pt-12 pb-8">
@@ -583,6 +585,12 @@
                         <div className="flex space-x-4 pt-2">
                             <a href="https://www.facebook.com/profile.php?id=61575121893868" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-sky-400 transition-colors" aria-label="Facebook">
                                 <IconFacebook />
+                            </a>
+                            <a href="https://instagram.com/westwindsorforward" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-sky-400 transition-colors" aria-label="Instagram">
+                                <IconInstagram />
+                            </a>
+                            <a href="https://x.com/westwindsorfwd" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-sky-400 transition-colors" aria-label="X">
+                                <IconX />
                             </a>
                             <a href="mailto:contact@westwindsorforward.org" className="text-slate-400 hover:text-sky-400 transition-colors" aria-label="Email">
                                 <IconMail />
@@ -623,10 +631,10 @@
             </div>
         </footer>
     );
- });
+});
 
- // A new component for the calendar dropdown
- const CalendarDropdown: FC = () => {
+// A new component for the calendar dropdown
+const CalendarDropdown: FC = () => {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -722,9 +730,9 @@
             )}
         </div>
     );
- };
+};
 
- const ForumHeader: FC = () => {
+const ForumHeader: FC = () => {
     return (
         <header className="relative bg-gradient-to-br from-slate-900 via-sky-800 to-indigo-900 text-white py-12 sm:py-16 md:py-20 px-4 rounded-b-2xl shadow-2xl overflow-hidden">
             <DotPattern dotColor="text-sky-700 opacity-10" rows={8} cols={10} />
@@ -744,9 +752,9 @@
             </div>
         </header>
     );
- };
+};
 
- const ProgressSection: FC = () => (
+const ProgressSection: FC = () => (
     <Card className="bg-gradient-to-r from-sky-50 to-indigo-50 border-sky-200 p-0">
         <div className="p-4 sm:p-6 md:p-8">
             <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-4"> Forum Milestones </h2>
@@ -764,9 +772,9 @@
             </div>
         </div>
     </Card>
- );
+);
 
- const ForumFormatSection: FC = () => {
+const ForumFormatSection: FC = () => {
     const getIcon = (iconType: string) => {
         if (iconType === "microphone") return <IconMicrophone />;
         if (iconType === "users") return <IconUsers />;
@@ -802,10 +810,10 @@
             </div>
         </Card>
     );
- };
+};
 
- // New component for press coverage
- const PressCoverageSection: FC = () => (
+// New component for press coverage
+const PressCoverageSection: FC = () => (
     <Card className="p-0">
         <div className="p-4 sm:p-6 md:p-8">
             <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-6 text-center"> In the News </h2>
@@ -824,9 +832,9 @@
             </div>
         </div>
     </Card>
- );
+);
 
- const PanelistSection: FC = () => {
+const PanelistSection: FC = () => {
     const [selectedPanelistId, setSelectedPanelistId] = useState<string | null>(null);
     return (
         <Card className="p-0">
@@ -859,9 +867,9 @@
             </div>
         </Card>
     );
- };
+};
 
- const InteractiveSection: FC = () => {
+const InteractiveSection: FC = () => {
     const [activeTab, setActiveTab] = useState("questions");
 
     const questionFormConfig = {
@@ -908,9 +916,9 @@
             </div>
         </Card>
     );
- };
+};
 
- const KeyInformationSection: FC = () => {
+const KeyInformationSection: FC = () => {
     const [expandedSection, setExpandedSection] = useState<string | null>(null);
     const infoSections = [
         { id: "attendance", title: "For Attendees", icon: <IconUsers />, content: <div className="space-y-4"> <div> <h4 className="font-semibold text-slate-800 mb-2">Why Attend?</h4> <ul className="space-y-2 text-sm text-slate-600"> <li>• Hear directly from candidates beyond campaign materials</li> <li> • Get answers to community questions during town hall session </li> <li>• Engage with fellow residents on important local issues</li> <li>• Meet candidates personally during informal session</li> <li>• Connect with local community organizations</li> </ul> </div> <div> <h4 className="font-semibold text-slate-800 mb-2"> What to Expect </h4> <p className="text-sm text-slate-600"> In-person admission to the forum is free. The event will be live-streamed on YouTube for those unable to attend in person. Audience members are expected to maintain respectful behavior during moderated portions. </p> </div> </div> },
@@ -943,10 +951,10 @@
             </div>
         </Card>
     );
- };
+};
 
- // --- Pages ---
- const HomePage: FC<PageProps> = memo(({ setActivePage }) => (
+// --- Pages ---
+const HomePage: FC<PageProps> = memo(({ setActivePage }) => (
     <div className="animate-fadeIn">
         <header className="relative bg-gradient-to-br from-slate-900 via-sky-800 to-indigo-900 text-white py-16 sm:py-20 md:py-28 px-4 text-center rounded-b-2xl shadow-2xl overflow-hidden">
             <DotPattern dotColor="text-sky-700 opacity-10" rows={8} cols={10} />
@@ -1016,9 +1024,9 @@
             </div>
         </section>
     </div>
- ));
+));
 
- const AboutPage: FC = memo(() => {
+const AboutPage: FC = memo(() => {
     const teamMembers = useMemo(() => [
         { name: "Parth Gupta", role: "Co-Founder", bio: "A West Windsor resident for 14 years and student at the Lawrenceville School. Parth is a runner for the Lawrenceville School as part of their cross-country and track and field teams. Parth has been playing piano for 10 years and has co-organized piano Performathons to raise money for the Children's Hospital of Philadelphia.", image: "/parth.png" },
         { name: "Darshan Chidambaram", role: "Co-Founder", bio: "A West Windsor resident for 8 years and a student at the Lawrenceville School. Darshan is an active tennis player for the Lawrenceville School and debater on the national debate circuit.", image: "/darshan.png" },
@@ -1072,9 +1080,9 @@
             </Card>
         </div>
     );
- });
+});
 
- const ProjectCard: FC<ProjectCardProps> = memo(({ project, setActivePage }) => {
+const ProjectCard: FC<ProjectCardProps> = memo(({ project, setActivePage }) => {
     const handleCardClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
         if ((e.target as HTMLElement).closest('a, button')) return;
         if (project.redirectTo) setActivePage(project.redirectTo);
@@ -1118,9 +1126,9 @@
             </div>
         </Card>
     );
- });
+});
 
- const ProjectsPage: FC<PageProps> = ({ setActivePage }) => (
+const ProjectsPage: FC<PageProps> = ({ setActivePage }) => (
     <div className="container mx-auto py-10 sm:py-12 md:py-16 px-4 animate-fadeIn">
         <div className="text-center mb-10 sm:mb-12 md:mb-16">
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-800 mb-2 sm:mb-3"> Our Initiatives </h1>
@@ -1132,9 +1140,9 @@
             {projectsData.map((project) => ( <ProjectCard key={project.id} project={project} setActivePage={setActivePage} /> ))}
         </div>
     </div>
- );
+);
 
- const ProjectDetailPage: FC<ProjectDetailPageProps> = ({ project, setActivePage }) => {
+const ProjectDetailPage: FC<ProjectDetailPageProps> = ({ project, setActivePage }) => {
     if (!project) {
         return (
             <div className="container mx-auto py-12 px-4 text-center">
@@ -1175,9 +1183,9 @@
             </Card>
         </div>
     );
- };
+};
 
- const EventsPage: FC<PageProps> = ({ setActivePage }) => (
+const EventsPage: FC<PageProps> = ({ setActivePage }) => (
     <div className="min-h-screen bg-slate-100 font-body text-slate-700">
         <ForumHeader />
         <div className="container mx-auto px-4 py-8 space-y-8">
@@ -1199,9 +1207,9 @@
             </Card>
         </div>
     </div>
- );
+);
 
- const ContactPage: FC = () => {
+const ContactPage: FC = () => {
     const initialFormData = { name: "", email: "", message: "" };
     const [formData, setFormData] = useState(initialFormData);
     const [result, setResult] = useState("");
@@ -1301,11 +1309,23 @@
                                             <div className="min-w-0 flex-1">
                                                 <h3 className="font-semibold text-base sm:text-lg mb-1 sm:mb-2">Join Our Community</h3>
                                                 <p className="text-sky-100 mb-3 text-sm sm:text-base">Follow us for updates and events</p>
-                                                <a href="https://www.facebook.com/profile.php?id=61575121893868" target="_blank" rel="noopener noreferrer" className="inline-flex items-center bg-white bg-opacity-20 hover:bg-opacity-30 px-3 py-2 sm:px-4 sm:py-2 rounded-lg transition-all duration-200 group text-sm sm:text-base">
-                                                    <IconFacebook className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                                                    <span>Facebook</span>
-                                                    <IconExternalLink className="h-3 w-3 sm:h-4 sm:w-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                                                </a>
+                                                <div className="flex flex-wrap gap-2">
+                                                    <a href="https://www.facebook.com/profile.php?id=61575121893868" target="_blank" rel="noopener noreferrer" className="inline-flex items-center bg-white bg-opacity-20 hover:bg-opacity-30 px-3 py-2 sm:px-4 sm:py-2 rounded-lg transition-all duration-200 group text-sm sm:text-base">
+                                                        <IconFacebook className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                                                        <span>Facebook</span>
+                                                        <IconExternalLink className="h-3 w-3 sm:h-4 sm:w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                                                    </a>
+                                                    <a href="https://instagram.com/westwindsorforward" target="_blank" rel="noopener noreferrer" className="inline-flex items-center bg-white bg-opacity-20 hover:bg-opacity-30 px-3 py-2 sm:px-4 sm:py-2 rounded-lg transition-all duration-200 group text-sm sm:text-base">
+                                                        <IconInstagram className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                                                        <span>Instagram</span>
+                                                        <IconExternalLink className="h-3 w-3 sm:h-4 sm:w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                                                    </a>
+                                                    <a href="https://x.com/westwindsorfwd" target="_blank" rel="noopener noreferrer" className="inline-flex items-center bg-white bg-opacity-20 hover:bg-opacity-30 px-3 py-2 sm:px-4 sm:py-2 rounded-lg transition-all duration-200 group text-sm sm:text-base">
+                                                        <IconX className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                                                        <span>X</span>
+                                                        <IconExternalLink className="h-3 w-3 sm:h-4 sm:w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                                                    </a>
+                                                </div>
                                             </div>
                                         </div>
 
@@ -1468,10 +1488,10 @@
             </div>
         </div>
     );
- };
+};
 
- // --- Main App Component ---
- function App() {
+// --- Main App Component ---
+function App() {
     const [activePage, setActivePage] = useState<PageName>("Home");
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
@@ -1542,12 +1562,12 @@
             <Footer setActivePage={navigateToPage} />
         </div>
     );
- }
+}
 
- export default App;
+export default App;
 
- // --- Style injection ---
- if (typeof window !== "undefined") {
+// --- Style injection ---
+if (typeof window !== "undefined") {
     const styleSheet = document.createElement("style");
     styleSheet.type = "text/css";
     styleSheet.innerText = `
@@ -1642,4 +1662,4 @@
     fontLinkLora.rel = "stylesheet";
     fontLinkLora.href = "https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600;1,700&display=swap";
     document.head.appendChild(fontLinkLora);
- }
+}
