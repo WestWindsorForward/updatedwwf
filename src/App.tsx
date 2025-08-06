@@ -471,7 +471,7 @@
     milestones: [
         { id: 1, title: "Completed: Venue & Panelists Secured", description: "Kelsey Theatre confirmed, distinguished panelists recruited, partnerships established", completed: true, date: "Completed" },
         { id: 2, title: "In Progress: Candidate Invitations & Agreements", description: "Formal invitations sent to all declared candidates, agreements being collected", completed: false, date: "In Progress" },
-        { id: 3, title: "Upcoming: Community Engagement & Promotion", description: "Public awareness campaign, ticket distribution, volunteer recruitment", completed: false, date: "August - September 2025" },
+        { id: 3, title: "In Progress:: Community Engagement & Promotion", description: "Public awareness campaign, ticket distribution, volunteer recruitment", completed: false, date: "In Progress: August - September 2025" },
         { id: 4, title: "Upcoming: Forum Event Day", description: "Live forum with streaming, Q&A sessions, and community engagement", completed: false, date: "September 25, 2025" },
     ],
     requirements: { council: "At least 3 council candidates participating OR candidates from at least 2 different tickets with minimum 3 total candidates running", mayor: "At least 2 mayoral candidates participating" },
