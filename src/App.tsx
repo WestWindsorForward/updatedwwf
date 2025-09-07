@@ -839,9 +839,9 @@ const PanelistSection: FC = () => {
         <Card className="p-0">
             <div className="p-4 sm:p-6 md:p-8">
                 <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-6 text-center"> Distinguished Panelists </h2>
-                <div className="grid md:grid-cols-3 gap-6">
+                <div className="flex flex-wrap justify-center items-start gap-6">
                     {forumData.panelists.map((panelist) => (
-                        <div key={panelist.id} className="flex flex-col">
+                        <div key={panelist.id} className="flex flex-col w-full max-w-sm">
                             <div className={`text-center p-6 rounded-xl border transition-all duration-300 cursor-pointer flex flex-col h-full ${selectedPanelistId === panelist.id ? "border-sky-500 bg-sky-50 shadow-lg" : "border-gray-200 hover:border-sky-300 hover:shadow-md"}`} onClick={() => setSelectedPanelistId(selectedPanelistId === panelist.id ? null : panelist.id)}>
                                 <img src={panelist.imageUrl || `https://placehold.co/150x150/E0F2FE/0C4A6E?text=${panelist.name.substring(0, 1)}${panelist.name.split(" ")[1]?.substring(0, 1) || ""}&font=Lora`} alt={panelist.name} className="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-sky-200 object-cover shadow-sm" onError={(e) => { (e.target as HTMLImageElement).onerror = null; (e.target as HTMLImageElement).src = `https://placehold.co/150x150/CCCCCC/FFFFFF?text=Panelist&font=Lora`; }} />
                                 <div className="flex-grow flex flex-col">
