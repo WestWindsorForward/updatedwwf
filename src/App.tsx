@@ -467,7 +467,6 @@ const forumData = {
     forumParts: [
         { id: 1, title: "Panelist Q&A Sessions", description: "Equal time Q&A sessions for Mayoral and Council candidates with questions from our distinguished panelists", location: "Main Theatre", iconType: "microphone" },
         { id: 2, title: "Town Hall Q&A", description: "Community-driven Q&A where residents can submit questions for candidates to address", location: "Main Theatre", iconType: "users" },
-        { id: 3, title: "Meet & Greet", description: "Informal conversations between candidates and voters, plus community organization tables", location: "Theatre Lobby", iconType: "lightbulb" },
     ],
     milestones: [
         { id: 1, title: "Completed: Venue & Panelists Secured", description: "Kelsey Theatre confirmed, distinguished panelists recruited, partnerships established", completed: true, date: "Completed" },
@@ -476,7 +475,7 @@ const forumData = {
         { id: 4, title: "Upcoming: Forum Event Day", description: "Live forum with streaming, Q&A sessions, and community engagement", completed: false, date: "September 25, 2025" },
     ],
     requirements: { council: "At least 3 council candidates participating OR candidates from at least 2 different tickets with minimum 3 total candidates running", mayor: "At least 2 mayoral candidates participating" },
-    volunteerRoles: ["Event Setup & Logistics", "Attendee Greeting & Check-in", "Camera & Live Stream Operation", "Question Collection & Management", "Community Organization Coordination", "Post-Event Cleanup"],
+    volunteerRoles: ["Event Setup & Logistics", "Attendee Greeting & Check-in", "Camera & Live Stream Operation", "Question Collection & Management", "Post-Event Cleanup"],
     pressCoverage: [
         { id: 1, title: "Civic group plans forum for 2025 election", source: "West Windsor Plainsboro News", url: "https://issuu.com/communitynewsservice/docs/6-25_wwp/4" },
         { id: 2, title: "2025 West Windsor Candidate Forum Announced", source: "West Windsor Peeps", url: "https://westwindsorpeeps.com/west-windsor-candidate-forum/" },
@@ -784,9 +783,9 @@ const ForumFormatSection: FC = () => {
         <Card hasDotPattern className="p-0">
             <div className="p-4 sm:p-6 md:p-8">
                 <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-6 text-center"> Forum Format & Structure </h2>
-                <div className="grid md:grid-cols-3 gap-6">
+                <div className="flex flex-wrap justify-center gap-6">
                     {forumData.forumParts.map((part) => (
-                        <div key={part.id} className="relative bg-gradient-to-br from-slate-50 to-sky-50 p-6 rounded-xl border border-sky-200 hover:shadow-lg transition-all duration-300">
+                        <div key={part.id} className="relative bg-gradient-to-br from-slate-50 to-sky-50 p-6 rounded-xl border border-sky-200 hover:shadow-lg transition-all duration-300 w-full max-w-md">
                             <div className="flex items-center mb-4">
                                 <div className="bg-sky-600 text-white p-2 rounded-lg mr-3 flex justify-center items-center"> {getIcon(part.iconType)} </div>
                                 <div>
@@ -920,8 +919,8 @@ const InteractiveSection: FC = () => {
 const KeyInformationSection: FC = () => {
     const [expandedSection, setExpandedSection] = useState<string | null>(null);
     const infoSections = [
-        { id: "attendance", title: "For Attendees", icon: <IconUsers />, content: <div className="space-y-4"> <div> <h4 className="font-semibold text-slate-800 mb-2">Why Attend?</h4> <ul className="space-y-2 text-sm text-slate-600"> <li>• Hear directly from candidates beyond campaign materials</li> <li> • Get answers to community questions during town hall session </li> <li>• Engage with fellow residents on important local issues</li> <li>• Meet candidates personally during informal session</li> <li>• Connect with local community organizations</li> </ul> </div> <div> <h4 className="font-semibold text-slate-800 mb-2"> What to Expect </h4> <p className="text-sm text-slate-600"> In-person admission to the forum is free. The event will be live-streamed on YouTube for those unable to attend in person. Audience members are expected to maintain respectful behavior during moderated portions. </p> </div> </div> },
-        { id: "candidates", title: "For Candidates", icon: <IconMicrophone />, content: <div className="space-y-4"> <div> <h4 className="font-semibold text-slate-800 mb-2"> Participation Benefits </h4> <ul className="space-y-2 text-sm text-slate-600"> <li>• Present your platform to engaged community audience</li> <li>• Reach broader audience through live streaming</li> <li>• Participate in fair, moderated discussion format</li> <li>• Connect directly with voters during meet-and-greet</li> </ul> </div> <div> <h4 className="font-semibold text-slate-800 mb-2">Requirements</h4> <p className="text-sm text-slate-600"> Candidates must arrive by 6:30 PM for briefing, agree to ground rules including professional conduct and time limits, and sign participation agreement by September 10th, 2025. </p> </div> </div> },
+        { id: "attendance", title: "For Attendees", icon: <IconUsers />, content: <div className="space-y-4"> <div> <h4 className="font-semibold text-slate-800 mb-2">Why Attend?</h4> <ul className="space-y-2 text-sm text-slate-600"> <li>• Hear directly from candidates beyond campaign materials</li> <li> • Get answers to community questions during town hall session </li> <li>• Engage with fellow residents on important local issues</li> </ul> </div> <div> <h4 className="font-semibold text-slate-800 mb-2"> What to Expect </h4> <p className="text-sm text-slate-600"> In-person admission to the forum is free. The event will be live-streamed on YouTube for those unable to attend in person. Audience members are expected to maintain respectful behavior during moderated portions. </p> </div> </div> },
+        { id: "candidates", title: "For Candidates", icon: <IconMicrophone />, content: <div className="space-y-4"> <div> <h4 className="font-semibold text-slate-800 mb-2"> Participation Benefits </h4> <ul className="space-y-2 text-sm text-slate-600"> <li>• Present your platform to an engaged community audience</li> <li>• Reach a broader audience through live streaming</li> <li>• Participate in a fair, moderated discussion format</li> </ul> </div> <div> <h4 className="font-semibold text-slate-800 mb-2">Requirements</h4> <p className="text-sm text-slate-600"> Candidates must arrive by 6:30 PM for briefing, agree to ground rules including professional conduct and time limits, and sign a participation agreement. </p> </div> </div> },
         { id: "rules", title: "Ground Rules & Guidelines", icon: <IconDocument />, content: <div className="space-y-4"> <div> <h4 className="font-semibold text-slate-800 mb-2"> Candidate Conduct </h4> <ul className="space-y-2 text-sm text-slate-600"> <li>• Strict time limits enforced by moderator</li> <li>• Equal speaking opportunities for all candidates</li> <li>• One rebuttal opportunity per question</li> <li>• Professional attire required (no political slogans)</li> <li>• No personal attacks or derogatory comments</li> <li>• Electronic devices silenced during forum</li> </ul> </div> <div> <h4 className="font-semibold text-slate-800 mb-2"> Audience Guidelines </h4> <ul className="space-y-2 text-sm text-slate-600"> <li>• Silent observation during moderated portions</li> <li>• Questions submitted in writing only</li> <li>• No political displays or materials in theatre</li> <li>• Recording prohibited (except official stream)</li> </ul> </div> </div> },
     ];
     return (
