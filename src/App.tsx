@@ -13,7 +13,6 @@ const IconCheckCircle: FC<{className?: string}> = ({className}) => ( <svg xmlns=
 const IconChevronDown: FC<{className?: string}> = ({className}) => ( <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${className}`} viewBox="0 0 20 20" fill="currentColor"> <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" /> </svg> );
 const IconChevronUp: FC<{className?: string}> = ({className}) => ( <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${className}`} viewBox="0 0 20 20" fill="currentColor"> <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" /> </svg> );
 const IconExternalLink: FC<{className?: string}> = ({className}) => ( <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 ${className}`} viewBox="0 0 20 20" fill="currentColor"> <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" /> <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" /> </svg> );
-const IconQuestionMark: FC<{className?: string}> = ({className}) => ( <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${className}`} viewBox="0 0 20 20" fill="currentColor"> <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" /> </svg> );
 const IconLightBulb: FC = () => ( <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"> <path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1h4v1a2 2 0 11-4 0zM12 14c.015-.34.208-.646.477-.859a4 4 0 10-4.954 0c.27.213.462.519.477.859h4z" /> </svg> );
 const IconMicrophone: FC = () => ( <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"> <path fillRule="evenodd" d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm4 10.93A7.001 7.001 0 0017 8a1 1 0 10-2 0A5 5 0 015 8a1 1 0 00-2 0 7.001 7.001 0 006 6.93V17H6a1 1 0 100 2h8a1 1 0 100-2h-3v-2.07z" clipRule="evenodd" /> </svg> );
 const IconDocument: FC<{className?: string}> = ({className}) => ( <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${className}`} viewBox="0 0 20 20" fill="currentColor"> <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" /> </svg> );
@@ -27,9 +26,10 @@ const IconMenu: FC = () => ( <svg xmlns="http://www.w3.org/2000/svg" className="
 const IconClose: FC = () => ( <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}> <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /> </svg> );
 
 // --- Type Definitions ---
+interface ModalProps { isOpen: boolean; onClose: () => void; children: ReactNode; }
 interface DotPatternProps { className?: string; dotColor?: string; rows?: number; cols?: number; }
 interface CardProps { children: ReactNode; className?: string; noHoverEffect?: boolean; hasDotPattern?: boolean; onClick?: (e: React.MouseEvent<HTMLDivElement>) => void; }
-interface ButtonProps { children?: ReactNode; onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void; type?: 'primary' | 'secondary' | 'success' | 'warning'; className?: string; icon?: ReactNode; isSubmit?: boolean; disabled?: boolean; size?: 'sm' | 'md' | 'lg'; }
+interface ButtonProps { children?: ReactNode; onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void; type?: 'primary' | 'secondary' | 'success' | 'warning'; className?: string; icon?: ReactNode; isSubmit?: boolean; disabled?: boolean; size?: 'sm' | 'md' | 'lg'; href?: string; }
 type PageName = "Home" | "About" | "Projects" | "Events" | "Contact" | "ProjectDetails";
 interface Project { id: number; slug: string; title: string; shortGoal: string; status: string; description: string; image: string; partnerOrganizations: string[]; redirectTo?: PageName; goal?: string; impact?: string; timeline?: { stage: string; details: string; completed: boolean; }[]; getInvolved?: string; fundingSources?: string[]; initiatives?: { title: string; description: string; icon: ReactNode; status: string; }[]; }
 interface NavbarProps { setActivePage: (page: PageName, project?: Project | null) => void; activePage: PageName; selectedProject: Project | null; }
@@ -39,6 +39,35 @@ interface ProjectDetailPageProps { project: Project | null; setActivePage: (page
 interface FooterProps { setActivePage: (page: PageName) => void; }
 
 // --- Helper Components ---
+const Modal: FC<ModalProps> = ({ isOpen, onClose, children }) => {
+    if (!isOpen) return null;
+
+    return (
+        <div 
+            className="fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center p-4 animate-fadeIn"
+            onClick={onClose}
+            aria-modal="true"
+            role="dialog"
+        >
+            <div 
+                className="relative bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-slideDown"
+                onClick={e => e.stopPropagation()}
+            >
+                <button 
+                    onClick={onClose}
+                    className="absolute top-2 right-2 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
+                    aria-label="Close modal"
+                >
+                    <IconClose />
+                </button>
+                <div className="p-6 sm:p-8">
+                    {children}
+                </div>
+            </div>
+        </div>
+    );
+};
+
 const DotPattern: FC<DotPatternProps> = memo(({ className = "", dotColor = "text-sky-200 opacity-5", rows = 6, cols = 8 }) => {
     const dots = useMemo(() => {
         const totalDots = Math.min(rows * cols * 4, 100);
@@ -81,10 +110,32 @@ const Card: FC<CardProps> = memo(({ children, className = "", noHoverEffect = fa
     </div>
 ));
 
-const Button: FC<ButtonProps> = memo(({ children, onClick, type = "primary", className = "", icon, isSubmit = false, disabled = false, size = "md" }) => {
+const Button: FC<ButtonProps> = memo(({ children, onClick, type = "primary", className = "", icon, isSubmit = false, disabled = false, size = "md", href }) => {
     const baseStyle = `inline-flex items-center justify-center rounded-lg font-semibold transition-all duration-200 ease-in-out transform hover:scale-103 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-opacity-75 shadow-md hover:shadow-lg will-change-transform ${disabled ? "opacity-50 cursor-not-allowed" : ""}`;
     const sizeStyles = { sm: "px-3 py-1.5 text-xs", md: "px-4 py-2 sm:px-5 sm:py-2.5 text-xs sm:text-sm", lg: "px-6 py-3 text-sm sm:text-base" };
     const typeStyle = type === "primary" ? "bg-sky-600 hover:bg-sky-700 text-white focus:ring-sky-500" : type === "secondary" ? "bg-slate-200 hover:bg-slate-300 text-slate-800 focus:ring-slate-400" : type === "success" ? "bg-green-600 hover:bg-green-700 text-white focus:ring-green-500" : type === "warning" ? "bg-amber-600 hover:bg-amber-700 text-white focus:ring-amber-500" : "bg-slate-200 hover:bg-slate-300 text-slate-800 focus:ring-slate-400";
+    
+    const content = (
+        <>
+            {icon && !children && <span>{icon}</span>}
+            {icon && children && <span className="mr-2">{icon}</span>}
+            {children}
+        </>
+    );
+
+    if (href) {
+        return (
+            <a
+                href={href}
+                className={`${baseStyle} ${typeStyle} ${sizeStyles[size]} ${className}`}
+                style={{ transform: 'translateZ(0)' }}
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                {content}
+            </a>
+        );
+    }
     
     const handleClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
         if (onClick && !disabled) {
@@ -99,9 +150,7 @@ const Button: FC<ButtonProps> = memo(({ children, onClick, type = "primary", cla
             disabled={disabled}
             style={{ transform: 'translateZ(0)' }}
         >
-            {icon && !children && <span>{icon}</span>}
-            {icon && children && <span className="mr-2">{icon}</span>}
-            {children}
+            {content}
         </button>
     );
 });
@@ -117,14 +166,7 @@ const forumData = {
         { id: 1, title: "Panelist Q&A Sessions", description: "Equal time Q&A sessions for Mayoral and Council candidates with questions from our distinguished panelists", location: "Main Theatre", iconType: "microphone" },
         { id: 2, title: "Town Hall Q&A", description: "Community-driven Q&A where residents can submit questions for candidates to address", location: "Main Theatre", iconType: "users" },
     ],
-    milestones: [
-        { id: 1, title: "Completed: Venue & Panelists Secured", description: "Kelsey Theatre confirmed, distinguished panelists recruited, partnerships established", completed: true, date: "Completed" },
-        { id: 2, title: "In Progress: Candidate Invitations & Agreements", description: "Formal invitations sent to all declared candidates, agreements being collected", completed: false, date: "In Progress" },
-        { id: 3, title: "In Progress: Community Engagement & Promotion", description: "Public awareness campaign, ticket distribution, volunteer recruitment", completed: false, date: "In Progress: August - September 2025" },
-        { id: 4, title: "Upcoming: Forum Event Day", description: "Live forum with streaming, Q&A sessions, and community engagement", completed: false, date: "September 25, 2025" },
-    ],
     requirements: { council: "At least 3 council candidates participating OR candidates from at least 2 different tickets with minimum 3 total candidates running", mayor: "At least 2 mayoral candidates participating" },
-    volunteerRoles: ["Event Setup & Logistics", "Attendee Greeting & Check-in", "Camera & Live Stream Operation", "Question Collection & Management", "Post-Event Cleanup"],
     pressCoverage: [
         { id: 1, title: "Civic group plans forum for 2025 election", source: "West Windsor Plainsboro News", url: "https://issuu.com/communitynewsservice/docs/6-25_wwp/4" },
         { id: 2, title: "2025 West Windsor Candidate Forum Announced", source: "West Windsor Peeps", url: "https://westwindsorpeeps.com/west-windsor-candidate-forum/" },
@@ -133,7 +175,7 @@ const forumData = {
 };
 
 const projectsData: Project[] = [
-    { id: 1, slug: "candidate-forum-2025", title: "2025 Candidate Forum Initiative", shortGoal: "Fostering informed civic participation.", status: "Cancelled", description: "An initiative to restore a vital civic tradition by providing a non-partisan platform for Mayoral and Council candidates. Though cancelled, this project highlights our commitment to informed local democracy.", image: "/2025 Forum Graphic.png", partnerOrganizations: ["League of Women Voters of the Greater Princeton Area"], redirectTo: "Events" },
+    { id: 1, slug: "candidate-forum-2025", title: "2025 Candidate Forum Initiative", shortGoal: "Fostering informed civic participation.", status: "Cancelled", description: "An initiative to restore a vital civic tradition by providing a non-partisan platform for candidates. Though cancelled, this project highlights our commitment to informed local democracy.", image: "/2025 Forum Graphic.png", partnerOrganizations: ["League of Women Voters of the Greater Princeton Area"], redirectTo: "Events" },
     { id: 2, slug: "princeton-junction-station-improvement", title: "Princeton Junction Station Improvement Project", shortGoal: "Revitalizing our key transit hub.", goal: "To transform the Princeton Junction Station into a welcoming, aesthetically appealing, and culturally reflective community hub that serves all users.", status: "Early Planning & Proposal Development", description: "This is a proposed comprehensive project to transform Princeton Junction Station—a vital asset serving over 4,000 NJ TRANSIT passengers daily and 123,000+ Amtrak passengers annually—into a vibrant community hub. We are developing plans for beautification efforts, community art installations, environmental initiatives, and programming to enhance the daily experience for thousands of commuters while fostering community pride and connectivity. Currently in early planning stages with proposals being developed for potential partnerships.", impact: "Enhanced commuter experience for thousands of daily users, strengthened community identity through public art, environmental benefits through recycling and beautification programs, increased community engagement through events and programming, and preserved infrastructure value through maintenance and improvements.", timeline: [{ stage: "Completed: Concept Development & Research", details: "Initial research completed on station usage, community needs, and potential improvement opportunities. Concept proposal drafted.", completed: true }, { stage: "In Progress: Stakeholder Outreach & Partnership Development", details: "Reaching out to NJ TRANSIT, West Windsor Parking Authority, and community organizations to gauge interest and explore potential partnerships.", completed: false }, { stage: "Upcoming: Community Input & Proposal Refinement", details: "Gathering community feedback on proposed improvements and refining plans based on resident input and partnership possibilities.", completed: false }, { stage: "Upcoming: Implementation Planning", details: "If partnerships are established, develop detailed implementation timeline and begin coordination with relevant authorities.", completed: false }], getInvolved: "Share your ideas for station improvements, express interest in volunteering for future cleanup or beautification efforts, connect us with relevant community organizations, or let us know what would make your commuting experience better.", image: "https://www.westwindsorhistory.com/uploads/1/2/3/1/123111196/2018-12-08-pj-train-station-ticket-building_orig.jpg", partnerOrganizations: [], fundingSources: [], initiatives: [{ title: "Beautification & Maintenance", description: "Potential regular cleanup, landscaping, and seasonal decorations", icon: <IconLightBulb />, status: "Concept Phase" }, { title: "Art & Cultural Enhancement", description: "Proposed community murals, decorative elements, and cultural programming", icon: <IconPhotograph />, status: "Concept Phase" }, { title: "Environmental Initiatives", description: "Exploring recycling programs and sustainable improvements", icon: <IconRecycle />, status: "Concept Phase" }, { title: "Community Programming", description: "Ideas for events and community engagement opportunities", icon: <IconUsers />, status: "Concept Phase" }] },
 ];
 
@@ -287,7 +329,7 @@ const ForumHeader: FC = () => {
             <div className="relative z-10 container mx-auto text-center">
                  <div className="inline-block bg-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold mb-4"> EVENT CANCELLED </div>
                 <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 leading-tight"> 2025 Candidate Forum </h1>
-                <p className="text-lg sm:text-xl md:text-2xl text-sky-200 mb-6 max-w-3xl mx-auto"> An Initiative to Restore a Vital Civic Tradition in West Windsor </p>
+                <p className="text-lg sm:text-xl md:text-2xl text-sky-200 mb-6 max-w-3xl mx-auto"> Empowering West Windsor voters with direct access to candidates for Mayor and Township Council </p>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8 max-w-4xl mx-auto">
                     <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4"> <div className="font-semibold line-through">{forumData.date}</div> <div className="text-sm text-sky-200">Originally Scheduled Date</div> </div>
                     <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4"> <div className="font-semibold">Kelsey Theatre</div> <div className="text-sm text-sky-200">@ MCCC West Windsor</div> </div>
@@ -298,45 +340,37 @@ const ForumHeader: FC = () => {
     );
 };
 
-const CancellationNotice: FC = () => (
+const DocumentComparisonSection: FC = () => (
     <div className="container mx-auto px-4 pt-8">
-        <Card className="bg-amber-50 border-amber-200 p-0" noHoverEffect>
-            <div className="p-6 sm:p-8">
-                <h2 className="text-2xl font-bold text-amber-800 mb-4">An Update on the 2025 Candidate Forum</h2>
-                <div className="prose prose-sm sm:prose-base max-w-none text-amber-900">
-                    <p>It is with deep regret and disappointment that <strong>West Windsor Forward must announce the cancellation of our 2025 Candidate Forum, which was scheduled for September 25th.</strong> The forum has been cancelled because the campaigns for Mayor and Council were unable to agree on a format.</p>
-                    <p>This cancellation represents a significant loss for West Windsor residents, who were anticipating a direct and unbiased opportunity to hear from all certified candidates on the issues that matter most. The West Windsor Forward team invested ten months of effort, countless hours, and a great deal of resources into restoring this vital civic tradition.</p>
-                    <p>We extend our deepest gratitude to all who supported our efforts. We are especially thankful for the unwavering support of the <strong>League of Women Voters of the Greater Princeton Area</strong> (lwvprinceton.org), and we encourage everyone in West Windsor to support their longstanding commitment to informing voters in Central Jersey. We also thank our panelists, <strong>Micah Rasmussen and David Matthau</strong>, for their immense trust in us and their invaluable assistance. We would also like to express our sincere appreciation to <strong>Mercer County Community College and the Kelsey Theatre</strong> for their generosity in offering their venue and their patience throughout our planning process. To everyone who offered to volunteer, your commitment to our town and its residents was a true inspiration. Finally, to the community, your words of encouragement privately, on our social media, and at our tabling events reaffirmed our efforts throughout this process.</p>
-                    <p>While this is a disappointing outcome, it does not mark the end of West Windsor Forward's commitment to civic engagement. We will remain actively involved in this year's Municipal election through other non-partisan projects focused on informing voters, including <strong>working with both campaigns to set up informative interviews for the community.</strong> We will also continue our other community-focused projects, such as pushing for our adoption of the Princeton Junction Train Station. We encourage residents to submit ideas for further civic and community initiatives by emailing us at contact@westwindsorforward.org.</p>
-                    <p>The last Mayoral and Council forums were held in 2017. The cancellation of this event—after coming so close to reinstating this tradition—is a worrying development for the health of the democratic process in West Windsor. Our town deserves and needs constructive, productive, and fair dialogue. It is on all of us, as a community, to advocate for that standard in subsequent election cycles. The future of our town's civic health depends on the collective voice of its citizens demanding accountability.</p>
-                    <p>Sincerely,
-                    <br />Parth Gupta and Darshan Chidambaram
-                    <br />Co-Executive Directors @ West Windsor Forward</p>
+        <Card noHoverEffect>
+             <div className="p-6 sm:p-8">
+                <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-4 text-center">Forum Format Agreements</h2>
+                <p className="text-center text-slate-600 mb-6 max-w-3xl mx-auto">The forum was cancelled because the two campaigns could not agree on a format. To provide transparency, we will share the final terms each campaign agreed to.</p>
+                <div className="grid md:grid-cols-2 gap-6">
+                    <div className="bg-slate-50 p-6 rounded-lg border border-slate-200 text-center">
+                        <h3 className="font-bold text-slate-700 mb-2">TeamMarathe4WW Agreed Terms</h3>
+                        <p className="text-sm text-slate-500 mb-4">The final rules and format agreement from the Marathe campaign.</p>
+                        {/* TO-DO: When the PDF is ready, place it in the /public folder 
+                            and change the href to "/filename.pdf" and remove the disabled prop.
+                        */}
+                        <Button type="secondary" icon={<IconDocument/>} disabled>
+                            View Terms (PDF)
+                        </Button>
+                    </div>
+                     <div className="bg-slate-50 p-6 rounded-lg border border-slate-200 text-center">
+                        <h3 className="font-bold text-slate-700 mb-2">WW Together Agreed Terms</h3>
+                        <p className="text-sm text-slate-500 mb-4">The final rules and format agreement from the WW Together campaign.</p>
+                         {/* TO-DO: When the PDF is ready, place it in the /public folder 
+                            and change the href to "/filename.pdf" and remove the disabled prop.
+                        */}
+                        <Button type="secondary" icon={<IconDocument/>} disabled>
+                            View Terms (PDF)
+                        </Button>
+                    </div>
                 </div>
             </div>
         </Card>
     </div>
-);
-
-
-const ProgressSection: FC = () => (
-    <Card className="bg-gradient-to-r from-sky-50 to-indigo-50 border-sky-200 p-0">
-        <div className="p-4 sm:p-6 md:p-8">
-            <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-4"> Forum Milestones </h2>
-            <div className="grid gap-4">
-                {forumData.milestones.map((milestone) => (
-                    <div key={milestone.id} className={`flex items-start p-4 rounded-lg border-l-4 ${milestone.completed ? "border-green-500 bg-green-50" : "border-sky-500 bg-sky-50"}`}>
-                        <div className="mr-3 mt-1"> {milestone.completed ? <IconCheckCircle className="h-6 w-6 text-green-600" /> : <IconClock className="h-6 w-6 text-sky-600" />} </div>
-                        <div className="flex-1">
-                            <h3 className="font-semibold text-slate-800 mb-1">{milestone.title}</h3>
-                            <p className="text-sm text-slate-600 mb-2">{milestone.description}</p>
-                            <span className="text-xs font-medium text-slate-500">{milestone.date}</span>
-                        </div>
-                    </div>
-                ))}
-            </div>
-        </div>
-    </Card>
 );
 
 const ForumFormatSection: FC = () => {
@@ -349,7 +383,7 @@ const ForumFormatSection: FC = () => {
     return (
         <Card hasDotPattern className="p-0">
             <div className="p-4 sm:p-6 md:p-8">
-                <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-6 text-center"> Planned Forum Format & Structure </h2>
+                <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-6 text-center"> Forum Format & Structure </h2>
                 <div className="flex flex-wrap justify-center gap-6">
                     {forumData.forumParts.map((part) => (
                         <div key={part.id} className="relative bg-gradient-to-br from-slate-50 to-sky-50 p-6 rounded-xl border border-sky-200 hover:shadow-lg transition-all duration-300 w-full max-w-md">
@@ -403,7 +437,7 @@ const PanelistSection: FC = () => {
     return (
         <Card className="p-0">
             <div className="p-4 sm:p-6 md:p-8">
-                <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-6 text-center"> Planned Distinguished Panelists </h2>
+                <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-6 text-center"> Distinguished Panelists </h2>
                 <div className="flex flex-wrap justify-center items-start gap-6">
                     {forumData.panelists.map((panelist) => (
                         <div key={panelist.id} className="flex flex-col w-full max-w-sm">
@@ -443,7 +477,7 @@ const KeyInformationSection: FC = () => {
     return (
         <Card className="p-0">
             <div className="p-4 sm:p-6 md:p-8">
-                <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-6 text-center"> Archived Planning Information </h2>
+                <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-6 text-center"> Important Information </h2>
                 <div className="space-y-4">
                     {infoSections.map((section) => (
                         <div key={section.id} className="border border-gray-200 rounded-lg overflow-hidden">
@@ -702,22 +736,51 @@ const ProjectDetailPage: FC<ProjectDetailPageProps> = ({ project, setActivePage 
     );
 };
 
-const EventsPage: FC<PageProps> = ({ setActivePage }) => (
-    <div className="min-h-screen bg-slate-100 font-body text-slate-700">
-        <CancellationNotice />
-        <ForumHeader />
-        <div className="container mx-auto px-4 py-8 space-y-8">
-            <div className="text-center pt-4">
-                <h2 className="text-2xl font-bold text-slate-700">Forum Archive</h2>
-                <p className="text-slate-500">The following information is preserved to document the extensive planning and community effort involved in this initiative.</p>
+const EventsPage: FC<PageProps> = ({ setActivePage }) => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    useEffect(() => {
+        const hasSeenModal = sessionStorage.getItem('hasSeenCancellationModal');
+        if (!hasSeenModal) {
+            setIsModalOpen(true);
+            sessionStorage.setItem('hasSeenCancellationModal', 'true');
+        }
+    }, []);
+
+    const closeModal = () => setIsModalOpen(false);
+
+    return (
+        <div className="min-h-screen bg-slate-100 font-body text-slate-700">
+            <Modal isOpen={isModalOpen} onClose={closeModal}>
+                <h2 className="text-2xl font-bold text-amber-800 mb-4">An Update on the 2025 Candidate Forum</h2>
+                <div className="prose prose-sm sm:prose-base max-w-none text-slate-700">
+                     <p>It is with deep regret and disappointment that <strong>West Windsor Forward must announce the cancellation of our 2025 Candidate Forum, which was scheduled for September 25th.</strong> The forum has been cancelled because the campaigns for Mayor and Council were unable to agree on a format.</p>
+                    <p>This cancellation represents a significant loss for West Windsor residents, who were anticipating a direct and unbiased opportunity to hear from all certified candidates on the issues that matter most. The West Windsor Forward team invested ten months of effort, countless hours, and a great deal of resources into restoring this vital civic tradition.</p>
+                    <p>We extend our deepest gratitude to all who supported our efforts. We are especially thankful for the unwavering support of the <strong>League of Women Voters of the Greater Princeton Area</strong> (lwvprinceton.org), and we encourage everyone in West Windsor to support their longstanding commitment to informing voters in Central Jersey. We also thank our panelists, <strong>Micah Rasmussen and David Matthau</strong>, for their immense trust in us and their invaluable assistance. We would also like to express our sincere appreciation to <strong>Mercer County Community College and the Kelsey Theatre</strong> for their generosity in offering their venue and their patience throughout our planning process. To everyone who offered to volunteer, your commitment to our town and its residents was a true inspiration. Finally, to the community, your words of encouragement privately, on our social media, and at our tabling events reaffirmed our efforts throughout this process.</p>
+                    <p>While this is a disappointing outcome, it does not mark the end of West Windsor Forward's commitment to civic engagement. We will remain actively involved in this year's Municipal election through other non-partisan projects focused on informing voters, including <strong>working with both campaigns to set up informative interviews for the community.</strong> We will also continue our other community-focused projects, such as pushing for our adoption of the Princeton Junction Train Station. We encourage residents to submit ideas for further civic and community initiatives by emailing us at contact@westwindsorforward.org.</p>
+                    <p>The last Mayoral and Council forums were held in 2017. The cancellation of this event—after coming so close to reinstating this tradition—is a worrying development for the health of the democratic process in West Windsor. Our town deserves and needs constructive, productive, and fair dialogue. It is on all of us, as a community, to advocate for that standard in subsequent election cycles. The future of our town's civic health depends on the collective voice of its citizens demanding accountability.</p>
+                    <p>Sincerely,
+                    <br />Parth Gupta and Darshan Chidambaram
+                    <br />Co-Executive Directors @ West Windsor Forward</p>
+                </div>
+                 <Button onClick={closeModal} className="mt-6 w-full sm:w-auto">Close</Button>
+            </Modal>
+            
+            <ForumHeader />
+            <DocumentComparisonSection />
+            <div className="container mx-auto px-4 py-8 space-y-8">
+                <div className="text-center pt-4 border-t-2 border-slate-200 mt-8">
+                    <h2 className="text-2xl font-bold text-slate-700">Forum Initiative Archive</h2>
+                    <p className="text-slate-500 max-w-3xl mx-auto">The following information is preserved to document the extensive planning and community effort involved in this civic initiative.</p>
+                </div>
+                <PanelistSection />
+                <ForumFormatSection />
+                <KeyInformationSection />
+                <PressCoverageSection />
             </div>
-            <PanelistSection />
-            <ForumFormatSection />
-            <KeyInformationSection />
-            <PressCoverageSection />
         </div>
-    </div>
-);
+    );
+};
 
 const ContactPage: FC = () => {
     const initialFormData = { name: "", email: "", message: "" };
@@ -1081,21 +1144,19 @@ if (typeof window !== "undefined") {
       .prose strong { color: inherit; }
       
       @keyframes fadeIn {
-        from { opacity: 0; transform: translate3d(0, 15px, 0); }
-        to { opacity: 1; transform: translate3d(0, 0, 0); }
+        from { opacity: 0; }
+        to { opacity: 1; }
       }
       .animate-fadeIn {
-        animation: fadeIn 0.6s ease-out forwards;
-        will-change: transform, opacity;
+        animation: fadeIn 0.3s ease-out forwards;
       }
       
       @keyframes slideDown {
-        from { opacity: 0; transform: translate3d(0, -10px, 0); }
-        to { opacity: 1; transform: translate3d(0, 0, 0); }
+        from { transform: translateY(-20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
       }
       .animate-slideDown {
         animation: slideDown 0.3s ease-out forwards;
-        will-change: transform, opacity;
       }
       
       @keyframes pulse-slow {
