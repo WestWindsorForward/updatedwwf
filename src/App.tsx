@@ -169,6 +169,7 @@ const forumData = {
     requirements: { council: "At least 3 council candidates participating OR candidates from at least 2 different tickets with minimum 3 total candidates running", mayor: "At least 2 mayoral candidates participating" },
     pressCoverage: [
         { id: 1, title: "Civic group plans forum for 2025 election", source: "West Windsor Plainsboro News", url: "https://issuu.com/communitynewsservice/docs/6-25_wwp/4" },
+        { id: 4, title: "West Windsor civic group to host Sept. 25 candidate forum (Revised)", source: "West Windsor Plainsboro News", url: "https://www.communitynews.org/towns/west-windsor-plainsboro-news/west-windsor-civic-group-to-host-sept-25-candidate-forum-revised/article_89bdf018-35c6-417c-a3ba-dd46adad7094.html"},
         { id: 2, title: "2025 West Windsor Candidate Forum Announced", source: "West Windsor Peeps", url: "https://westwindsorpeeps.com/west-windsor-candidate-forum/" },
         { id: 3, title: "West Windsor to Host First Candidate Forum in Over a Decade at the Kelsey Theatre", source: "CentralJersey.com", url: "https://centraljersey.com/2025/05/05/west-windsor-candidate-forum-kelsey-theatre/" },
     ],
@@ -348,7 +349,7 @@ const DocumentComparisonSection: FC = () => (
                 <p className="text-center text-slate-600 mb-6 max-w-3xl mx-auto">The forum was cancelled because the two campaigns could not agree on a format. To provide transparency, we will share the final terms each campaign agreed to.</p>
                 <div className="grid md:grid-cols-2 gap-6">
                     <div className="bg-slate-50 p-6 rounded-lg border border-slate-200 text-center">
-                        <h3 className="font-bold text-slate-700 mb-2">TeamMarathe4WW Agreed Terms + Original Format</h3>
+                        <h3 className="font-bold text-slate-700 mb-2">TeamMarathe4WW Agreed Terms</h3>
                         <p className="text-sm text-slate-500 mb-4">The final rules and format agreement from the Marathe campaign.</p>
                         {/* TO-DO: When the PDF is ready, place it in the /public folder 
                             and change the href to "/filename.pdf" and remove the disabled prop.
@@ -358,7 +359,7 @@ const DocumentComparisonSection: FC = () => (
                         </Button>
                     </div>
                      <div className="bg-slate-50 p-6 rounded-lg border border-slate-200 text-center">
-                        <h3 className="font-bold text-slate-700 mb-2">WW Together Agreed Terms + Counterproposal</h3>
+                        <h3 className="font-bold text-slate-700 mb-2">WW Together Agreed Terms</h3>
                         <p className="text-sm text-slate-500 mb-4">The final rules and format agreement from the WW Together campaign.</p>
                          {/* TO-DO: When the PDF is ready, place it in the /public folder 
                             and change the href to "/filename.pdf" and remove the disabled prop.
@@ -488,14 +489,6 @@ const KeyInformationSection: FC = () => {
                             {expandedSection === section.id && <div className="px-4 pb-4 border-t border-gray-100">{section.content}</div>}
                         </div>
                     ))}
-                </div>
-                <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                    <h3 className="font-semibold text-blue-800 mb-2 flex items-center"> <IconExternalLink className="h-4 w-4 mr-2" /> Complete Documentation </h3>
-                    <p className="text-sm text-blue-700 mb-3"> For complete ground rules, candidate agreements, and detailed guidelines, view our official documents. </p>
-                    <div className="flex flex-col sm:flex-row gap-2">
-                        <Button type="secondary" size="sm" onClick={() => window.open("/WWF_Candidate_Forum_Public_Release.pdf", "_blank")} icon={<IconDocument />}> Public Release PDF </Button>
-                        <Button type="secondary" size="sm" onClick={() => window.open("/WWF_Candidate_Forum_Candidate_Agreement.pdf", "_blank")} icon={<IconDocument />}> Candidate Agreement </Button>
-                    </div>
                 </div>
             </div>
         </Card>
@@ -740,11 +733,8 @@ const EventsPage: FC<PageProps> = ({ setActivePage }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
-        const hasSeenModal = sessionStorage.getItem('hasSeenCancellationModal');
-        if (!hasSeenModal) {
-            setIsModalOpen(true);
-            sessionStorage.setItem('hasSeenCancellationModal', 'true');
-        }
+        // Show the modal every time the page is visited
+        setIsModalOpen(true);
     }, []);
 
     const closeModal = () => setIsModalOpen(false);
@@ -754,10 +744,10 @@ const EventsPage: FC<PageProps> = ({ setActivePage }) => {
             <Modal isOpen={isModalOpen} onClose={closeModal}>
                 <h2 className="text-2xl font-bold text-amber-800 mb-4">An Update on the 2025 Candidate Forum</h2>
                 <div className="prose prose-sm sm:prose-base max-w-none text-slate-700">
-                     <p>It is with deep regret and disappointment that <strong>West Windsor Forward must announce the cancellation of our 2025 Candidate Forum, which was scheduled for September 25th.</strong> The forum has been cancelled because the campaigns for Mayor and Council were unable to agree on a format.</p>
+                     <p><strong>West Windsor, NJ – September 18, 2025</strong> – It is with deep regret and disappointment that <strong>West Windsor Forward must announce the cancellation of our 2025 Candidate Forum, which was scheduled for September 25th.</strong> The forum has been cancelled because the campaigns for Mayor and Council were unable to agree on a format.</p>
                     <p>This cancellation represents a significant loss for West Windsor residents, who were anticipating a direct and unbiased opportunity to hear from all certified candidates on the issues that matter most. The West Windsor Forward team invested ten months of effort, countless hours, and a great deal of resources into restoring this vital civic tradition.</p>
                     <p>We extend our deepest gratitude to all who supported our efforts. We are especially thankful for the unwavering support of the <strong>League of Women Voters of the Greater Princeton Area</strong> (lwvprinceton.org), and we encourage everyone in West Windsor to support their longstanding commitment to informing voters in Central Jersey. We also thank our panelists, <strong>Micah Rasmussen and David Matthau</strong>, for their immense trust in us and their invaluable assistance. We would also like to express our sincere appreciation to <strong>Mercer County Community College and the Kelsey Theatre</strong> for their generosity in offering their venue and their patience throughout our planning process. To everyone who offered to volunteer, your commitment to our town and its residents was a true inspiration. Finally, to the community, your words of encouragement privately, on our social media, and at our tabling events reaffirmed our efforts throughout this process.</p>
-                    <p>While this is a disappointing outcome, it does not mark the end of West Windsor Forward's commitment to civic engagement. We will remain actively involved in this year's Municipal election through other non-partisan projects focused on informing voters, including <strong>working with both campaigns to set up informative interviews for the community.</strong> We will also continue our other community-focused projects, such as pushing for our adoption of the Princeton Junction Train Station. We encourage residents to submit ideas for further civic and community initiatives and to sign up to volunteer with us by emailing at contact@westwindsorforward.org.</p>
+                    <p>While this is a disappointing outcome, it does not mark the end of West Windsor Forward's commitment to civic engagement. We will remain actively involved in this year's Municipal election through other non-partisan projects focused on informing voters, including <strong>working with both campaigns to set up informative interviews for the community.</strong> We will also continue our other community-focused projects, such as pushing for our adoption of the Princeton Junction Train Station. We encourage residents to submit ideas for further civic and community initiatives. We are looking for High Schoolers who want to join us and make a difference in West Windsor to sign up to volunteer by emailing at contact@westwindsorforward.org.</p>
                     <p>The last Mayoral and Council forums were held in 2017. The cancellation of this event—after coming so close to reinstating this tradition—is a worrying development for the health of the democratic process in West Windsor. Our town deserves and needs constructive, productive, and fair dialogue. It is on all of us, as a community, to advocate for that standard in subsequent election cycles. The future of our town's civic health depends on the collective voice of its citizens demanding accountability.</p>
                     <p>Sincerely,
                     <br />Parth Gupta and Darshan Chidambaram
