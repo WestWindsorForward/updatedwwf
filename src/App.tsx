@@ -370,27 +370,21 @@ const DocumentComparisonSection: FC = () => (
 
 const StatementsSection: FC = () => (
     <div className="container mx-auto px-4">
-        <Card noHoverEffect>
-             <div className="p-6 sm:p-8">
+        <Card noHoverEffect className="p-0 overflow-hidden">
+             <div className="p-6 sm:p-8 bg-gradient-to-r from-sky-50 to-indigo-50">
                 <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-6 text-center">Official Statements</h2>
                 <div className="grid md:grid-cols-2 gap-6">
-                    <div className="bg-slate-50 p-6 rounded-lg border border-slate-200 text-center">
-                        <h3 className="font-bold text-slate-700 mb-2">West Windsor Forward Statement</h3>
-                        <p className="text-sm text-slate-500 mb-4">The official statement from West Windsor Forward regarding the forum's cancellation.</p>
-                        {/* TO-DO: When the PDF is ready, place it in the /public folder 
-                            and change the href to "/filename.pdf" and remove the disabled prop.
-                        */}
-                        <Button type="secondary" icon={<IconDocument/>} disabled>
+                    <div className="bg-white/60 backdrop-blur-sm p-6 rounded-lg border border-white/50 text-center shadow-lg">
+                        <h3 className="font-bold text-slate-700 mb-2">Our Official Statement</h3>
+                        <p className="text-sm text-slate-600 mb-4">The official statement from West Windsor Forward regarding the forum's cancellation.</p>
+                        <Button type="secondary" icon={<IconDocument/>} href="/West Windsor Forward - 2025 Candidate Forum Cancellation.pdf">
                             View Statement (PDF)
                         </Button>
                     </div>
-                     <div className="bg-slate-50 p-6 rounded-lg border border-slate-200 text-center">
-                        <h3 className="font-bold text-slate-700 mb-2">LWV of Greater Princeton Area Statement</h3>
-                        <p className="text-sm text-slate-500 mb-4">A statement from the League of Women Voters of the Greater Princeton Area.</p>
-                        {/* TO-DO: When the PDF is ready, place it in the /public folder 
-                            and change the href to "/filename.pdf" and remove the disabled prop.
-                        */}
-                        <Button type="secondary" icon={<IconDocument/>} disabled>
+                     <div className="bg-white/60 backdrop-blur-sm p-6 rounded-lg border border-white/50 text-center shadow-lg">
+                        <h3 className="font-bold text-slate-700 mb-2">League of Women Voters Statement</h3>
+                        <p className="text-sm text-slate-600 mb-4">A statement from our partners, the League of Women Voters of the Greater Princeton Area.</p>
+                        <Button type="secondary" icon={<IconDocument/>} href="/Cancellation of West Windsor Candidates.pdf">
                             View Statement (PDF)
                         </Button>
                     </div>
@@ -399,7 +393,6 @@ const StatementsSection: FC = () => (
         </Card>
     </div>
 );
-
 
 const ForumFormatSection: FC = () => {
     const getIcon = (iconType: string) => {
