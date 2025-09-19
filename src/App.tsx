@@ -356,7 +356,7 @@ const DocumentComparisonSection: FC = () => (
                         </Button>
                     </div>
                      <div className="bg-slate-50 p-6 rounded-lg border border-slate-200 text-center">
-                        <h3 className="font-bold text-slate-700 mb-2">WW Together Agreed Format (Counterproposal)</h3>
+                        <h3 className="font-bold text-slate-700 mb-2">West Windsor Together Agreed Format (Counterproposal)</h3>
                         <p className="text-sm text-slate-500 mb-4">The final rules and format agreement from the WW Together campaign.</p>
                         <Button type="secondary" icon={<IconDocument/>} href="/West Windsor Together Agreed Format (Counterproposal) .pdf">
                             View Terms (PDF)
