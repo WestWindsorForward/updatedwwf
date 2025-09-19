@@ -386,7 +386,7 @@ const StatementsSection: FC = () => (
                     </div>
                      <div className="bg-slate-50 p-6 rounded-lg border border-slate-200 text-center">
                         <h3 className="font-bold text-slate-700 mb-2">LWV of Greater Princeton Area Statement</h3>
-                        <p className="text-sm text-slate-500 mb-4">A statement from our partners, the League of Women Voters of the Greater Princeton Area.</p>
+                        <p className="text-sm text-slate-500 mb-4">A statement from the League of Women Voters of the Greater Princeton Area.</p>
                         {/* TO-DO: When the PDF is ready, place it in the /public folder 
                             and change the href to "/filename.pdf" and remove the disabled prop.
                         */}
