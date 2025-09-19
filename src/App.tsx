@@ -351,9 +351,7 @@ const DocumentComparisonSection: FC = () => (
                     <div className="bg-slate-50 p-6 rounded-lg border border-slate-200 text-center">
                         <h3 className="font-bold text-slate-700 mb-2">TeamMarathe4WW Agreed Format (Original)</h3>
                         <p className="text-sm text-slate-500 mb-4">The final rules and format agreement from the Marathe campaign.</p>
-                        {/* TO-DO: When the PDF is ready, place it in the /public folder 
-                            and change the href to "/filename.pdf" and remove the disabled prop.
-                        */}
+                        {West Windsor Together Agreed Format (Counterproposal) .pdf/}
                         <Button type="secondary" icon={<IconDocument/>} disabled>
                             View Terms (PDF)
                         </Button>
@@ -361,9 +359,7 @@ const DocumentComparisonSection: FC = () => (
                      <div className="bg-slate-50 p-6 rounded-lg border border-slate-200 text-center">
                         <h3 className="font-bold text-slate-700 mb-2">West Windsor Together Agreed Format (Counterproposal)</h3>
                         <p className="text-sm text-slate-500 mb-4">The final rules and format agreement from the WW Together campaign.</p>
-                         {/* TO-DO: When the PDF is ready, place it in the /public folder 
-                            and change the href to "/filename.pdf" and remove the disabled prop.
-                        */}
+                         {TeamMarathe4WW Agreed Format (Original) .pdf/}
                         <Button type="secondary" icon={<IconDocument/>} disabled>
                             View Terms (PDF)
                         </Button>
