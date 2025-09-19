@@ -346,7 +346,7 @@ const DocumentComparisonSection: FC = () => (
         <Card noHoverEffect>
              <div className="p-6 sm:p-8">
                 <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-4 text-center">Forum Format Agreements</h2>
-                <p className="text-center text-slate-600 mb-6 max-w-3xl mx-auto">The forum was cancelled because the two campaigns were unable to agree on a single, final format. All other aspects of the forum, including the date, time, venue, and panelists, were accepted by both campaigns. To provide full transparency on this specific point of disagreement, we are sharing the final format terms each campaign agreed to.</p>
+                <p className="text-center text-slate-600 mb-6 max-w-3xl mx-auto">The forum was cancelled because the two campaigns were unable to agree on a single, final format. All other aspects of the forum, including the date, time, venue, and panelists, were accepted by both campaigns. To provide full transparency on this specific point of disagreement, we are sharing the final format terms each campaign provided.</p>
                 <div className="grid md:grid-cols-2 gap-6">
                     <div className="bg-slate-50 p-6 rounded-lg border border-slate-200 text-center">
                         <h3 className="font-bold text-slate-700 mb-2">TeamMarathe4WW Agreed Format (Original)</h3>
@@ -356,7 +356,7 @@ const DocumentComparisonSection: FC = () => (
                         </Button>
                     </div>
                      <div className="bg-slate-50 p-6 rounded-lg border border-slate-200 text-center">
-                        <h3 className="font-bold text-slate-700 mb-2">West Windsor Together Agreed Format (Counterproposal)</h3>
+                        <h3 className="font-bold text-slate-700 mb-2">WW Together Agreed Format (Counterproposal)</h3>
                         <p className="text-sm text-slate-500 mb-4">The final rules and format agreement from the WW Together campaign.</p>
                         <Button type="secondary" icon={<IconDocument/>} href="/West Windsor Together Agreed Format (Counterproposal) .pdf">
                             View Terms (PDF)
@@ -367,6 +367,39 @@ const DocumentComparisonSection: FC = () => (
         </Card>
     </div>
 );
+
+const StatementsSection: FC = () => (
+    <div className="container mx-auto px-4">
+        <Card noHoverEffect>
+             <div className="p-6 sm:p-8">
+                <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-6 text-center">Official Statements</h2>
+                <div className="grid md:grid-cols-2 gap-6">
+                    <div className="bg-slate-50 p-6 rounded-lg border border-slate-200 text-center">
+                        <h3 className="font-bold text-slate-700 mb-2">West Windsor Forward Statement</h3>
+                        <p className="text-sm text-slate-500 mb-4">The official statement from West Windsor Forward regarding the forum's cancellation.</p>
+                        {/* TO-DO: When the PDF is ready, place it in the /public folder 
+                            and change the href to "/filename.pdf" and remove the disabled prop.
+                        */}
+                        <Button type="secondary" icon={<IconDocument/>} disabled>
+                            View Statement (PDF)
+                        </Button>
+                    </div>
+                     <div className="bg-slate-50 p-6 rounded-lg border border-slate-200 text-center">
+                        <h3 className="font-bold text-slate-700 mb-2">LWV of Greater Princeton Area Statement</h3>
+                        <p className="text-sm text-slate-500 mb-4">A statement from our partners, the League of Women Voters of the Greater Princeton Area.</p>
+                        {/* TO-DO: When the PDF is ready, place it in the /public folder 
+                            and change the href to "/filename.pdf" and remove the disabled prop.
+                        */}
+                        <Button type="secondary" icon={<IconDocument/>} disabled>
+                            View Statement (PDF)
+                        </Button>
+                    </div>
+                </div>
+            </div>
+        </Card>
+    </div>
+);
+
 
 const ForumFormatSection: FC = () => {
     const getIcon = (iconType: string) => {
@@ -751,6 +784,7 @@ const EventsPage: FC<PageProps> = ({ setActivePage }) => {
             
             <ForumHeader />
             <DocumentComparisonSection />
+            <StatementsSection />
             <div className="container mx-auto px-4 py-8 space-y-8">
                 <div className="text-center pt-4 border-t-2 border-slate-200 mt-8">
                     <h2 className="text-2xl font-bold text-slate-700">Forum Initiative Archive</h2>
