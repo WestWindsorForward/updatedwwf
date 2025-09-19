@@ -351,16 +351,14 @@ const DocumentComparisonSection: FC = () => (
                     <div className="bg-slate-50 p-6 rounded-lg border border-slate-200 text-center">
                         <h3 className="font-bold text-slate-700 mb-2">TeamMarathe4WW Agreed Format (Original)</h3>
                         <p className="text-sm text-slate-500 mb-4">The final rules and format agreement from the Marathe campaign.</p>
-                        {West Windsor Together Agreed Format (Counterproposal) .pdf/}
-                        <Button type="secondary" icon={<IconDocument/>} disabled>
+                        <Button type="secondary" icon={<IconDocument/>} href="/TeamMarathe4WW Agreed Format (Original) .pdf">
                             View Terms (PDF)
                         </Button>
                     </div>
                      <div className="bg-slate-50 p-6 rounded-lg border border-slate-200 text-center">
-                        <h3 className="font-bold text-slate-700 mb-2">West Windsor Together Agreed Format (Counterproposal)</h3>
+                        <h3 className="font-bold text-slate-700 mb-2">WW Together Agreed Format (Counterproposal)</h3>
                         <p className="text-sm text-slate-500 mb-4">The final rules and format agreement from the WW Together campaign.</p>
-                         {TeamMarathe4WW Agreed Format (Original) .pdf/}
-                        <Button type="secondary" icon={<IconDocument/>} disabled>
+                        <Button type="secondary" icon={<IconDocument/>} href="/West Windsor Together Agreed Format (Counterproposal) .pdf">
                             View Terms (PDF)
                         </Button>
                     </div>
