@@ -349,7 +349,7 @@ const DocumentComparisonSection: FC = () => (
                 <p className="text-center text-slate-600 mb-6 max-w-3xl mx-auto">The forum was cancelled because the two campaigns were unable to agree on a single, final format. All other aspects of the forum, including the date, time, venue, and panelists, were accepted by both campaigns. To provide full transparency on this specific point of disagreement, we are sharing the final format terms each campaign provided.</p>
                 <div className="grid md:grid-cols-2 gap-6">
                     <div className="bg-slate-50 p-6 rounded-lg border border-slate-200 text-center">
-                        <h3 className="font-bold text-slate-700 mb-2">TeamMarathe4WW Agreed Terms</h3>
+                        <h3 className="font-bold text-slate-700 mb-2">TeamMarathe4WW Agreed Format (Original)</h3>
                         <p className="text-sm text-slate-500 mb-4">The final rules and format agreement from the Marathe campaign.</p>
                         {/* TO-DO: When the PDF is ready, place it in the /public folder 
                             and change the href to "/filename.pdf" and remove the disabled prop.
@@ -359,7 +359,7 @@ const DocumentComparisonSection: FC = () => (
                         </Button>
                     </div>
                      <div className="bg-slate-50 p-6 rounded-lg border border-slate-200 text-center">
-                        <h3 className="font-bold text-slate-700 mb-2">WW Together Agreed Terms</h3>
+                        <h3 className="font-bold text-slate-700 mb-2">West Windsor Together Agreed Format (Counterproposal)</h3>
                         <p className="text-sm text-slate-500 mb-4">The final rules and format agreement from the WW Together campaign.</p>
                          {/* TO-DO: When the PDF is ready, place it in the /public folder 
                             and change the href to "/filename.pdf" and remove the disabled prop.
