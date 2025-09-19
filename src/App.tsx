@@ -346,7 +346,7 @@ const DocumentComparisonSection: FC = () => (
         <Card noHoverEffect>
              <div className="p-6 sm:p-8">
                 <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-4 text-center">Forum Format Agreements</h2>
-                <p className="text-center text-slate-600 mb-6 max-w-3xl mx-auto">The forum was cancelled because the two campaigns were unable to agree on a single, final format. All other aspects of the forum, including the date, time, venue, and panelists, were accepted by both campaigns. To provide full transparency on this specific point of disagreement, we are sharing the final format terms each campaign provided.</p>
+                <p className="text-center text-slate-600 mb-6 max-w-3xl mx-auto">The forum was cancelled because the two campaigns were unable to agree on a single, final format. All other aspects of the forum, including the date, time, venue, and panelists, were accepted by both campaigns. To provide full transparency on this specific point of disagreement, we are sharing the final format terms each campaign agreed to.</p>
                 <div className="grid md:grid-cols-2 gap-6">
                     <div className="bg-slate-50 p-6 rounded-lg border border-slate-200 text-center">
                         <h3 className="font-bold text-slate-700 mb-2">TeamMarathe4WW Agreed Format (Original)</h3>
