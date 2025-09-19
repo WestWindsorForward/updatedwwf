@@ -346,7 +346,7 @@ const DocumentComparisonSection: FC = () => (
         <Card noHoverEffect>
              <div className="p-6 sm:p-8">
                 <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-4 text-center">Forum Format Agreements</h2>
-                <p className="text-center text-slate-600 mb-6 max-w-3xl mx-auto">The forum was cancelled because the two campaigns could not agree on a format. To provide transparency, we will share the final terms each campaign agreed to.</p>
+                <p className="text-center text-slate-600 mb-6 max-w-3xl mx-auto">The forum was cancelled because the two campaigns were unable to agree on a single, final format. All other aspects of the forum, including the date, time, venue, and panelists, were accepted by both campaigns. To provide full transparency on this specific point of disagreement, we are sharing the final format terms each campaign provided.</p>
                 <div className="grid md:grid-cols-2 gap-6">
                     <div className="bg-slate-50 p-6 rounded-lg border border-slate-200 text-center">
                         <h3 className="font-bold text-slate-700 mb-2">TeamMarathe4WW Agreed Terms</h3>
@@ -416,7 +416,7 @@ const PressCoverageSection: FC = () => (
     <Card className="p-0">
         <div className="p-4 sm:p-6 md:p-8">
             <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-6 text-center"> In the News </h2>
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {forumData.pressCoverage.map((article) => (
                     <a key={article.id} href={article.url} target="_blank" rel="noopener noreferrer" className="block">
                         <div className="bg-slate-50 p-6 rounded-xl border border-slate-200 text-center transition-all duration-300 hover:shadow-lg hover:border-sky-300 flex flex-col h-full">
@@ -733,7 +733,6 @@ const EventsPage: FC<PageProps> = ({ setActivePage }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
-        // Show the modal every time the page is visited
         setIsModalOpen(true);
     }, []);
 
@@ -744,7 +743,7 @@ const EventsPage: FC<PageProps> = ({ setActivePage }) => {
             <Modal isOpen={isModalOpen} onClose={closeModal}>
                 <h2 className="text-2xl font-bold text-amber-800 mb-4">An Update on the 2025 Candidate Forum</h2>
                 <div className="prose prose-sm sm:prose-base max-w-none text-slate-700">
-                     <p><strong>West Windsor, NJ – September 18, 2025</strong> – It is with deep regret and disappointment that <strong>West Windsor Forward must announce the cancellation of our 2025 Candidate Forum, which was scheduled for September 25th.</strong> The forum has been cancelled because the campaigns for Mayor and Council were unable to agree on a format.</p>
+                    <p><strong>West Windsor, NJ – September 18, 2025</strong> – It is with deep regret and disappointment that <strong>West Windsor Forward must announce the cancellation of our 2025 Candidate Forum, which was scheduled for September 25th.</strong> The forum has been cancelled because the campaigns for Mayor and Council were unable to agree on a format.</p>
                     <p>This cancellation represents a significant loss for West Windsor residents, who were anticipating a direct and unbiased opportunity to hear from all certified candidates on the issues that matter most. The West Windsor Forward team invested ten months of effort, countless hours, and a great deal of resources into restoring this vital civic tradition.</p>
                     <p>We extend our deepest gratitude to all who supported our efforts. We are especially thankful for the unwavering support of the <strong>League of Women Voters of the Greater Princeton Area</strong> (lwvprinceton.org), and we encourage everyone in West Windsor to support their longstanding commitment to informing voters in Central Jersey. We also thank our panelists, <strong>Micah Rasmussen and David Matthau</strong>, for their immense trust in us and their invaluable assistance. We would also like to express our sincere appreciation to <strong>Mercer County Community College and the Kelsey Theatre</strong> for their generosity in offering their venue and their patience throughout our planning process. To everyone who offered to volunteer, your commitment to our town and its residents was a true inspiration. Finally, to the community, your words of encouragement privately, on our social media, and at our tabling events reaffirmed our efforts throughout this process.</p>
                     <p>While this is a disappointing outcome, it does not mark the end of West Windsor Forward's commitment to civic engagement. We will remain actively involved in this year's Municipal election through other non-partisan projects focused on informing voters, including <strong>working with both campaigns to set up informative interviews for the community.</strong> We will also continue our other community-focused projects, such as pushing for our adoption of the Princeton Junction Train Station. We encourage residents to submit ideas for further civic and community initiatives. We are looking for High Schoolers who want to join us and make a difference in West Windsor to sign up to volunteer by emailing at contact@westwindsorforward.org.</p>
