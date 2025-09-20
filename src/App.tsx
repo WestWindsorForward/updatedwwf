@@ -373,17 +373,17 @@ const StatementsSection: FC = () => (
         <Card noHoverEffect className="p-0 overflow-hidden">
              <div className="p-6 sm:p-8 bg-gradient-to-br from-slate-800 via-sky-900 to-indigo-900">
                 <h2 className="text-xl sm:text-2xl font-bold text-white mb-6 text-center">Official Statements</h2>
-                <div className="max-w-xl mx-auto space-y-6">
-                    <div className="bg-slate-700/50 p-6 rounded-lg border border-sky-700 text-center">
+                <div className="grid md:grid-cols-2 gap-6">
+                    <div className="bg-slate-700/50 p-6 rounded-lg border border-sky-700 text-center flex flex-col">
                         <h3 className="font-bold text-white mb-2">Our Official Statement</h3>
-                        <p className="text-sm text-slate-300 mb-4">The official statement from West Windsor Forward regarding the forum's cancellation.</p>
+                        <p className="text-sm text-slate-300 mb-4 flex-grow">The official statement from West Windsor Forward regarding the forum's cancellation.</p>
                         <Button type="secondary" icon={<IconDocument/>} href="/West Windsor Forward - 2025 Candidate Forum Cancellation.pdf">
                             View Statement (PDF)
                         </Button>
                     </div>
-                     <div className="bg-slate-700/50 p-6 rounded-lg border border-sky-700 text-center">
+                     <div className="bg-slate-700/50 p-6 rounded-lg border border-sky-700 text-center flex flex-col">
                         <h3 className="font-bold text-white mb-2">League of Women Voters Statement</h3>
-                        <p className="text-sm text-slate-300 mb-4">A statement from the League of Women Voters of the Greater Princeton Area, who supported the forum initiative.</p>
+                        <p className="text-sm text-slate-300 mb-4 flex-grow">A statement from the League of Women Voters of the Greater Princeton Area, who supported the forum initiative.</p>
                         <Button type="secondary" icon={<IconDocument/>} href="/Cancellation of West Windsor Candidates.pdf">
                             View Statement (PDF)
                         </Button>
@@ -393,6 +393,7 @@ const StatementsSection: FC = () => (
         </Card>
     </div>
 );
+
 
 const ForumFormatSection: FC = () => {
     const getIcon = (iconType: string) => {
