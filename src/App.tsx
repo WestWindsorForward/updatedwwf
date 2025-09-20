@@ -31,7 +31,7 @@ interface DotPatternProps { className?: string; dotColor?: string; rows?: number
 interface CardProps { children: ReactNode; className?: string; noHoverEffect?: boolean; hasDotPattern?: boolean; onClick?: (e: React.MouseEvent<HTMLDivElement>) => void; }
 interface ButtonProps { children?: ReactNode; onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void; type?: 'primary' | 'secondary' | 'success' | 'warning'; className?: string; icon?: ReactNode; isSubmit?: boolean; disabled?: boolean; size?: 'sm' | 'md' | 'lg'; href?: string; }
 type PageName = "Home" | "About" | "Projects" | "Events" | "Contact" | "ProjectDetails";
-interface Project { id: number; slug: string; title: string; shortGoal: string; status: string; description: string; image: string; partnerOrganizations: string[]; redirectTo?: PageName; goal?: string; impact?: string; timeline?: { stage: string; details: string; completed: boolean; }[]; getInvolved?: string; fundingSources?: string[]; initiatives?: { title: string; description: string; icon: ReactNode; status: string; }[]; }
+interface Project { id: number; slug: string; title: string; shortGoal: string; status: string; description: string; image: string; partnerOrganizations?: string[]; supportingOrganizations?: string[]; redirectTo?: PageName; goal?: string; impact?: string; timeline?: { stage: string; details: string; completed: boolean; }[]; getInvolved?: string; fundingSources?: string[]; initiatives?: { title: string; description: string; icon: ReactNode; status: string; }[]; }
 interface NavbarProps { setActivePage: (page: PageName, project?: Project | null) => void; activePage: PageName; selectedProject: Project | null; }
 interface PageProps { setActivePage: (page: PageName, project?: Project | null) => void; }
 interface ProjectCardProps { project: Project; setActivePage: (page: PageName, project?: Project | null) => void; }
@@ -176,7 +176,7 @@ const forumData = {
 };
 
 const projectsData: Project[] = [
-    { id: 1, slug: "candidate-forum-2025", title: "2025 Candidate Forum Initiative", shortGoal: "Fostering informed civic participation.", status: "Cancelled", description: "An initiative to restore a vital civic tradition by providing a non-partisan platform for candidates. Though cancelled, this project highlights our commitment to informed local democracy.", image: "/2025 Forum Graphic.png", partnerOrganizations: ["League of Women Voters of the Greater Princeton Area"], redirectTo: "Events" },
+    { id: 1, slug: "candidate-forum-2025", title: "2025 Candidate Forum Initiative", shortGoal: "Fostering informed civic participation.", status: "Cancelled", description: "An initiative to restore a vital civic tradition by providing a non-partisan platform for candidates. Though cancelled, this project highlights our commitment to informed local democracy.", image: "/2025 Forum Graphic.png", supportingOrganizations: ["League of Women Voters of the Greater Princeton Area"], redirectTo: "Events" },
     { id: 2, slug: "princeton-junction-station-improvement", title: "Princeton Junction Station Improvement Project", shortGoal: "Revitalizing our key transit hub.", goal: "To transform the Princeton Junction Station into a welcoming, aesthetically appealing, and culturally reflective community hub that serves all users.", status: "Early Planning & Proposal Development", description: "This is a proposed comprehensive project to transform Princeton Junction Station—a vital asset serving over 4,000 NJ TRANSIT passengers daily and 123,000+ Amtrak passengers annually—into a vibrant community hub. We are developing plans for beautification efforts, community art installations, environmental initiatives, and programming to enhance the daily experience for thousands of commuters while fostering community pride and connectivity. Currently in early planning stages with proposals being developed for potential partnerships.", impact: "Enhanced commuter experience for thousands of daily users, strengthened community identity through public art, environmental benefits through recycling and beautification programs, increased community engagement through events and programming, and preserved infrastructure value through maintenance and improvements.", timeline: [{ stage: "Completed: Concept Development & Research", details: "Initial research completed on station usage, community needs, and potential improvement opportunities. Concept proposal drafted.", completed: true }, { stage: "In Progress: Stakeholder Outreach & Partnership Development", details: "Reaching out to NJ TRANSIT, West Windsor Parking Authority, and community organizations to gauge interest and explore potential partnerships.", completed: false }, { stage: "Upcoming: Community Input & Proposal Refinement", details: "Gathering community feedback on proposed improvements and refining plans based on resident input and partnership possibilities.", completed: false }, { stage: "Upcoming: Implementation Planning", details: "If partnerships are established, develop detailed implementation timeline and begin coordination with relevant authorities.", completed: false }], getInvolved: "Share your ideas for station improvements, express interest in volunteering for future cleanup or beautification efforts, connect us with relevant community organizations, or let us know what would make your commuting experience better.", image: "https://www.westwindsorhistory.com/uploads/1/2/3/1/123111196/2018-12-08-pj-train-station-ticket-building_orig.jpg", partnerOrganizations: [], fundingSources: [], initiatives: [{ title: "Beautification & Maintenance", description: "Potential regular cleanup, landscaping, and seasonal decorations", icon: <IconLightBulb />, status: "Concept Phase" }, { title: "Art & Cultural Enhancement", description: "Proposed community murals, decorative elements, and cultural programming", icon: <IconPhotograph />, status: "Concept Phase" }, { title: "Environmental Initiatives", description: "Exploring recycling programs and sustainable improvements", icon: <IconRecycle />, status: "Concept Phase" }, { title: "Community Programming", description: "Ideas for events and community engagement opportunities", icon: <IconUsers />, status: "Concept Phase" }] },
 ];
 
@@ -371,19 +371,19 @@ const DocumentComparisonSection: FC = () => (
 const StatementsSection: FC = () => (
     <div className="container mx-auto px-4">
         <Card noHoverEffect className="p-0 overflow-hidden">
-             <div className="p-6 sm:p-8 bg-gradient-to-r from-sky-50 to-indigo-50">
-                <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-6 text-center">Official Statements</h2>
-                <div className="grid md:grid-cols-2 gap-6">
-                    <div className="bg-white/60 backdrop-blur-sm p-6 rounded-lg border border-white/50 text-center shadow-lg">
-                        <h3 className="font-bold text-slate-700 mb-2">Our Official Statement</h3>
-                        <p className="text-sm text-slate-600 mb-4">The official statement from West Windsor Forward regarding the forum's cancellation.</p>
+             <div className="p-6 sm:p-8 bg-gradient-to-br from-slate-800 via-sky-900 to-indigo-900">
+                <h2 className="text-xl sm:text-2xl font-bold text-white mb-6 text-center">Official Statements</h2>
+                <div className="max-w-xl mx-auto space-y-6">
+                    <div className="bg-slate-700/50 p-6 rounded-lg border border-sky-700 text-center">
+                        <h3 className="font-bold text-white mb-2">Our Official Statement</h3>
+                        <p className="text-sm text-slate-300 mb-4">The official statement from West Windsor Forward regarding the forum's cancellation.</p>
                         <Button type="secondary" icon={<IconDocument/>} href="/West Windsor Forward - 2025 Candidate Forum Cancellation.pdf">
                             View Statement (PDF)
                         </Button>
                     </div>
-                     <div className="bg-white/60 backdrop-blur-sm p-6 rounded-lg border border-white/50 text-center shadow-lg">
-                        <h3 className="font-bold text-slate-700 mb-2">League of Women Voters Statement</h3>
-                        <p className="text-sm text-slate-600 mb-4">A statement from our partners, the League of Women Voters of the Greater Princeton Area.</p>
+                     <div className="bg-slate-700/50 p-6 rounded-lg border border-sky-700 text-center">
+                        <h3 className="font-bold text-white mb-2">League of Women Voters Statement</h3>
+                        <p className="text-sm text-slate-300 mb-4">A statement from the League of Women Voters of the Greater Princeton Area, in support of the forum.</p>
                         <Button type="secondary" icon={<IconDocument/>} href="/Cancellation of West Windsor Candidates.pdf">
                             View Statement (PDF)
                         </Button>
@@ -678,9 +678,15 @@ const ProjectCard: FC<ProjectCardProps> = memo(({ project, setActivePage }) => {
                 <div className="mb-4"> <span className={`inline-block text-xs font-medium px-2 py-1 ${statusColor} rounded-full`}>{project.status}</span> </div>
                 <div className="flex-grow">
                     {project.partnerOrganizations && project.partnerOrganizations.length > 0 && (
-                        <>
+                         <>
                             <h4 className="text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1"> Partners: </h4>
                             <div className="flex flex-wrap gap-1"> {project.partnerOrganizations.map((org) => ( <span key={org} className="text-xs bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full">{org}</span> ))} </div>
+                        </>
+                    )}
+                    {project.supportingOrganizations && project.supportingOrganizations.length > 0 && (
+                         <>
+                            <h4 className="text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1"> Supported By: </h4>
+                            <div className="flex flex-wrap gap-1"> {project.supportingOrganizations.map((org) => ( <span key={org} className="text-xs bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full">{org}</span> ))} </div>
                         </>
                     )}
                 </div>
@@ -735,6 +741,7 @@ const ProjectDetailPage: FC<ProjectDetailPageProps> = ({ project, setActivePage 
                         <div className="space-y-3 sm:space-y-4"> {project.timeline?.map((item, index) => ( <div key={index} className={`flex items-start p-2.5 sm:p-3 md:p-4 rounded-lg border-l-4 ${item.completed ? "border-green-500 bg-green-50 text-green-800" : "border-sky-500 bg-sky-50 text-sky-800"}`}> <div className="mr-2 sm:mr-3 mt-0.5 sm:mt-1 flex-shrink-0">{item.completed ? <IconCheckCircle className="text-green-500 h-5 w-5 sm:h-6 sm:w-6" /> : <IconClock className="text-sky-500 h-5 w-5 sm:h-6 sm:w-6" />}</div> <div> <h4 className="font-semibold text-sm sm:text-md md:text-lg">{item.stage}</h4> <p className="text-xs sm:text-sm opacity-90">{item.details}</p> </div> </div> ))} </div>
                         <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-800 border-b-2 border-sky-200 pb-2 mt-6 sm:mt-8 mb-3 sm:mb-4"> Envisioned Impact </h2> <p>{project.impact}</p>
                         {project.partnerOrganizations && project.partnerOrganizations.length > 0 && ( <> <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-800 border-b-2 border-sky-200 pb-2 mt-6 sm:mt-8 mb-3 sm:mb-4"> Our Partners </h2> <ul className="list-none p-0 flex flex-wrap gap-2 sm:gap-3"> {project.partnerOrganizations.map((org) => ( <li key={org} className="bg-slate-100 text-slate-700 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full text-xs sm:text-sm shadow-sm flex items-center">{org}</li> ))} </ul> </> )}
+                        {project.supportingOrganizations && project.supportingOrganizations.length > 0 && ( <> <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-800 border-b-2 border-sky-200 pb-2 mt-6 sm:mt-8 mb-3 sm:mb-4"> Supported By </h2> <ul className="list-none p-0 flex flex-wrap gap-2 sm:gap-3"> {project.supportingOrganizations.map((org) => ( <li key={org} className="bg-slate-100 text-slate-700 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full text-xs sm:text-sm shadow-sm flex items-center">{org}</li> ))} </ul> </> )}
                         <div className="mt-8 sm:mt-10 p-4 sm:p-6 bg-sky-50 rounded-lg border border-sky-200">
                             <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-sky-700 mb-3"> How You Can Contribute </h2> <p className="text-gray-700 leading-relaxed mb-4 text-xs sm:text-sm md:text-base">{project.getInvolved}</p>
                             <div className="flex flex-col sm:flex-row gap-3">
