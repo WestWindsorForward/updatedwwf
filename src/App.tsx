@@ -383,7 +383,7 @@ const StatementsSection: FC = () => (
                     </div>
                      <div className="bg-slate-700/50 p-6 rounded-lg border border-sky-700 text-center">
                         <h3 className="font-bold text-white mb-2">League of Women Voters Statement</h3>
-                        <p className="text-sm text-slate-300 mb-4">A statement from the League of Women Voters of the Greater Princeton Area, in support of the forum.</p>
+                        <p className="text-sm text-slate-300 mb-4">A statement from the League of Women Voters of the Greater Princeton Area, who supported the forum initiative.</p>
                         <Button type="secondary" icon={<IconDocument/>} href="/Cancellation of West Windsor Candidates.pdf">
                             View Statement (PDF)
                         </Button>
