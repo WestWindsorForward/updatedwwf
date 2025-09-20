@@ -371,7 +371,7 @@ const DocumentComparisonSection: FC = () => (
 const StatementsSection: FC = () => (
     <div className="container mx-auto px-4">
         <Card noHoverEffect className="p-0 overflow-hidden">
-             <div className="p-6 sm:p-8 bg-gradient-to-br from-slate-800 via-sky-900 to-indigo-900">
+            <div className="p-6 sm:p-8 bg-gradient-to-br from-slate-800 via-sky-900 to-indigo-900">
                 <h2 className="text-xl sm:text-2xl font-bold text-white mb-6 text-center">Official Statements</h2>
                 <div className="grid md:grid-cols-2 gap-6">
                     <div className="bg-slate-700/50 p-6 rounded-lg border border-sky-700 text-center flex flex-col">
@@ -381,7 +381,7 @@ const StatementsSection: FC = () => (
                             View Statement (PDF)
                         </Button>
                     </div>
-                     <div className="bg-slate-700/50 p-6 rounded-lg border border-sky-700 text-center flex flex-col">
+                    <div className="bg-slate-700/50 p-6 rounded-lg border border-sky-700 text-center flex flex-col">
                         <h3 className="font-bold text-white mb-2">League of Women Voters Statement</h3>
                         <p className="text-sm text-slate-300 mb-4 flex-grow">A statement from the League of Women Voters of the Greater Princeton Area, who supported the forum initiative.</p>
                         <Button type="secondary" icon={<IconDocument/>} href="/Cancellation of West Windsor Candidates.pdf">
@@ -556,18 +556,22 @@ const HomePage: FC<PageProps> = memo(({ setActivePage }) => (
                 <div className="p-4 sm:p-6 md:p-8">
                     <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 mb-8 text-center"> Key Initiatives </h2>
                     <div className="grid md:grid-cols-2 gap-4 md:gap-6 lg:gap-8">
-                        <Card className="flex flex-col transform hover:scale-105 transition-transform duration-300 p-0">
-                            <div className="p-4 sm:p-6 md:p-8">
-                                <h3 className="text-lg sm:text-xl font-semibold text-sky-700"> 2025 Candidate Forum Initiative </h3>
-                                <p className="text-xs sm:text-sm text-gray-600 mb-3 flex-grow"> An initiative to restore a vital civic tradition by providing a non-partisan platform for candidates. Though cancelled, this project highlights our commitment to informed local democracy. </p>
-                                <Button onClick={() => setActivePage("Events")} type="secondary" className="mt-auto w-full sm:w-auto text-xs"> View Archive & Statement </Button>
+                        <Card className="p-0">
+                            <div className="p-4 sm:p-6 md:p-8 flex flex-col h-full">
+                                <div className="flex-grow">
+                                    <h3 className="text-lg sm:text-xl font-semibold text-sky-700"> 2025 Candidate Forum Initiative </h3>
+                                    <p className="text-xs sm:text-sm text-gray-600 mb-3"> An initiative to restore a vital civic tradition by providing a non-partisan platform for candidates. Though cancelled, this project highlights our commitment to informed local democracy. </p>
+                                </div>
+                                <Button onClick={() => setActivePage("Events")} type="secondary" className="w-full sm:w-auto text-xs"> View Archive & Statement </Button>
                             </div>
                         </Card>
-                        <Card className="flex flex-col transform hover:scale-105 transition-transform duration-300 p-0">
-                            <div className="p-4 sm:p-6 md:p-8">
-                                <h3 className="text-lg sm:text-xl font-semibold text-sky-700"> Princeton Junction Station Improvement Project </h3>
-                                <p className="text-xs sm:text-sm text-gray-600 mb-3 flex-grow"> Transforming our vital transit hub into a welcoming, beautiful, and vibrant community space through beautification, art, and programming. </p>
-                                <Button onClick={() => { const stationProject = projectsData.find(p => p.slug === "princeton-junction-station-improvement"); setActivePage("ProjectDetails", stationProject); }} type="secondary" className="mt-auto w-full sm:w-auto text-xs"> Project Information </Button>
+                        <Card className="p-0">
+                            <div className="p-4 sm:p-6 md:p-8 flex flex-col h-full">
+                                <div className="flex-grow">
+                                    <h3 className="text-lg sm:text-xl font-semibold text-sky-700"> Princeton Junction Station Improvement Project </h3>
+                                    <p className="text-xs sm:text-sm text-gray-600 mb-3"> Transforming our vital transit hub into a welcoming, beautiful, and vibrant community space through beautification, art, and programming. </p>
+                                </div>
+                                <Button onClick={() => { const stationProject = projectsData.find(p => p.slug === "princeton-junction-station-improvement"); if (stationProject) { setActivePage("ProjectDetails", stationProject); } }} type="secondary" className="w-full sm:w-auto text-xs"> Project Information </Button>
                             </div>
                         </Card>
                     </div>
