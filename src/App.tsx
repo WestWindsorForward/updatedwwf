@@ -3108,7 +3108,7 @@ const ElectionPage: FC<PageProps> = ({ setActivePage }) => {
       "q3-closing": {
         time: "47:40",
         summary:
-          "Mr. Charles names Al John's as a favorite, calling it a 'pillar of the community.' Councilwoman Geevers states she has many favorites depending on the occasion, including Aljon's, PJ's Pancake House, and Seasons 52.",
+          "Mr. Charles names Aljon's as a favorite, calling it a 'pillar of the community.' Councilwoman Geevers states she has many favorites depending on the occasion, including Aljon's, PJ's Pancake House, and Seasons 52.",
       },
       "q4-closing": {
         time: "49:02",
