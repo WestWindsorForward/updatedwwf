@@ -4170,8 +4170,8 @@ Co-Executive Directors @ West Windsor Forward`;
                           </h5>
                         </div>
                         <div className="flex justify-between mb-1 text-sm font-medium text-slate-700 px-1">
-                          <span>17.3% $200 or less</span>
-                          <span>82.7% over $200</span>
+                          <span>17.3% donations of $200 or less</span>
+                          <span>82.7% donations of over $200</span>
                         </div>
                         <div className="w-full bg-slate-200 rounded-full h-2.5 flex">
                           <div
@@ -4288,17 +4288,17 @@ Co-Executive Directors @ West Windsor Forward`;
                         </div>
                         {/* UPDATED: Text changed per previous request */}
                         <div className="flex justify-between mb-1 text-sm font-medium text-slate-700 px-1">
-                          <span>6.7% $200 or less</span>
-                          <span>93.3% over $200</span>
+                          <span>6.2% donations of $200 or less</span>
+                          <span>93.8% donations of over $200</span>
                         </div>
                         <div className="w-full bg-slate-200 rounded-full h-2.5 flex">
                           <div
                             className="bg-sky-500 h-2.5 rounded-l-full"
-                            style={{ width: "6.7%" }}
+                            style={{ width: "6.2%" }}
                           ></div>
                           <div
                             className="bg-slate-400 h-2.5 rounded-r-full"
-                            style={{ width: "93.3%" }}
+                            style={{ width: "93.8%" }}
                           ></div>
                         </div>
                       </div>
