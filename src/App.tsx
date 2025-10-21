@@ -2714,61 +2714,6 @@ const BioCard: FC<{
   );
 };
 
-import React, {
-  FC,
-  useState,
-  useRef,
-  useCallback,
-  useMemo,
-  useEffect,
-} from "react";
-// Assuming these components are imported from your project
-import { PageProps } from "../types"; // Example import
-import { Modal } from "./Modal"; // Example import
-import { Button } from "./Button"; // Example import
-import { Countdown } from "./Countdown"; // Example import
-import { Card } from "./Card"; // Example import
-import { BioCard } from "./BioCard"; // Example import
-import { DotPattern } from "./DotPattern"; // Example import
-import { electionData, forumData } from "../data/electionData"; // Example import
-import {
-  IconMicrophone,
-  IconDocument,
-  IconBallotBox,
-  IconExternalLink,
-  IconVideoCamera,
-  IconSearch,
-  IconChevronUp,
-  IconChevronDown,
-  IconClipboard,
-  IconCheckCircle,
-  IconInfo,
-  IconCalendar,
-  IconUserCheck,
-  IconMapMarker,
-} from "./Icons"; // Example import
-import {
-  PanelistSection,
-  DocumentComparisonSection,
-  StatementsSection,
-  ForumFormatSection,
-  KeyInformationSection,
-  PressCoverageSection,
-} from "./ForumArchiveSections"; // Example import
-
-// Define missing types locally for this example
-type OfficeType = "Mayor" | "Township Council";
-interface ElectionQuestion {
-  id: string;
-  text: string;
-  office: OfficeType | OfficeType[];
-}
-interface ElectionIssue {
-  id: string;
-  title: string;
-  questions: ElectionQuestion[];
-}
-
 const ElectionPage: FC<PageProps> = ({ setActivePage }) => {
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null); // Start with all collapsed
   const [activeTab, setActiveTab] = useState("mail");
