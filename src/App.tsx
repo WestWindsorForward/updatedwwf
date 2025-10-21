@@ -2714,6 +2714,61 @@ const BioCard: FC<{
   );
 };
 
+import React, {
+  FC,
+  useState,
+  useRef,
+  useCallback,
+  useMemo,
+  useEffect,
+} from "react";
+// Assuming these components are imported from your project
+import { PageProps } from "../types"; // Example import
+import { Modal } from "./Modal"; // Example import
+import { Button } from "./Button"; // Example import
+import { Countdown } from "./Countdown"; // Example import
+import { Card } from "./Card"; // Example import
+import { BioCard } from "./BioCard"; // Example import
+import { DotPattern } from "./DotPattern"; // Example import
+import { electionData, forumData } from "../data/electionData"; // Example import
+import {
+  IconMicrophone,
+  IconDocument,
+  IconBallotBox,
+  IconExternalLink,
+  IconVideoCamera,
+  IconSearch,
+  IconChevronUp,
+  IconChevronDown,
+  IconClipboard,
+  IconCheckCircle,
+  IconInfo,
+  IconCalendar,
+  IconUserCheck,
+  IconMapMarker,
+} from "./Icons"; // Example import
+import {
+  PanelistSection,
+  DocumentComparisonSection,
+  StatementsSection,
+  ForumFormatSection,
+  KeyInformationSection,
+  PressCoverageSection,
+} from "./ForumArchiveSections"; // Example import
+
+// Define missing types locally for this example
+type OfficeType = "Mayor" | "Township Council";
+interface ElectionQuestion {
+  id: string;
+  text: string;
+  office: OfficeType | OfficeType[];
+}
+interface ElectionIssue {
+  id: string;
+  title: string;
+  questions: ElectionQuestion[];
+}
+
 const ElectionPage: FC<PageProps> = ({ setActivePage }) => {
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null); // Start with all collapsed
   const [activeTab, setActiveTab] = useState("mail");
@@ -2726,17 +2781,20 @@ const ElectionPage: FC<PageProps> = ({ setActivePage }) => {
   const handleCopyLink = useCallback((questionId: string) => {
     // Guard against environments where clipboard API is not available
     if (navigator.clipboard && navigator.clipboard.writeText) {
-        const url = `${window.location.origin}${window.location.pathname}#${questionId}`;
-        navigator.clipboard.writeText(url).then(() => {
-            setCopiedLinks(prev => ({ ...prev, [questionId]: true }));
-            setTimeout(() => {
-                setCopiedLinks(prev => ({ ...prev, [questionId]: false }));
-            }, 2000);
-        }).catch(err => {
-            console.error("Failed to copy link: ", err);
+      const url = `${window.location.origin}${window.location.pathname}#${questionId}`;
+      navigator.clipboard
+        .writeText(url)
+        .then(() => {
+          setCopiedLinks((prev) => ({ ...prev, [questionId]: true }));
+          setTimeout(() => {
+            setCopiedLinks((prev) => ({ ...prev, [questionId]: false }));
+          }, 2000);
+        })
+        .catch((err) => {
+          console.error("Failed to copy link: ", err);
         });
     } else {
-        console.error("Clipboard API not supported in this environment.");
+      console.error("Clipboard API not supported in this environment.");
     }
   }, []);
 
@@ -3262,7 +3320,7 @@ const ElectionPage: FC<PageProps> = ({ setActivePage }) => {
       "q2-closing": {
         time: "49:58",
         summary:
-          "Mr. Tomar's favorite thing is the abundant open space available for walking. Mr. Winters says his favorite thing is the 'special' and diverse people who live in the community.",
+          "Mr. Tomar's favorite thing is the abundant open space for walking. Mr. Winters says his favorite thing is the 'special' and diverse people who live in the community.",
       },
       "q3-closing": {
         time: "51:20",
@@ -3397,57 +3455,86 @@ Co-Executive Directors @ West Windsor Forward`;
     setSelectedTopic(isCurrentlySelected ? null : issueId);
 
     if (isCurrentlySelected && questionCount > 3) {
-        const topicButton = document.querySelector(`button[data-topic-id="${issueId}"]`);
-        if (topicButton) {
-            setTimeout(() => {
-                topicButton.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }, 100);
-        } else if (filterBarRef.current) {
-             filterBarRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
+      const topicButton = document.querySelector(
+        `button[data-topic-id="${issueId}"]`
+      );
+      if (topicButton) {
+        setTimeout(() => {
+          topicButton.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }, 100);
+      } else if (filterBarRef.current) {
+        filterBarRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
     }
   };
 
-
   // --- EFFECT FOR HANDLING HASH SCROLLING ---
   useEffect(() => {
+    // Helper function to find which topic a question ID belongs to
+    // We search the data object, not the DOM, because the element
+    // might not be rendered yet.
+    const getTopicIdForQuestion = (questionId: string): string | null => {
+      for (const issue of electionData.issues as ElectionIssue[]) {
+        if (issue.questions.some((q) => q.id === questionId)) {
+          return issue.id;
+        }
+      }
+      return null;
+    };
+
     const handleScrollAndExpansion = () => {
       const hash = window.location.hash.substring(1);
       if (!hash) return;
 
-      const element = document.getElementById(hash);
-      if (!element) return;
+      // 1. Find the topic ID from our data
+      const topicId = getTopicIdForQuestion(hash);
 
-      const topicSection = element.closest('[data-topic-section-id]');
-      const topicId = topicSection?.getAttribute('data-topic-section-id');
-
-      // If the correct topic is not open, open it. The effect will re-run.
+      // 2. If the topic is found but not open, open it.
+      // The effect will re-run after state update, and the 'else'
+      // block will handle the scroll.
       if (topicId && topicId !== selectedTopic) {
         setSelectedTopic(topicId);
-        return; // Stop, let re-render and subsequent effect handle the scroll.
+        return;
       }
-      
-      // If topic is already open or it's not a question, scroll.
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      // 3. If topic is already open (or it's not a question hash),
+      // try to find the element and scroll.
+      const element = document.getElementById(hash);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
     };
 
-    // This handles scrolling after a topic has been expanded via state update.
-    if(selectedTopic && window.location.hash){
-        // Use a timeout to ensure the DOM is ready after expansion.
-        const timeoutId = setTimeout(handleScrollAndExpansion, 150);
+    // This handles scrolling *after* a topic has been expanded via state update
+    if (selectedTopic && window.location.hash) {
+      const hash = window.location.hash.substring(1);
+      const topicId = getTopicIdForQuestion(hash);
+
+      // Only scroll if the selectedTopic matches the hash's topic
+      if (topicId === selectedTopic) {
+        // Use a timeout to ensure the DOM is ready after expansion animation
+        const timeoutId = setTimeout(() => {
+          const element = document.getElementById(hash);
+          if (element) {
+            element.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        }, 150);
         return () => clearTimeout(timeoutId);
+      }
     }
 
-    // This handles initial page load with a hash.
+    // This handles initial page load with a hash
     handleScrollAndExpansion();
 
-    // This handles user clicking on another hash link while on the page.
-    window.addEventListener('hashchange', handleScrollAndExpansion);
+    // This handles user clicking on another hash link *while on the page*
+    window.addEventListener("hashchange", handleScrollAndExpansion);
     return () => {
-      window.removeEventListener('hashchange', handleScrollAndExpansion);
+      window.removeEventListener("hashchange", handleScrollAndExpansion);
     };
-}, [selectedTopic]); // Dependency is key for the expand-then-scroll logic.
-
+  }, [selectedTopic]); // Dependency on selectedTopic is key
 
   return (
     <>
@@ -3489,7 +3576,10 @@ Co-Executive Directors @ West Windsor Forward`;
       </Modal>
 
       <div className="min-h-screen bg-slate-100 font-body text-slate-700 animate-fadeIn">
-        <header ref={headerRef} className="relative bg-gradient-to-br from-slate-900 via-sky-800 to-indigo-900 text-white py-12 sm:py-16 px-4 rounded-b-2xl shadow-2xl overflow-hidden">
+        <header
+          ref={headerRef}
+          className="relative bg-gradient-to-br from-slate-900 via-sky-800 to-indigo-900 text-white py-12 sm:py-16 px-4 rounded-b-2xl shadow-2xl overflow-hidden"
+        >
           <DotPattern dotColor="text-sky-700 opacity-10" rows={8} cols={10} />
           <div className="relative z-10 container mx-auto text-center">
             <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 leading-tight">
@@ -3537,22 +3627,40 @@ Co-Executive Directors @ West Windsor Forward`;
         </header>
 
         <div className="container mx-auto px-4">
-            <div className="mt-8 mb-4 flex flex-col sm:flex-row justify-center gap-3">
-                <Button href="#interviews" type="secondary" size="md" icon={<IconMicrophone />}>
-                Jump to Interviews
-                </Button>
-                <Button href="#finance" type="secondary" size="md" icon={<IconDocument />}>
-                Jump to Campaign Finance
-                </Button>
-                <Button href="#voter-tools" type="secondary" size="md" icon={<IconBallotBox />}>
-                Jump to Voter Tools
-                </Button>
-            </div>
+          <div className="mt-8 mb-4 flex flex-col sm:flex-row justify-center gap-3">
+            <Button
+              href="#interviews"
+              type="secondary"
+              size="md"
+              icon={<IconMicrophone />}
+              target="_self"
+            >
+              Jump to Interviews
+            </Button>
+            <Button
+              href="#finance"
+              type="secondary"
+              size="md"
+              icon={<IconDocument />}
+              target="_self"
+            >
+              Jump to Campaign Finance
+            </Button>
+            <Button
+              href="#voter-tools"
+              type="secondary"
+              size="md"
+              icon={<IconBallotBox />}
+              target="_self"
+            >
+              Jump to Voter Tools
+            </Button>
+          </div>
         </div>
 
         <div className="container mx-auto px-4 py-8 sm:py-12 space-y-12">
           {/* ... all section content remains the same as previous correct version ... */}
-           <Card
+          <Card
             noHoverEffect
             className="p-0 -mb-6 border-amber-300 bg-amber-50"
           >
@@ -3915,10 +4023,11 @@ Co-Executive Directors @ West Windsor Forward`;
                                 ) {
                                   const nextQuestionId = questionOrder[i];
                                   const nextQuestion =
-                                    electionData.issues
+                                    (electionData.issues
                                       .flatMap((iss) => iss.questions)
-                                      .find((q) => q.id === nextQuestionId) ||
-                                    null;
+                                      .find(
+                                        (q) => q.id === nextQuestionId
+                                      ) as ElectionQuestion) || null;
 
                                   if (!nextQuestion) continue;
 
@@ -4039,94 +4148,104 @@ Co-Executive Directors @ West Windsor Forward`;
                             };
 
                             return (
-                                <div
+                              <div
                                 key={question.id}
                                 id={question.id}
-                                className="relative bg-white shadow-lg rounded-xl border border-gray-200 p-4 sm:p-6 scroll-mt-[10rem]"
-                                >
+                                className="relative bg-white shadow-xl rounded-xl border-2 border-gray-300 p-4 sm:p-6 scroll-mt-[10rem]"
+                              >
                                 <button
-                                    onClick={() => handleCopyLink(question.id)}
-                                    className={`absolute top-2 right-2 sm:top-3 sm:right-3 p-1.5 rounded-full transition-colors duration-200 ${
-                                        copiedLinks[question.id]
-                                        ? 'bg-green-100 text-green-600 hover:bg-green-200'
-                                        : 'bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-700'
-                                    }`}
-                                    aria-label="Copy link to this question"
-                                    title={copiedLinks[question.id] ? "Link Copied!" : "Copy link to this question"}
+                                  onClick={() => handleCopyLink(question.id)}
+                                  className={`absolute top-2 right-2 sm:top-3 sm:right-3 p-1.5 rounded-full transition-colors duration-200 ${
+                                    copiedLinks[question.id]
+                                      ? "bg-green-100 text-green-600 hover:bg-green-200"
+                                      : "bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-700"
+                                  }`}
+                                  aria-label="Copy link to this question"
+                                  title={
+                                    copiedLinks[question.id]
+                                      ? "Link Copied!"
+                                      : "Copy link to this question"
+                                  }
                                 >
-                                    {copiedLinks[question.id] ? <IconCheckCircle className="h-4 w-4 sm:h-5 sm:w-5"/> : <IconClipboard className="h-4 w-4 sm:h-5 sm:w-5" />}
+                                  {copiedLinks[question.id] ? (
+                                    <IconCheckCircle className="h-4 w-4 sm:h-5 sm:w-5" />
+                                  ) : (
+                                    <IconClipboard className="h-4 w-4 sm:h-5 sm:w-5" />
+                                  )}
                                 </button>
 
                                 <div className="text-center mb-6 pr-8">
-                                    <div className="mb-2">
+                                  <div className="mb-2">
                                     {Array.isArray(question.office) ? (
-                                        question.office.map((off) => (
+                                      question.office.map((off) => (
                                         <span
-                                            key={off}
-                                            className={`inline-block text-xs font-semibold mr-2 px-2.5 py-1 rounded-full ${
-                                            officeStyles[off] || "bg-gray-100 text-gray-800"
-                                            }`}
+                                          key={off}
+                                          className={`inline-block text-xs font-semibold mr-2 px-2.5 py-1 rounded-full ${
+                                            officeStyles[off] ||
+                                            "bg-gray-100 text-gray-800"
+                                          }`}
                                         >
-                                            {off} Question
+                                          {off} Question
                                         </span>
-                                        ))
+                                      ))
                                     ) : question.office ? (
-                                        <span
+                                      <span
                                         className={`inline-block text-xs font-semibold mr-2 px-2.5 py-1 rounded-full ${
-                                            officeStyles[question.office] || "bg-gray-100 text-gray-800"
+                                          officeStyles[question.office] ||
+                                          "bg-gray-100 text-gray-800"
                                         }`}
-                                        >
+                                      >
                                         {question.office} Question
-                                        </span>
+                                      </span>
                                     ) : (
-                                        <span className="inline-block text-xs font-semibold mr-2 px-2.5 py-1 rounded-full bg-gray-100 text-gray-800">
+                                      <span className="inline-block text-xs font-semibold mr-2 px-2.5 py-1 rounded-full bg-gray-100 text-gray-800">
                                         General Question
-                                        </span>
+                                      </span>
                                     )}
-                                    </div>
-                                    <p className="font-semibold text-slate-700 italic max-w-2xl mx-auto">
+                                  </div>
+                                  <p className="font-semibold text-slate-700 italic max-w-2xl mx-auto">
                                     "{question.text}"
-                                    </p>
+                                  </p>
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                                    {showMayor &&
+                                  {showMayor &&
                                     questionIsMayor &&
                                     renderResponseBlock(
-                                        "Mayoral Candidate: Hemant Marathe",
-                                        "text-blue-700",
-                                        maratheResponse,
-                                        mayorMaratheVideoId,
-                                        question.id
+                                      "Mayoral Candidate: Hemant Marathe",
+                                      "text-blue-700",
+                                      maratheResponse,
+                                      mayorMaratheVideoId,
+                                      question.id
                                     )}
-                                    {showMayor &&
+                                  {showMayor &&
                                     questionIsMayor &&
                                     renderResponseBlock(
-                                        "Mayoral Candidate: Sujit Singh",
-                                        "text-green-700",
-                                        singhResponse,
-                                        mayorSinghVideoId,
-                                        question.id
+                                      "Mayoral Candidate: Sujit Singh",
+                                      "text-green-700",
+                                      singhResponse,
+                                      mayorSinghVideoId,
+                                      question.id
                                     )}
-                                    {showCouncil &&
+                                  {showCouncil &&
                                     questionIsCouncil &&
                                     renderResponseBlock(
-                                        "Council Candidates: Geevers & Charles",
-                                        "text-blue-700",
-                                        geeversCharlesResponse,
-                                        councilGeeversCharlesVideoId,
-                                        question.id
+                                      "Council Candidates: Geevers & Charles",
+                                      "text-blue-700",
+                                      geeversCharlesResponse,
+                                      councilGeeversCharlesVideoId,
+                                      question.id
                                     )}
-                                    {showCouncil &&
+                                  {showCouncil &&
                                     questionIsCouncil &&
                                     renderResponseBlock(
-                                        "Council Candidates: Tomar & Winters",
-                                        "text-green-700",
-                                        tomarWintersResponse,
-                                        councilTomarWintersVideoId,
-                                        question.id
+                                      "Council Candidates: Tomar & Winters",
+                                      "text-green-700",
+                                      tomarWintersResponse,
+                                      councilTomarWintersVideoId,
+                                      question.id
                                     )}
                                 </div>
-                                </div>
+                              </div>
                             );
                           })}
                         </div>
@@ -4170,62 +4289,221 @@ Co-Executive Directors @ West Windsor Forward`;
                   </div>
                 </div>
 
-                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                     {/* Proven Leaders */}
-                     <div className="p-6 bg-slate-50 rounded-xl border-2 border-slate-200 h-full flex flex-col">
-                        <h4 className="font-bold text-lg text-blue-800 mb-4 text-center">
-                            Proven Leaders for West Windsor
-                        </h4>
-                        <div className="grid grid-cols-2 gap-3 text-sm mb-6 text-center">
-                            <div><div className="text-xs text-slate-500">Raised</div><div className="font-bold text-lg">$28,953.71</div></div>
-                            <div><div className="text-xs text-slate-500">Spent</div><div className="font-bold text-lg">$13,764.07</div></div>
-                            <div className="col-span-2"><div className="text-xs text-slate-500">Cash on Hand</div><div className="font-bold text-2xl text-green-700">$21,554.38</div></div>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Proven Leaders */}
+                  <div className="p-6 bg-slate-50 rounded-xl border-2 border-slate-200 h-full flex flex-col">
+                    <h4 className="font-bold text-lg text-blue-800 mb-4 text-center">
+                      Proven Leaders for West Windsor
+                    </h4>
+                    <div className="grid grid-cols-2 gap-3 text-sm mb-6 text-center">
+                      <div>
+                        <div className="text-xs text-slate-500">Raised</div>
+                        <div className="font-bold text-lg">$28,953.71</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-slate-500">Spent</div>
+                        <div className="font-bold text-lg">$13,764.07</div>
+                      </div>
+                      <div className="col-span-2">
+                        <div className="text-xs text-slate-500">
+                          Cash on Hand
                         </div>
-                        <div className="space-y-8 flex-grow flex flex-col">
-                            <div className="relative">
-                                <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10"><span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700 border border-orange-200"><span className="w-1.5 h-1.5 bg-orange-500 rounded-full mr-1.5 animate-pulse"></span>Only includes donations &gt; $200</span></div>
-                                <div className="bg-white border-2 border-slate-400 rounded-lg p-4 pt-6 space-y-8">
-                                    <div><div className="text-center mb-1"><h5 className="font-semibold text-slate-700 text-sm">Funding Sources¹</h5></div><div className="text-center mb-1 text-sm font-medium text-slate-700"><span>100% from Individuals</span></div><div className="w-full bg-slate-200 rounded-full h-2.5"><div className="bg-sky-500 h-2.5 rounded-full" style={{width: "100%"}}></div></div></div>
-                                    <div><div className="text-center mb-1"><h5 className="font-semibold text-slate-700 text-sm">Donation Origin (by $ Amount)²</h5></div><div className="text-center mb-1 text-sm font-medium text-slate-700"><span>29.4% from In-Town</span></div><div className="w-full bg-slate-200 rounded-full h-2.5"><div className="bg-sky-500 h-2.5 rounded-full" style={{width: "29.4%"}}></div></div></div>
-                                </div>
-                            </div>
-                            <div>
-                                <div className="text-center mb-1"><h5 className="font-semibold text-slate-700 text-sm">Donation Size (% of Total Raised)</h5></div>
-                                <div className="flex justify-between mb-1 text-sm font-medium text-slate-700 px-1"><span>17.3% donations of $200 or less</span><span>82.7% donations of over $200</span></div>
-                                <div className="w-full bg-slate-200 rounded-full h-2.5 flex"><div className="bg-sky-500 h-2.5 rounded-l-full" style={{width: "17.3%"}}></div><div className="bg-slate-400 h-2.5 rounded-r-full" style={{width: "82.7%"}}></div></div>
-                            </div>
+                        <div className="font-bold text-2xl text-green-700">
+                          $21,554.38
                         </div>
-                        <Button size="sm" type="secondary" className="w-full mt-10" href="/3892476.pdf" icon={<IconExternalLink />}>View Full ELEC Report</Button>
-                     </div>
-                     {/* WW Together */}
-                     <div className="p-6 bg-slate-50 rounded-xl border-2 border-slate-200 h-full flex flex-col">
-                        <h4 className="font-bold text-lg text-green-800 mb-4 text-center">West Windsor Together</h4>
-                        <div className="grid grid-cols-2 gap-3 text-sm mb-6 text-center">
-                            <div><div className="text-xs text-slate-500">Raised</div><div className="font-bold text-lg">$37,731.31</div></div>
-                            <div><div className="text-xs text-slate-500">Spent</div><div className="font-bold text-lg">$14,787.36</div></div>
-                            <div className="col-span-2"><div className="text-xs text-slate-500">Cash on Hand</div><div className="font-bold text-2xl text-green-700">$22,943.95</div></div>
+                      </div>
+                    </div>
+                    <div className="space-y-8 flex-grow flex flex-col">
+                      <div className="relative">
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700 border border-orange-200">
+                            <span className="w-1.5 h-1.5 bg-orange-500 rounded-full mr-1.5 animate-pulse"></span>
+                            Only includes donations &gt; $200
+                          </span>
                         </div>
-                        <div className="space-y-8 flex-grow flex flex-col">
-                            <div className="relative">
-                                <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10"><span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700 border border-orange-200"><span className="w-1.5 h-1.5 bg-orange-500 rounded-full mr-1.5 animate-pulse"></span>Only includes donations &gt; $200</span></div>
-                                <div className="bg-white border-2 border-slate-400 rounded-lg p-4 pt-6 space-y-8">
-                                    <div><div className="text-center mb-1"><h5 className="font-semibold text-slate-700 text-sm">Funding Sources¹</h5></div><div className="flex justify-between mb-1 text-sm font-medium text-slate-700 px-1"><span>96.9% Individuals</span><span>3.1% Committees</span></div><div className="w-full bg-slate-200 rounded-full h-2.5 flex"><div className="bg-sky-500 h-2.5 rounded-l-full" style={{width: "96.9%"}}></div><div className="bg-slate-400 h-2.5 rounded-r-full" style={{width: "3.1%"}}></div></div></div>
-                                    <div><div className="text-center mb-1"><h5 className="font-semibold text-slate-700 text-sm">Donation Origin (by $ Amount)²</h5></div><div className="text-center mb-1 text-sm font-medium text-slate-700"><span>33.6% from In-Town</span></div><div className="w-full bg-slate-200 rounded-full h-2.5"><div className="bg-sky-500 h-2.5 rounded-full" style={{width: "33.6%"}}></div></div></div>
-                                </div>
+                        <div className="bg-white border-2 border-slate-400 rounded-lg p-4 pt-6 space-y-8">
+                          <div>
+                            <div className="text-center mb-1">
+                              <h5 className="font-semibold text-slate-700 text-sm">
+                                Funding Sources¹
+                              </h5>
                             </div>
-                            <div>
-                                <div className="text-center mb-1"><h5 className="font-semibold text-slate-700 text-sm">Donation Size (% of Total Raised)</h5></div>
-                                <div className="flex justify-between mb-1 text-sm font-medium text-slate-700 px-1"><span>6.2% donations of $200 or less</span><span>93.8% donations of over $200</span></div>
-                                <div className="w-full bg-slate-200 rounded-full h-2.5 flex"><div className="bg-sky-500 h-2.5 rounded-l-full" style={{width: "6.2%"}}></div><div className="bg-slate-400 h-2.5 rounded-r-full" style={{width: "93.8%"}}></div></div>
+                            <div className="text-center mb-1 text-sm font-medium text-slate-700">
+                              <span>100% from Individuals</span>
                             </div>
+                            <div className="w-full bg-slate-200 rounded-full h-2.5">
+                              <div
+                                className="bg-sky-500 h-2.5 rounded-full"
+                                style={{ width: "100%" }}
+                              ></div>
+                            </div>
+                          </div>
+                          <div>
+                            <div className="text-center mb-1">
+                              <h5 className="font-semibold text-slate-700 text-sm">
+                                Donation Origin (by $ Amount)²
+                              </h5>
+                            </div>
+                            <div className="text-center mb-1 text-sm font-medium text-slate-700">
+                              <span>29.4% from In-Town</span>
+                            </div>
+                            <div className="w-full bg-slate-200 rounded-full h-2.5">
+                              <div
+                                className="bg-sky-500 h-2.5 rounded-full"
+                                style={{ width: "29.4%" }}
+                              ></div>
+                            </div>
+                          </div>
                         </div>
-                        <Button size="sm" type="secondary" className="w-full mt-10" href="/3892561.pdf" icon={<IconExternalLink />}>View Full ELEC Report</Button>
-                     </div>
-                 </div>
+                      </div>
+                      <div>
+                        <div className="text-center mb-1">
+                          <h5 className="font-semibold text-slate-700 text-sm">
+                            Donation Size (% of Total Raised)
+                          </h5>
+                        </div>
+                        <div className="flex justify-between mb-1 text-sm font-medium text-slate-700 px-1">
+                          <span>17.3% donations of $200 or less</span>
+                          <span>82.7% donations of over $200</span>
+                        </div>
+                        <div className="w-full bg-slate-200 rounded-full h-2.5 flex">
+                          <div
+                            className="bg-sky-500 h-2.5 rounded-l-full"
+                            style={{ width: "17.3%" }}
+                          ></div>
+                          <div
+                            className="bg-slate-400 h-2.5 rounded-r-full"
+                            style={{ width: "82.7%" }}
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                    <Button
+                      size="sm"
+                      type="secondary"
+                      className="w-full mt-10"
+                      href="/3892476.pdf"
+                      icon={<IconExternalLink />}
+                    >
+                      View Full ELEC Report
+                    </Button>
+                  </div>
+                  {/* WW Together */}
+                  <div className="p-6 bg-slate-50 rounded-xl border-2 border-slate-200 h-full flex flex-col">
+                    <h4 className="font-bold text-lg text-green-800 mb-4 text-center">
+                      West Windsor Together
+                    </h4>
+                    <div className="grid grid-cols-2 gap-3 text-sm mb-6 text-center">
+                      <div>
+                        <div className="text-xs text-slate-500">Raised</div>
+                        <div className="font-bold text-lg">$37,731.31</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-slate-500">Spent</div>
+                        <div className="font-bold text-lg">$14,787.36</div>
+                      </div>
+                      <div className="col-span-2">
+                        <div className="text-xs text-slate-500">
+                          Cash on Hand
+                        </div>
+                        <div className="font-bold text-2xl text-green-700">
+                          $22,943.95
+                        </div>
+                      </div>
+                    </div>
+                    <div className="space-y-8 flex-grow flex flex-col">
+                      <div className="relative">
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700 border border-orange-200">
+                            <span className="w-1.5 h-1.5 bg-orange-500 rounded-full mr-1.5 animate-pulse"></span>
+                            Only includes donations &gt; $200
+                          </span>
+                        </div>
+                        <div className="bg-white border-2 border-slate-400 rounded-lg p-4 pt-6 space-y-8">
+                          <div>
+                            <div className="text-center mb-1">
+                              <h5 className="font-semibold text-slate-700 text-sm">
+                                Funding Sources¹
+                              </h5>
+                            </div>
+                            <div className="flex justify-between mb-1 text-sm font-medium text-slate-700 px-1">
+                              <span>96.9% Individuals</span>
+                              <span>3.1% Committees</span>
+                            </div>
+                            <div className="w-full bg-slate-200 rounded-full h-2.5 flex">
+                              <div
+                                className="bg-sky-500 h-2.5 rounded-l-full"
+                                style={{ width: "96.9%" }}
+                              ></div>
+                              <div
+                                className="bg-slate-400 h-2.5 rounded-r-full"
+                                style={{ width: "3.1%" }}
+                              ></div>
+                            </div>
+                          </div>
+                          <div>
+                            <div className="text-center mb-1">
+                              <h5 className="font-semibold text-slate-700 text-sm">
+                                Donation Origin (by $ Amount)²
+                              </h5>
+                            </div>
+                            <div className="text-center mb-1 text-sm font-medium text-slate-700">
+                              <span>33.6% from In-Town</span>
+                            </div>
+                            <div className="w-full bg-slate-200 rounded-full h-2.5">
+                              <div
+                                className="bg-sky-500 h-2.5 rounded-full"
+                                style={{ width: "33.6%" }}
+                              ></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-center mb-1">
+                          <h5 className="font-semibold text-slate-700 text-sm">
+                            Donation Size (% of Total Raised)
+                          </h5>
+                        </div>
+                        <div className="flex justify-between mb-1 text-sm font-medium text-slate-700 px-1">
+                          <span>6.2% donations of $200 or less</span>
+                          <span>93.8% donations of over $200</span>
+                        </div>
+                        <div className="w-full bg-slate-200 rounded-full h-2.5 flex">
+                          <div
+                            className="bg-sky-500 h-2.5 rounded-l-full"
+                            style={{ width: "6.2%" }}
+                          ></div>
+                          <div
+                            className="bg-slate-400 h-2.5 rounded-r-full"
+                            style={{ width: "93.8%" }}
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                    <Button
+                      size="sm"
+                      type="secondary"
+                      className="w-full mt-10"
+                      href="/3892561.pdf"
+                      icon={<IconExternalLink />}
+                    >
+                      View Full ELEC Report
+                    </Button>
+                  </div>
+                </div>
 
                 <div className="mt-6 text-xs text-slate-600 space-y-2">
-                  <p><strong>¹ About 'Funding Sources'</strong><br />The breakdown of funding sources... (rest of text)</p>
-                  <p><strong>² About 'Donation Origin' (In-Town Percentage)</strong><br />The "In-Town" percentage is calculated... (rest of text)</p>
+                  <p>
+                    <strong>¹ About 'Funding Sources'</strong>
+                    <br />
+                    The breakdown of funding sources... (rest of text)
+                  </p>
+                  <p>
+                    <strong>² About 'Donation Origin' (In-Town Percentage)</strong>
+                    <br />
+                    The "In-Town" percentage is calculated... (rest of text)
+                  </p>
                 </div>
               </div>
             </Card>
@@ -4236,13 +4514,159 @@ Co-Executive Directors @ West Windsor Forward`;
             <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 mb-6 text-center">
               Voter Toolkit
             </h2>
-             <Card noHoverEffect className="p-0">
-               <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-8">
-                 <div><div className="flex items-center mb-3"><IconCalendar className="h-6 w-6 text-sky-600 mr-2" /><h3 className="text-lg font-semibold text-slate-800">Key Dates</h3></div><ul className="space-y-2">{keyDates.map((item) => (<li key={item.event} className="text-sm"><strong className="text-sky-700">{item.date}:</strong> {item.event}</li>))}</ul></div>
-                 <div><div className="flex items-center mb-3"><IconUserCheck className="h-6 w-6 text-sky-600 mr-2" /><h3 className="text-lg font-semibold text-slate-800">Voter Tools</h3></div><div className="space-y-3"><Button type="secondary" href="https://voter.svrs.nj.gov/registration-check" icon={<IconExternalLink />} className="w-full justify-center">Check Status</Button><Button type="primary" href="https://voter.svrs.nj.gov/register" icon={<IconUserCheck />} className="w-full justify-center">Register Online</Button><Button type="secondary" href="https://voter.svrs.nj.gov/polling-place-search" icon={<IconMapMarker className="h-4 w-4" />} className="w-full justify-center">Find Polling Place</Button></div></div>
-                 <div><div className="flex items-center mb-3"><IconBallotBox className="h-6 w-6 text-sky-600 mr-2" /><h3 className="text-lg font-semibold text-slate-800">Three Ways to Vote</h3></div><div className="flex border-b border-gray-200"><button onClick={() => setActiveTab("mail")} className={`flex-1 py-2 text-sm font-medium ${ activeTab === "mail" ? "border-b-2 border-sky-600 text-sky-600" : "text-gray-500" }`}>By Mail</button><button onClick={() => setActiveTab("early")} className={`flex-1 py-2 text-sm font-medium ${ activeTab === "early" ? "border-b-2 border-sky-600 text-sky-600" : "text-gray-500" }`}>Early</button><button onClick={() => setActiveTab("electionDay")} className={`flex-1 py-2 text-sm font-medium ${ activeTab === "electionDay" ? "border-b-2 border-sky-600 text-sky-600" : "text-gray-500" }`}>Election Day</button></div><div className="mt-3 text-sm animate-fadeIn">{activeTab === "mail" && ( <div> <p> Apply for your mail-in ballot by Oct. 28. Return it via USPS or a secure ballot drop box. </p> <Button size="sm" type="secondary" href="https://www.nj.gov/state/elections/vote-by-mail.shtml" icon={<IconExternalLink />} className="mt-2">Learn More</Button></div>)}{activeTab === "early" && ( <div> <p> From Oct. 25 to Nov. 2, vote at any designated early voting location in Mercer County. </p> <Button size="sm" type="secondary" href="https://www.nj.gov/state/elections/vote-early-voting.shtml" icon={<IconExternalLink />} className="mt-2">Find Locations</Button></div>)}{activeTab === "electionDay" && ( <div> <p> Go to your assigned polling place on Tuesday, Nov. 4, between 6:00 AM and 8:00 PM. </p> <Button size="sm" type="secondary" href="https://voter.svrs.nj.gov/polling-place-search" icon={<IconExternalLink />} className="mt-2">Find Polling Place</Button></div>)}</div></div>
-               </div>
-             </Card>
+            <Card noHoverEffect className="p-0">
+              <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                  <div className="flex items-center mb-3">
+                    <IconCalendar className="h-6 w-6 text-sky-600 mr-2" />
+                    <h3 className="text-lg font-semibold text-slate-800">
+                      Key Dates
+                    </h3>
+                  </div>
+                  <ul className="space-y-2">
+                    {keyDates.map((item) => (
+                      <li key={item.event} className="text-sm">
+                        <strong className="text-sky-700">{item.date}:</strong>{" "}
+                        {item.event}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <div className="flex items-center mb-3">
+                    <IconUserCheck className="h-6 w-6 text-sky-600 mr-2" />
+                    <h3 className="text-lg font-semibold text-slate-800">
+                      Voter Tools
+                    </h3>
+                  </div>
+                  <div className="space-y-3">
+                    <Button
+                      type="secondary"
+                      href="https://voter.svrs.nj.gov/registration-check"
+                      icon={<IconExternalLink />}
+                      className="w-full justify-center"
+                    >
+                      Check Status
+                    </Button>
+                    <Button
+                      type="primary"
+                      href="https://voter.svrs.nj.gov/register"
+                      icon={<IconUserCheck />}
+                      className="w-full justify-center"
+                    >
+                      Register Online
+                    </Button>
+                    <Button
+                      type="secondary"
+                      href="https://voter.svrs.nj.gov/polling-place-search"
+                      icon={<IconMapMarker className="h-4 w-4" />}
+                      className="w-full justify-center"
+                    >
+                      Find Polling Place
+                    </Button>
+                  </div>
+                </div>
+                <div>
+                  <div className="flex items-center mb-3">
+                    <IconBallotBox className="h-6 w-6 text-sky-600 mr-2" />
+                    <h3 className="text-lg font-semibold text-slate-800">
+                      Three Ways to Vote
+                    </h3>
+                  </div>
+                  <div className="flex border-b border-gray-200">
+                    <button
+                      onClick={() => setActiveTab("mail")}
+                      className={`flex-1 py-2 text-sm font-medium ${
+                        activeTab === "mail"
+                          ? "border-b-2 border-sky-600 text-sky-600"
+                          : "text-gray-500"
+                      }`}
+                    >
+                      By Mail
+                    </button>
+                    <button
+                      onClick={() => setActiveTab("early")}
+                      className={`flex-1 py-2 text-sm font-medium ${
+                        activeTab === "early"
+                          ? "border-b-2 border-sky-600 text-sky-600"
+                          : "text-gray-500"
+                      }`}
+                    >
+                      Early
+                    </button>
+                    <button
+                      onClick={() => setActiveTab("electionDay")}
+                      className={`flex-1 py-2 text-sm font-medium ${
+                        activeTab === "electionDay"
+                          ? "border-b-2 border-sky-600 text-sky-600"
+                          : "text-gray-500"
+                      }`}
+                    >
+                      Election Day
+                    </button>
+                  </div>
+                  <div className="mt-3 text-sm animate-fadeIn">
+                    {activeTab === "mail" && (
+                      <div>
+                        {" "}
+                        <p>
+                          {" "}
+                          Apply for your mail-in ballot by Oct. 28. Return it
+                          via USPS or a secure ballot drop box.{" "}
+                        </p>{" "}
+                        <Button
+                          size="sm"
+                          type="secondary"
+                          href="https://www.nj.gov/state/elections/vote-by-mail.shtml"
+                          icon={<IconExternalLink />}
+                          className="mt-2"
+                        >
+                          Learn More
+                        </Button>
+                      </div>
+                    )}
+                    {activeTab === "early" && (
+                      <div>
+                        {" "}
+                        <p>
+                          {" "}
+                          From Oct. 25 to Nov. 2, vote at any designated early
+                          voting location in Mercer County.{" "}
+                        </p>{" "}
+                        <Button
+                          size="sm"
+                          type="secondary"
+                          href="https://www.nj.gov/state/elections/vote-early-voting.shtml"
+                          icon={<IconExternalLink />}
+                          className="mt-2"
+                        >
+                          Find Locations
+                        </Button>
+                      </div>
+                    )}
+                    {activeTab === "electionDay" && (
+                      <div>
+                        {" "}
+                        <p>
+                          {" "}
+                          Go to your assigned polling place on Tuesday, Nov. 4,
+                          between 6:00 AM and 8:00 PM.{" "}
+                        </p>{" "}
+                        <Button
+                          size="sm"
+                          type="secondary"
+                          href="https://voter.svrs.nj.gov/polling-place-search"
+                          icon={<IconExternalLink />}
+                          className="mt-2"
+                        >
+                          Find Polling Place
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </Card>
           </section>
 
           {/* --- Section Divider --- */}
@@ -4285,6 +4709,8 @@ Co-Executive Directors @ West Windsor Forward`;
     </>
   );
 };
+
+export default ElectionPage;
 
 
 const ContactPage: FC = () => {
