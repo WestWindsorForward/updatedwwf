@@ -269,6 +269,18 @@ const IconMenu: FC = () => (
     />{" "}
   </svg>
 );
+// ADD THIS NEW ICON COMPONENT
+const IconClipboard: FC<{ className?: string }> = ({ className }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    className={`h-5 w-5 ${className}`}
+    viewBox="0 0 20 20"
+    fill="currentColor"
+  >
+    <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+    <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2H6zM8 7a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1zm0 4a1 1 0 110 2h2a1 1 0 110-2H8z" />
+  </svg>
+);
 const IconClose: FC = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -2707,6 +2719,20 @@ const ElectionPage: FC<PageProps> = ({ setActivePage }) => {
   const [activeTab, setActiveTab] = useState("mail");
   const [isStatementModalOpen, setIsStatementModalOpen] = useState(false);
   const [isRasmussenBioOpen, setIsRasmussenBioOpen] = useState(false);
+  const [copiedLinks, setCopiedLinks] = useState<{ [key: string]: boolean }>({});
+
+  const handleCopyLink = useCallback((questionId: string) => {
+    // Construct the full URL with the hash
+    const url = `${window.location.origin}${window.location.pathname}#${questionId}`;
+    navigator.clipboard.writeText(url).then(() => {
+      // Set this question's copied state to true
+      setCopiedLinks(prev => ({ ...prev, [questionId]: true }));
+      // Reset the button text after 2 seconds
+      setTimeout(() => {
+        setCopiedLinks(prev => ({ ...prev, [questionId]: false }));
+      }, 2000);
+    });
+  }, []); // Empty dependency array because it doesn't rely on other state
   const filterBarRef = useRef<HTMLDivElement>(null); // Ref for the filter bar
 
   const [activeOffice, setActiveOffice] = useState<OfficeType | null>(null); // Use OfficeType
@@ -3468,7 +3494,22 @@ Co-Executive Directors @ West Windsor Forward`;
             </div>
           </div>
         </header>
+{/* --- JUMP LINKS (NEW) --- */}
+              <div className="mt-8 flex flex-col sm:flex-row justify-center gap-3 px-4">
+                <Button href="#interviews" type="secondary" size="md" icon={<IconMicrophone />}>
+                  Jump to Interviews
+                </Button>
+                <Button href="#finance" type="secondary" size="md" icon={<IconDocument />}>
+                  Jump to Campaign Finance
+                </Button>
+                <Button href="#voter-tools" type="secondary" size="md" icon={<IconBallotBox />}>
+                  Jump to Voter Tools
+                </Button>
+              </div>
 
+            </div> {/* This is the closing tag of the z-10 container */}
+          </div>
+        </header>
         <div className="container mx-auto px-4 py-8 sm:py-12 space-y-12">
           <Card
             noHoverEffect
@@ -3573,7 +3614,7 @@ Co-Executive Directors @ West Windsor Forward`;
             </div>
           </section>
           {/* --- Interview Series & Comparison Tool --- */}
-          <section>
+          <section id="interviews" className="scroll-mt-24">
             <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 mb-6 text-center">
               West Windsor Forward Interview Series
             </h2>
@@ -3966,8 +4007,14 @@ Co-Executive Directors @ West Windsor Forward`;
                             };
 
                             return (
-                              <div key={question.id}>
-                                <div className="text-center mb-4">
+                              return (
+  // This is the new "box" for each question
+  <div
+    key={question.id}
+    id={question.id} // This is the ID for the unique link
+    className="relative bg-white shadow-lg rounded-xl border border-gray-200 p-4 sm:p-6 scroll-mt-32" // Added styles and scroll-margin
+  >
+    <div className="text-center mb-6"> {/* Increased bottom margin */}
                                   <div className="mb-2">
                                     {Array.isArray(question.office) ? (
                                       question.office.map((off) => (
@@ -3996,11 +4043,23 @@ Co-Executive Directors @ West Windsor Forward`;
                                       </span>
                                     )}
                                   </div>
-                                  <p className="font-semibold text-slate-700 italic">
-                                    "{question.text}"
-                                  </p>
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                                  <p className="font-semibold text-slate-700 italic max-w-2xl mx-auto">
+                  "{question.text}"
+                </p>
+                {/* --- NEW COPY BUTTON --- */}
+                <Button
+                  size="sm"
+                  // Use "success" type when link is copied
+                  type={copiedLinks[question.id] ? "success" : "secondary"} 
+                  onClick={() => handleCopyLink(question.id)}
+                  className="mt-4"
+                  // Show a checkmark icon when copied
+                  icon={copiedLinks[question.id] ? <IconCheckCircle /> : <IconClipboard />}
+                >
+                  {copiedLinks[question.id] ? "Link Copied!" : "Copy Link to Question"}
+                </Button>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                                   {/* Conditionally render based on filter AND question applicability */}
                                   {showMayor &&
                                     questionIsMayor &&
@@ -4059,7 +4118,7 @@ Co-Executive Directors @ West Windsor Forward`;
           </section>
 
           {/* --- Campaign Finance Section --- */}
-          <section>
+          <section id="finance" className="scroll-mt-24">
             <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 mb-6 text-center">
               Campaign Finance & Transparency
             </h2>
@@ -4353,7 +4412,7 @@ Co-Executive Directors @ West Windsor Forward`;
           </section>
 
           {/* --- Voter Information Hub --- */}
-          <section>
+          <section id="voter-tools" className="scroll-mt-24">
             <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 mb-6 text-center">
               Voter Toolkit
             </h2>
