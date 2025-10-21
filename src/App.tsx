@@ -2770,633 +2770,632 @@ interface ElectionIssue {
 }
 
 const ElectionPage: FC<PageProps> = ({ setActivePage }) => {
-  const [selectedTopic, setSelectedTopic] = useState<string | null>(null); // Start with all collapsed
-  const [activeTab, setActiveTab] = useState("mail");
-  const [isStatementModalOpen, setIsStatementModalOpen] = useState(false);
-  const [isRasmussenBioOpen, setIsRasmussenBioOpen] = useState(false);
-  const [copiedLinks, setCopiedLinks] = useState<{ [key: string]: boolean }>({});
-  const filterBarRef = useRef<HTMLDivElement>(null); // Ref for the filter bar
-  const headerRef = useRef<HTMLElement>(null); // Ref for the sticky header/filter bar
+  const [selectedTopic, setSelectedTopic] = useState<string | null>(null); // Start with all collapsed
+  const [activeTab, setActiveTab] = useState("mail");
+  const [isStatementModalOpen, setIsStatementModalOpen] = useState(false);
+  const [isRasmussenBioOpen, setIsRasmussenBioOpen] = useState(false);
+  const [copiedLinks, setCopiedLinks] = useState<{ [key: string]: boolean }>({});
+  const filterBarRef = useRef<HTMLDivElement>(null); // Ref for the filter bar
+  const headerRef = useRef<HTMLElement>(null); // Ref for the sticky header/filter bar
 
-  const handleCopyLink = useCallback((questionId: string) => {
-    // Guard against environments where clipboard API is not available
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      const url = `${window.location.origin}${window.location.pathname}#${questionId}`;
-      navigator.clipboard
-        .writeText(url)
-        .then(() => {
-          setCopiedLinks((prev) => ({ ...prev, [questionId]: true }));
-          setTimeout(() => {
-            setCopiedLinks((prev) => ({ ...prev, [questionId]: false }));
-          }, 2000);
-        })
-        .catch((err) => {
-          console.error("Failed to copy link: ", err);
-        });
-    } else {
-      console.error("Clipboard API not supported in this environment.");
-    }
-  }, []);
+  const handleCopyLink = useCallback((questionId: string) => {
+    // Guard against environments where clipboard API is not available
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      // Construct URL with hash
+      const url = `${window.location.origin}${window.location.pathname}#${questionId}`;
+      navigator.clipboard.writeText(url).then(() => {
+          setCopiedLinks(prev => ({ ...prev, [questionId]: true }));
+          setTimeout(() => {
+              setCopiedLinks(prev => ({ ...prev, [questionId]: false }));
+          }, 2000);
+      }).catch(err => {
+          console.error("Failed to copy link: ", err);
+      });
+    } else {
+      console.error("Clipboard API not supported in this environment.");
+    }
+  }, []);
 
-  const [activeOffice, setActiveOffice] = useState<OfficeType | null>(null); // Use OfficeType
-  const [searchQuery, setSearchQuery] = useState("");
 
-  const officeStyles: { [key: string]: string } = {
-    Mayor: "bg-blue-100 text-blue-800",
-    "Township Council": "bg-green-100 text-green-800",
-  };
+  const [activeOffice, setActiveOffice] = useState<OfficeType | null>(null); // Use OfficeType
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const mayorMaratheVideoId = "nrW--rMjDXc";
-  const mayorSinghVideoId = "OdMCwdJfdJk";
-  const councilGeeversCharlesVideoId = "nZ1YuORz3Ug";
-  const councilTomarWintersVideoId = "76l6GSE4lkU";
+  const officeStyles: { [key: string]: string } = {
+    Mayor: "bg-blue-100 text-blue-800",
+    "Township Council": "bg-green-100 text-green-800",
+  };
 
-  const responsesData = {
-    marathe: {
-      // Mayor - Proven Leaders
-      "q0-opening": {
-        time: "0:31",
-        summary:
-          "Mayor Marate introduces himself as a 31-year resident of West Windsor, viewing the town as his home. He outlines his extensive history of public service, including nine years as school board president and his current tenure as mayor since 2017, emphasizing his commitment to making the best, albeit sometimes difficult, decisions for the community.",
-      },
-      "q1-vision": {
-        time: "2:18",
-        summary:
-          "The mayor describes the role as being the 'face of the township' and setting the community's tone. He asserts that his 25-year record of service on the school board, council, and as mayor is his primary qualification, and he asks voters to judge him on his history of making tough decisions for the town's long-term benefit.",
-      },
-      "q2-vision": {
-        time: "4:19",
-        summary:
-          "Mayor Marathe states that the township is performing very well, citing eight consecutive years of flat municipal taxes as an objective measure of success. He highlights his administration's effective management of significant challenges, including the COVID-19 pandemic and the state's affordable housing mandates.",
-      },
-      "q3-vision": {
-        time: "5:32",
-        summary:
-          "He identifies the town's top three appealing attributes as its excellent school district, busy train station, and a family-friendly atmosphere where leadership is based on merit, not politics. He notes that the primary frustrations residents express are related to taxes, the condition of sidewalks, and a desire for more street lighting.",
-      },
-      "q1-future": {
-        time: "7:27",
-        summary:
-          "In his first 100 days, he would continue to prioritize key resident concerns, including taxes, sidewalk repairs, increasing street lighting, and resurfacing roads. He emphasizes that his approach to governing is consistent throughout his term and not confined to a specific timeframe.",
-      },
-      "q2-future": {
-        time: "9:33",
-        summary:
-          "His primary long-term goal is to continue making decisions that ensure the future prosperity of West Windsor, even if they are politically difficult in the short term. A specific project he hopes to advance is attracting an indoor sports facility to meet demand for year-round athletic activities.",
-      },
-      "q1-warehouse": {
-        time: "11:24",
-        summary:
-          "The mayor explains that the decision to approve warehouses on the Howard Hughes site was a strategic choice to avoid a lawsuit that could have forced the township to build approximately 2,000 homes. This action, he argues, fulfills affordable housing obligations while preventing a massive increase in residential density and school enrollment.",
-      },
-      "q2-warehouse": {
-        time: "13:24",
-        summary:
-          "He frames the development choice as one between warehouses or 2,000 new homes, arguing the homes would create far more traffic on local roads. He contends that warehouse traffic will be largely outbound with direct access to Route 1, minimally impacting local streets, similar to the traffic patterns of nearby shopping malls.",
-      },
-      "q3-warehouse": {
-        time: "15:52",
-        summary:
-          "Mayor Marathe states that he has not received any new proposals for warehouses and does not anticipate any due to market saturation. He would, however, support a warehouse-style structure if it were repurposed for a community use, such as the indoor sports facility he hopes to attract.",
-      },
-      "q1-taxes": {
-        time: "17:05",
-        summary:
-          "To keep West Windsor affordable for young families, his strategy is to maintain low municipal taxes, foster a strong sense of community, and enhance local amenities. He plans to continue attracting new small businesses and improving sports facilities to preserve the town's appeal.",
-      },
-      "q2-taxes": {
-        time: "18:16",
-        summary:
-          "He points out that the municipal portion of property taxes has risen by only 2.7% cumulatively over eight years while maintaining all town services. The mayor attributes overall tax increases to school and county levies and highlights that his administration has grown the town's surplus to $10 million through prudent financial management.",
-      },
-      "q3-taxes": {
-        time: "20:00",
-        summary:
-          "He compares West Windsor to Robbinsville, noting that Robbinsville's fiscal stability is due in large part to its Amazon warehouse. He argues that West Windsor's approval of warehouses will provide similar long-term tax stability by preventing costly residential development, contrasting the township's minimal tax increases with the county's significant hikes.",
-      },
-      "q1-infra": {
-        time: "21:47",
-        summary:
-          "The mayor asserts that controlling new housing development is the most effective way to manage traffic, which is why his administration is legally challenging the state's affordable housing numbers. He also notes that the township dedicates over $2 million annually to a systematic road resurfacing program based on objective condition assessments.",
-      },
-      "q2-infra": {
-        time: "23:36",
-        summary:
-          "He affirms that West Windsor is a bicycle-friendly community and that safety for pedestrians and cyclists is a priority in all road projects. He cites the completion of the Cranberry Road sidewalk and safety upgrades on Alexander Road as examples of his commitment and notes his close collaboration with the West Windsor Bicycle and Pedestrian Alliance.",
-      },
-      "q3-infra": {
-        time: "25:56",
-        summary:
-          "The mayor assesses the police department as 'excellent' and notes that fire and EMS services are continuously improving. A key goal for his next term is to expand the dedicated ambulance service to provide 24/7 coverage for the community.",
-      },
-      "q1-gov": {
-        time: "26:45",
-        summary:
-          "He refutes any claims of a lack of transparency, stating he is one of the most accessible and responsive mayors in the region through platforms like Facebook, email, and phone. He asserts that both he and the township council are consistently available to address resident concerns.",
-      },
-      "q2-gov": {
-        time: "28:17",
-        summary:
-          "Mayor Marathe deems a 311-style system unnecessary, as residents can already report issues like potholes and missed garbage pickups efficiently through the township website. He states that the current system works well, with most issues being resolved within a day.",
-      },
-      "q3-gov": {
-        time: "29:03",
-        summary:
-          "He highlights the township's strong record of preserving open space, including purchasing the Hall Farm to prevent a large housing development. On sustainability, he believes in a shared responsibility between the town and its residents, encouraging personal actions like reducing online deliveries alongside municipal efforts.",
-      },
-      "q4-gov": {
-        time: "30:52",
-        summary:
-          "While he would prefer no new large-scale housing, he acknowledges it is mandated by the state. His focus is on supporting small businesses to ensure local commercial centers remain vibrant and fully occupied.",
-      },
-      "q5-gov": {
-        time: "33:04",
-        summary:
-          "He confirms that creating a walkable downtown area between the train station and High School South is a feasible goal that will be achieved in the next four years. The plan includes redesigning Route 571 with new lanes, sidewalks, and bike paths to foster a vibrant town center.",
-      },
-      "q6-gov": {
-        time: "35:10",
-        summary:
-          "The mayor clarifies that the library is part of the Mercer County system, which controls its funding and operations, not the township. He states that his administration continues to work with the county to advocate for improvements to the West Windsor branch.",
-      },
-      "q1-regional": {
-        time: "36:28",
-        summary:
-          "He describes his relationship with other local and state leaders as excellent and collaborative. He provides the example of working with the mayors of Princeton and Hamilton during the pandemic to successfully advocate for local control over vaccination efforts.",
-      },
-      "q1-closing": {
-        time: "37:53",
-        summary:
-          "Expressing disappointment over the lack of a live debate, the mayor says he would ask his opponent why he declined to participate in a face-to-face forum. He believes such an event is critical for voters to directly compare candidates.",
-      },
-      "q2-closing": {
-        time: "38:37",
-        summary:
-          "His favorite thing about West Windsor is that it is his home. Having lived in the same house for 31 years and raised his family there, he feels a deep, personal connection to the town.",
-      },
-      "q3-closing": {
-        time: "39:18",
-        summary:
-          "Declining to name a single favorite, he says he made an effort to support every restaurant in town during the pandemic. He encourages residents to shop and dine locally to strengthen the community's economy.",
-      },
-      "q4-closing": {
-        time: "40:04",
-        summary:
-          "A perfect weekend for him consists of spending time with family and friends and attending community events. He stresses the importance of fostering a strong sense of community and neighborliness as the town continues to grow.",
-      },
-    },
-    singh: {
-      // Mayor - WW Together (UPDATED SUMMARIES)
-      "q0-opening": {
-        time: "0:34",
-        summary:
-          "Mr. Singh introduces himself as a resident since 2011, a father of three, and a tech consultant for 30 years. He highlights his community involvement, including connecting residents with elected officials and serving on the board of a nonprofit that supports adults with disabilities, stating he wants to make a positive impact as mayor.",
-      },
-      "q1-vision": {
-        time: "2:03",
-        summary:
-          "He views the mayor's role as crucial for addressing the town's infrastructure issues and dense development through collaboration with county and state officials. He emphasizes a \"community first\" attitude to ensure future development is suburban and safe, not a repeat of the high-density Transit Village.",
-      },
-      "q2-vision": {
-        time: "3:40",
-        summary:
-          'Mr. Singh gives the current administration an "F" grade, citing the 900+ unit Transit Village development, which he says has no open space and was built without supporting sidewalks. He states the administration has failed to invest in basic infrastructure like roads, despite residents paying high taxes.',
-      },
-      "q3-vision": {
-        time: "5:05",
-        summary:
-          "He states that based on speaking with thousands of residents, the main frustrations are public safety (citing tragic accidents), high property taxes, and dense development that doesn't fit the town's suburban character. He also notes the \"pathetic state\" of the library and missing sidewalk links as key infrastructure frustrations.",
-      },
-      "q1-future": {
-        time: "7:03",
-        summary:
-          "His three main priorities for the first 100 days are to approve flashing beacon lights for accident-prone intersections, initiate discussions with the warehouse developer (Bridge Point) to explore a mixed-use alternative, and identify new services for seniors and empty nesters.",
-      },
-      "q2-future": {
-        time: "8:49",
-        summary:
-          'His long-term goals are to pause dense development by actively acquiring and preserving open space, implement a "Vision Zero" framework to improve public safety on roads, and work to get the township\'s library upgraded and improved.',
-      },
-      "q1-warehouse": {
-        time: "11:01",
-        summary:
-          'Mr. Singh characterizes the current administration\'s approval of the 5.5 million-square-foot warehouse project as a "colossal" decision made against the wishes of 90% of residents. He states this was done without collaborating with neighboring towns and is not good for West Windsor.',
-      },
-      "q2-warehouse": {
-        time: "12:27",
-        summary:
-          "He argues that the project will be a low-ratable distribution center that will not generate the $14 million in revenue the administration claims, but will create significant traffic and safety issues. He believes a mixed-use development, like those in other towns, would provide four to eight times the ratables and be more beneficial for the community.",
-      },
-      "q3-warehouse": {
-        time: "14:51",
-        summary:
-          "He is unequivocally opposed to any new warehouse proposals, stating they do not fit the suburban, green character of West Windsor. He argues that such development negatively impacts not just the township but the entire greater Princeton area.",
-      },
-      "q1-taxes": {
-        time: "15:55",
-        summary:
-          "Mr. Singh's plan for affordability focuses on stabilizing property taxes, which he says are making the town unaffordable for many, including seniors and young families. He plans to achieve this by preserving open space to limit new development mandates, attracting more commercial revenue, and improving the township's operational efficiency.",
-      },
-      "q2-taxes": {
-        time: "17:49",
-        summary:
-          "He plans to conduct a full audit of the budget to find savings and will ensure that money already appropriated for infrastructure is actually spent. He also aims to improve the productivity of township staff using better technology to control operational costs and maintain fiscal discipline.",
-      },
-      "q3-taxes": {
-        time: "19:13",
-        summary:
-          'Mr. Singh argues that West Windsor\'s fund balance has "ballooned" to $13 million because the current administration is not investing appropriated money into services and infrastructure, which is why residents don\'t see returns on their high taxes. He also suggests exploring shared services with neighboring towns to avoid "shortsighted" service cuts, such as the reduction in summer garbage collection.',
-      },
-      "q1-infra": {
-        time: "20:56",
-        summary:
-          'His plan to improve roads and traffic centers on implementing the "Vision Zero" framework, a public safety initiative used by other towns to add traffic calming measures, better signage, and flashing beacons. He also makes it a high priority to fill in the gaps in the town\'s sidewalk network so people are not forced to walk in the street.',
-      },
-      "q2-infra": {
-        time: "22:22",
-        summary:
-          "He supports creating safer, more connected bike paths and sidewalks, stating they are essential for both physical and mental well-being. He plans to invest funds that have already been approved—but not spent—on this infrastructure, starting with projects to make areas like the Windsor Plaza more walkable.",
-      },
-      "q3-infra": {
-        time: "23:58",
-        summary:
-          'Mr. Singh states that he supports the police and EMS staff and that they are doing a "wonderful job." His plan is to ensure there is better coordination between departments and to work with them to see if any process improvements or additional resources are needed.',
-      },
-      "q1-gov": {
-        time: "24:31",
-        summary:
-          "To improve transparency, he pledges to upgrade the township website to provide quarterly snapshots of project statuses and budgets. He also plans to implement a Civic App (a 311-style application) for residents to submit and track service tickets, and he will hold regular town halls to answer resident questions.",
-      },
-      "q2-gov": {
-        time: "26:01",
-        summary:
-          'He "absolutely" supports implementing a Civic App for service requests, stating the township is currently using "19th-century tools." He believes this technology will make reporting issues more efficient for residents and improve the township\'s internal productivity and workflow.',
-      },
-      "q3-gov": {
-        time: "26:49",
-        summary:
-          "He positions himself as a strong proponent of open space, pledging to proactively identify and purchase private land to preserve it from development, similar to what Princeton has done. He also states that all future development must include green space and exceed state stormwater management guidelines to prevent flooding.",
-      },
-      "q4-gov": {
-        time: "28:26",
-        summary:
-          "He would like to attract mixed-use developments, potentially on the warehouse site, that include a public-private wellness center, restaurants, and clean energy or AI startups. He also wants to support existing small businesses by making strip malls more walkable so residents can shop and dine locally.",
-      },
-      "q5-gov": {
-        time: "30:12",
-        summary:
-          'Mr. Singh believes West Windsor needs a "heart" or town center, which he says the Transit Village failed to become. He proposes a two-part plan: first, make existing shopping plazas more walkable, and second, explore creating a new town center with a wellness center, hospitality, and parks, possibly by working with developers on a mixed-use project.',
-      },
-      "q6-gov": {
-        time: "32:30",
-        summary:
-          'He criticizes the current administration for blaming the county for the library\'s poor, "leaking" condition. He promises to personally take charge, seek grants, and work with county officials to secure funding to expand, upgrade, and properly maintain the library.',
-      },
-      "q1-regional": {
-        time: "33:56",
-        summary:
-          'He states that he has strong, pre-existing relationships with county and state elected officials, with whom he already connects the community annually. He will leverage these relationships to collaborate on regional solutions for West Windsor, always taking a "community first" approach.',
-      },
-      "q1-closing": {
-        time: "35:14",
-        summary:
-          "Mr. Singh would ask his opponent: Why did you approve the 5.5 million-square-foot warehouse project instead of investing in and taking care of our township's public safety infrastructure?",
-      },
-      "q2-closing": {
-        time: "35:43",
-        summary:
-          "He loves that West Windsor is a close, thriving community with beautiful schools and a strategic location near Princeton, New York City, and Philadelphia, all centered around the train station.",
-      },
-      "q3-closing": {
-        time: "36:23",
-        summary: "His favorite restaurant in town is Tommy's Tavern.",
-      },
-      "q4-closing": {
-        time: "36:34",
-        summary:
-          "His perfect weekend involves going to the farmer's market and enjoying lunch or dinner at a local restaurant, such as one in the U.S. 1 Market Fair.",
-      },
-    },
-    geeversCharles: {
-      // Council - Proven Leaders (Embeds from MpSLuk4TBQg)
-      "q0-opening": {
-        time: "0:30",
-        summary:
-          "Councilwoman Geevers highlights her 30 years in town and extensive experience, including six years on the school board, 20 years on the council, and nine years on the Planning Board. Mr. Charles introduces himself as a 17-year resident and a CPA with 29 years of financial experience, noting his community involvement in youth sports and fostering rescue dogs.",
-      },
-      "q1-council-vision": {
-        time: "2:20",
-        summary:
-          "Mr. Charles describes the role as a serious public service commitment to make thoughtful, independent decisions for the long-term benefit of all residents, citing his CPA background. Councilwoman Geevers explains the council's functional role as the legislative branch in the town's strong-mayor government, with primary responsibilities for approving the annual budget, passing ordinances, and serving as liaisons to township committees.",
-      },
-      "q2-vision": {
-        time: "4:32",
-        summary:
-          "Both candidates give the administration an 'A,' stating that the mayor and council have done a great job managing the constant challenge of growth. They specifically note that this growth is largely driven by state-mandated affordable housing obligations, which the administration has handled well.",
-      },
-      "q4-council-vision": {
-        time: "5:55",
-        summary:
-          "Councilwoman Geevers describes her philosophy as collaborative, using her good relationship with the mayor to discuss disagreements, while Mr. Charles emphasizes his independence, stating he is not a 'rubber stamp' and will always study issues thoughtfully. Both candidates highlight their recent successful campaign to keep West Windsor's elections nonpartisan as proof of their focus on local issues.",
-      },
-      "q1-future": {
-        time: "8:12",
-        summary:
-          "Mr. Charles states his priority is to incorporate resident feedback into the upcoming budget, specifically by increasing funding for street lighting and sidewalk repairs. Councilwoman Geevers notes the first 100 days are dominated by the start of the annual budget season, and her priority is managing the council's open and public review of the operating and capital budgets.",
-      },
-      "q2-future": {
-        time: "10:21",
-        summary:
-          "Both candidates identify managing growth as the primary long-term goal. Councilwoman Geevers emphasizes doing so in a fiscally responsible way to keep municipal taxes flat, while Mr. Charles highlights the strategy of legally challenging the state's affordable housing mandates and preserving open space to limit residential development.",
-      },
-      "q1-warehouse": {
-        time: "12:41",
-        summary:
-          "Both candidates explain the situation as a choice between two outcomes, stating the developer was pursuing litigation to build 2,000 residential units, which would have severely impacted schools and traffic. They support the administration's decision to reach a settlement agreement that instead zoned the land for commercial warehouses, avoiding the high-density housing.",
-      },
-      "q2-warehouse": {
-        time: "14:29",
-        summary:
-          "Mr. Charles addresses traffic concerns by highlighting that the Planning Board's approval includes over 80 conditions, one of which prohibits trucks from turning onto Clarksville Road, directing them to Route 1. Councilwoman Geevers adds that all towns are competing for ratables, and this project provides necessary ratables to keep the township affordable.",
-      },
-      "q4-council-warehouse": {
-        time: "16:46",
-        summary:
-          "Councilwoman Geevers states the goal is to maintain a balance between residential and commercial zoning, while also ensuring open space and recreational parks are developed throughout town. Mr. Charles emphasizes that a key planning priority should be proactively preserving open space by using the town's open space list and tax fund to acquire land.",
-      },
-      "q2-taxes": {
-        time: "18:36",
-        summary:
-          "Mr. Charles emphasizes that the council controls only 14-15% of the total tax bill and has kept that portion flat, with increases coming from the county and schools. Councilwoman Geevers adds that the council manages this budget through an open process and, based on resident feedback, will likely increase funding for street lights and sidewalk repairs.",
-      },
-      "q4-council-taxes": {
-        time: "21:21",
-        summary:
-          "Both candidates agree on the need to increase the capital budget for road repaving. Councilwoman Geevers also suggests investing in a more interactive township website, while Mr. Charles defends the council's unanimous decision to reduce summer garbage pickup as a fiscally responsible choice that saved over $1.1 million.",
-      },
-      "q1-infra": {
-        time: "24:43",
-        summary:
-          "Mr. Charles explains that the township has a systematic plan for road improvement, using a study that rates every road from one to five. This allows the engineering department to prioritize repaving the roads that are in the worst condition first.",
-      },
-      "q2-infra": {
-        time: "25:46",
-        summary:
-          "Both candidates affirm their close collaboration with the West Windsor Bicycle and Pedestrian Alliance. Councilwoman Geevers highlights budgeting for safety items like crosswalks and working with police to combat speeding, while Mr. Charles points to the upcoming county project on Route 571 that will add continuous sidewalks and bike lanes.",
-      },
-      "q3-infra": {
-        time: "28:17",
-        summary:
-          "Both candidates state that West Windsor is a very safe community with outstanding public safety services. Mr. Charles praises the police, fire, and EMS departments, while Councilwoman Geevers, a fire police officer herself, expresses pride in the high level of training and professionalism from both paid and volunteer staff.",
-      },
-      "q2-gov": {
-        time: "30:11",
-        summary:
-          "Both candidates are open to discussing a 311-style app. Councilwoman Geevers notes that a similar online system for potholes already exists and could be expanded, while Mr. Charles states he would want to see a cost-benefit analysis before committing.",
-      },
-      "q7-council-gov": {
-        time: "31:13",
-        summary:
-          "Councilwoman Geevers clarifies the process, noting that the council appoints to the Zoning Board and Parking Authority, and she looks for residents with relevant backgrounds. Mr. Charles states his primary criteria would be the candidate's qualifications and their ability to bring a 'diversity of thought' to the boards.",
-      },
-      "q8-council-disagreement": {
-        time: "33:42",
-        summary:
-          "Councilwoman Geevers states that she handles disagreements by fostering good communication and relationships, which allows council members to learn from each other. Mr. Charles emphasizes that he and his running mates are independent thinkers who resolve differences through healthy debate, noting they each wrote their own responses to a newspaper, unlike their opponents.",
-      },
-      "q3-gov": {
-        time: "35:49",
-        summary:
-          "Both candidates support using the town's open space tax to preserve land. Councilwoman Geevers cites the successful purchase of the Hall property to prevent 400 townhouses, while Mr. Charles points to a recent warehouse deal that blocked 600 homes and resulted in 25 acres of farmland being preserved.",
-      },
-      "q4-gov": {
-        time: "38:09",
-        summary:
-          "Councilwoman Geevers expresses support for the new commercial developments and restaurants along Route 1, which provide strong ratables and new dining options. Mr. Charles highlights the successful attraction of small businesses to the redeveloped Route 571 area and the potential for new growth from tech businesses like the new AI hub.",
-      },
-      "q5-gov": {
-        time: "40:46",
-        summary:
-          "Both candidates agree this is a feasible and active goal. Councilwoman Geevers points to the 30,000 sq. ft. of retail in the train station plan and the revitalization of Windsor Plaza, while Mr. Charles highlights the upcoming Route 571 redesign and the replacement of derelict buildings with new mixed-use developments.",
-      },
-      "q6-gov": {
-        time: "43:23",
-        summary:
-          "Both candidates agree that the library is a county responsibility and that collaborating with the county is the best approach. Councilwoman Geevers is hopeful the new county executive will finally fund needed physical repairs, while Mr. Charles adds that building a separate town library would likely not be financially sensible.",
-      },
-      "q1-closing": {
-        time: "45:18",
-        summary:
-          "Councilwoman Geevers would ask her opponents why they decided to run, given that they have not previously participated in any township boards or committees. Mr. Charles would ask what their actual plan is, why they don't offer alternatives when they criticize, and why they block residents who ask questions on social media.",
-      },
-      "q2-closing": {
-        time: "46:26",
-        summary:
-          "Councilwoman Geevers says her favorite thing is the town's dynamic range of amenities, including the Senior Center, the schools, and the parks, which offer something for all ages. Mr. Charles states his favorite thing is the sense of community and the diverse, long-term friendships his family has made.",
-      },
-      "q3-closing": {
-        time: "47:40",
-        summary:
-          "Mr. Charles names Aljon's as a favorite, calling it a 'pillar of the community.' Councilwoman Geevers states she has many favorites depending on the occasion, including Aljon's, PJ's Pancake House, and Seasons 52.",
-      },
-      "q4-closing": {
-        time: "49:02",
-        summary:
-          "Mr. Charles describes a perfect weekend as hiking on a town trail with his dogs, followed by smoking meats in his backyard and having friends over. Councilwoman Geevers describes her perfect weekend as exercising by walking in a park and spending time with her family, including her new grandchild.",
-      },
-    },
-    tomarWinters: {
-      // Council - WW Together (Placeholders)
-      "q0-opening": {
-        time: "0:37",
-        summary:
-          "Mr. Tomar introduces himself as an 18-year resident who wants to give back to the community that gave his family opportunities. Mr. Winters, a newcomer who moved here for the schools, aims to bring fresh ideas and outside perspectives from other towns to West Windsor.",
-      },
-      "q1-council-vision": {
-        time: "2:08",
-        summary:
-          "Mr. Winters defines the role as a fiduciary for town spending, with a broader responsibility to market the town; he cites his corporate strategy background as his main qualification. Mr. Tomar views the council as 'guardians' to hold the administration accountable, qualifying himself with 30 years of corporate experience and 15 years in nonprofit management.",
-      },
-      "q2-vision": {
-        time: "5:36",
-        summary:
-          "Mr. Tomar gives a failing assessment, stating he cannot point to a single success and criticizes the administration for the 'worst roads' in the county and underinvesting in infrastructure. Mr. Winters, as a newcomer, states that he sees many areas that 'could be better' and that he wants to facilitate stronger connections within the community.",
-      },
-      "q4-council-vision": {
-        time: "7:25",
-        summary:
-          "Both candidates state that while collaboration with the mayor is important, their primary duty is to be an independent voice for the residents. Mr. Winters notes council should not just 'appease a mayor,' and Mr. Tomar affirms he will not be a 'rubber stamp' for the administration.",
-      },
-      "q1-future": {
-        time: "9:42",
-        summary:
-          "Mr. Tomar's immediate goals are installing flashing beacons at dangerous crosswalks and launching a Civic App. Mr. Winters also prioritizes the Civic App for streamlining resident services and wants to immediately pass a resolution to adopt the 'Vision Zero' pedestrian safety framework.",
-      },
-      "q2-future": {
-        time: "12:08",
-        summary:
-          "Mr. Winters's long-term goal is to find sustainable, 'community first' development models, such as 100% affordable housing projects, to avoid the 'band-aid' solution of warehouses. Mr. Tomar's primary goal is to 'materially improve' the town's infrastructure, particularly the roads, and to ensure all new projects are built with thoughtful planning.",
-      },
-      "q1-warehouse": {
-        time: "14:39",
-        summary:
-          "Both candidates strongly oppose the project, calling it 'inappropriate' for the community. Mr. Tomar highlights the 'tens of thousands' of trucks and pollution it will bring, while Mr. Winters argues it doesn't fit the town's character and won't deliver the promised tax revenue.",
-      },
-      "q2-warehouse": {
-        time: "16:57",
-        summary:
-          "Mr. Winters doubts the project will be financially positive, arguing the ratables will be low while the traffic from delivery vans and employees will be high. Mr. Tomar argues the project is an environmental threat, calculating 'tens of thousands' of new truck trips daily and warning that paving 650 acres will cause 'really bad flooding problems.'",
-      },
-      "q4-council-warehouse": {
-        time: "19:30",
-        summary:
-          "Mr. Tomar states that any new zoning must be strictly evaluated on its alignment with suburban values, its ratable value, and its impact on infrastructure. Mr. Winters adds that the town needs a comprehensive long-term master plan and must be 'bold' in negotiating with developers to achieve community-focused goals.",
-      },
-      "q2-taxes": {
-        time: "21:46",
-        summary:
-          "Both candidates argue the key to stabilizing municipal and school taxes is to stop approving high-density residential developments. Mr. Winters stresses the need to actually spend the money appropriated in the budget on improvements, while Mr. Tomar advocates for attracting more commercial ratables.",
-      },
-      "q4-council-taxes": {
-        time: "25:32",
-        summary:
-          "Mr. Tomar criticizes the budget's lack of transparency and says his priority is to create clear, trackable project plans while increasing investment in roads and safety. Mr. Winters would add specific investments for a Civic App and a new town composting program to lead on sustainability.",
-      },
-      "q1-infra": {
-        time: "28:55",
-        summary:
-          "Mr. Winters states that since roads can't be widened, the plan must be traffic optimization and better traffic studies for new developments. Mr. Tomar's plan is to use the town's budget surplus and seek grants to 'heavily invest' in repairing the existing roads, which he says are in a state of despair.",
-      },
-      "q2-infra": {
-        time: "31:06",
-        summary:
-          "Both candidates strongly advocate for adopting the 'Vision Zero' framework, which they say is a proven plan for implementing traffic-calming measures and improving pedestrian safety. They criticize the current administration for failing to invest in infrastructure and pledge to work with the local Bicycle and Pedestrian Alliance to connect communities.",
-      },
-      "q3-infra": {
-        time: "34:47",
-        summary:
-          "Both candidates praise the town's police, fire, and EMS departments as 'very good' and 'fortunate.' Mr. Tomar adds a specific goal of supporting the volunteer fire companies to improve recruitment and ensure they remain strong.",
-      },
-      "q2-gov": {
-        time: "36:12",
-        summary:
-          "Both candidates 'absolutely' and 'wholeheartedly' support implementing a Civic App (311 system) immediately. Mr. Tomar states the town is '10 years behind' on this, and Mr. Winters notes it will provide clear benefits to the community.",
-      },
-      "q7-council-gov": {
-        time: "37:01",
-        summary:
-          "Mr. Winters states he would evaluate appointees based on their expertise and alignment with the community's values. Mr. Tomar adds that he will be an 'independent evaluator' to ensure the mayor appoints qualified residents, not just political allies.",
-      },
-      "q8-council-disagreement": {
-        time: "38:49",
-        summary:
-          "Both candidates state their approach to disagreement is professional and collaborative, based on their corporate backgrounds. Mr. Tomar says he will 'look for common grounds,' and Mr. Winters notes their daily job is to manage relationships between people with competing views.",
-      },
-      "q3-gov": {
-        time: "40:18",
-        summary:
-          "Mr. Winters focuses on proactively acquiring open space using grants and developer offsets, as well as implementing new sustainability initiatives like composting. Mr. Tomar also supports preserving land and suggests re-evaluating farming practices on preserved land to be more environmentally friendly.",
-      },
-      "q4-gov": {
-        time: "43:00",
-        summary:
-          "Mr. Tomar wants to focus on development that serves young residents (like cafes) and seniors, ensuring infrastructure can support it. Mr. Winters adds that the council should act as 'chief marketing officers' to proactively attract desirable businesses, such as a winery, to town.",
-      },
-      "q5-gov": {
-        time: "45:08",
-        summary:
-          "Both candidates agree a vibrant town center is 'absolutely needed' but express concerns about whether the train station area can still support it after recent high-density development. They state that any plan must be 'very thoughtful' and first confirm that the infrastructure can handle it.",
-      },
-      "q6-gov": {
-        time: "47:24",
-        summary:
-          "Both candidates strongly support improving the 'not very good' library. Their primary strategy is to collaborate more forcefully with the county to get a better return on the taxes West Windsor pays, and they are also open to exploring grants for a new facility.",
-      },
-      "q1-closing": {
-        time: "48:51",
-        summary:
-          "Both candidates would ask their incumbent opponents a similar question: Why should voters trust that you will suddenly make improvements now, like fixing the roads, when you have failed to do so for the many years you have already been in office?",
-      },
-      "q2-closing": {
-        time: "49:58",
-        summary:
-          "Mr. Tomar's favorite thing is the abundant open space for walking. Mr. Winters says his favorite thing is the 'special' and diverse people who live in the community.",
-      },
-      "q3-closing": {
-        time: "51:20",
-        summary:
-          "Mr. Winters names Capuano's pizza as a favorite. Mr. Tomar says his go-to place for lunch is First Wok.",
-      },
-      "q4-closing": {
-        time: "51:57",
-        summary:
-          "Mr. Tomar describes a perfect weekend as playing golf at the local course. Mr. Winters's perfect weekend involves visiting the farmer's market and enjoying the town's open spaces with his family.",
-      },
-    },
-  };
+  const mayorMaratheVideoId = "nrW--rMjDXc";
+  const mayorSinghVideoId = "OdMCwdJfdJk";
+  const councilGeeversCharlesVideoId = "nZ1YuORz3Ug";
+  const councilTomarWintersVideoId = "76l6GSE4lkU";
 
-  const questionOrder = useMemo(
-    () => [
-      "q0-opening",
-      // Vision
-      "q1-vision",
-      "q1-council-vision",
-      "q2-vision",
-      "q3-vision",
-      "q4-council-vision",
-      // Future
-      "q1-future",
-      "q2-future",
-      // Warehouses
-      "q1-warehouse",
-      "q2-warehouse",
-      "q3-warehouse",
-      "q4-council-warehouse",
-      // Taxes
-      "q1-taxes",
-      "q2-taxes",
-      "q3-taxes",
-      "q4-council-taxes",
-      // Infra
-      "q1-infra",
-      "q2-infra",
-      "q3-infra",
-      // Governance
-      "q1-gov",
-      "q2-gov",
-      "q7-council-gov",
-      "q8-council-disagreement",
-      "q3-gov",
-      "q4-gov",
-      "q5-gov",
-      "q6-gov",
-      // Regional
-      "q1-regional",
-      // Closing
-      "q1-closing",
-      "q2-closing",
-      "q3-closing",
-      "q4-closing",
-    ],
-    []
-  );
+  const responsesData = {
+    marathe: {
+      // Mayor - Proven Leaders
+      "q0-opening": {
+        time: "0:31",
+        summary:
+          "Mayor Marate introduces himself as a 31-year resident of West Windsor, viewing the town as his home. He outlines his extensive history of public service, including nine years as school board president and his current tenure as mayor since 2017, emphasizing his commitment to making the best, albeit sometimes difficult, decisions for the community.",
+      },
+      "q1-vision": {
+        time: "2:18",
+        summary:
+          "The mayor describes the role as being the 'face of the township' and setting the community's tone. He asserts that his 25-year record of service on the school board, council, and as mayor is his primary qualification, and he asks voters to judge him on his history of making tough decisions for the town's long-term benefit.",
+      },
+      "q2-vision": {
+        time: "4:19",
+        summary:
+          "Mayor Marathe states that the township is performing very well, citing eight consecutive years of flat municipal taxes as an objective measure of success. He highlights his administration's effective management of significant challenges, including the COVID-19 pandemic and the state's affordable housing mandates.",
+      },
+      "q3-vision": {
+        time: "5:32",
+        summary:
+          "He identifies the town's top three appealing attributes as its excellent school district, busy train station, and a family-friendly atmosphere where leadership is based on merit, not politics. He notes that the primary frustrations residents express are related to taxes, the condition of sidewalks, and a desire for more street lighting.",
+      },
+      "q1-future": {
+        time: "7:27",
+        summary:
+          "In his first 100 days, he would continue to prioritize key resident concerns, including taxes, sidewalk repairs, increasing street lighting, and resurfacing roads. He emphasizes that his approach to governing is consistent throughout his term and not confined to a specific timeframe.",
+      },
+      "q2-future": {
+        time: "9:33",
+        summary:
+          "His primary long-term goal is to continue making decisions that ensure the future prosperity of West Windsor, even if they are politically difficult in the short term. A specific project he hopes to advance is attracting an indoor sports facility to meet demand for year-round athletic activities.",
+      },
+      "q1-warehouse": {
+        time: "11:24",
+        summary:
+          "The mayor explains that the decision to approve warehouses on the Howard Hughes site was a strategic choice to avoid a lawsuit that could have forced the township to build approximately 2,000 homes. This action, he argues, fulfills affordable housing obligations while preventing a massive increase in residential density and school enrollment.",
+      },
+      "q2-warehouse": {
+        time: "13:24",
+        summary:
+          "He frames the development choice as one between warehouses or 2,000 new homes, arguing the homes would create far more traffic on local roads. He contends that warehouse traffic will be largely outbound with direct access to Route 1, minimally impacting local streets, similar to the traffic patterns of nearby shopping malls.",
+      },
+      "q3-warehouse": {
+        time: "15:52",
+        summary:
+          "Mayor Marathe states that he has not received any new proposals for warehouses and does not anticipate any due to market saturation. He would, however, support a warehouse-style structure if it were repurposed for a community use, such as the indoor sports facility he hopes to attract.",
+      },
+      "q1-taxes": {
+        time: "17:05",
+        summary:
+          "To keep West Windsor affordable for young families, his strategy is to maintain low municipal taxes, foster a strong sense of community, and enhance local amenities. He plans to continue attracting new small businesses and improving sports facilities to preserve the town's appeal.",
+      },
+      "q2-taxes": {
+        time: "18:16",
+        summary:
+          "He points out that the municipal portion of property taxes has risen by only 2.7% cumulatively over eight years while maintaining all town services. The mayor attributes overall tax increases to school and county levies and highlights that his administration has grown the town's surplus to $10 million through prudent financial management.",
+      },
+      "q3-taxes": {
+        time: "20:00",
+        summary:
+          "He compares West Windsor to Robbinsville, noting that Robbinsville's fiscal stability is due in large part to its Amazon warehouse. He argues that West Windsor's approval of warehouses will provide similar long-term tax stability by preventing costly residential development, contrasting the township's minimal tax increases with the county's significant hikes.",
+      },
+      "q1-infra": {
+        time: "21:47",
+        summary:
+          "The mayor asserts that controlling new housing development is the most effective way to manage traffic, which is why his administration is legally challenging the state's affordable housing numbers. He also notes that the township dedicates over $2 million annually to a systematic road resurfacing program based on objective condition assessments.",
+      },
+      "q2-infra": {
+        time: "23:36",
+        summary:
+          "He affirms that West Windsor is a bicycle-friendly community and that safety for pedestrians and cyclists is a priority in all road projects. He cites the completion of the Cranberry Road sidewalk and safety upgrades on Alexander Road as examples of his commitment and notes his close collaboration with the West Windsor Bicycle and Pedestrian Alliance.",
+      },
+      "q3-infra": {
+        time: "25:56",
+        summary:
+          "The mayor assesses the police department as 'excellent' and notes that fire and EMS services are continuously improving. A key goal for his next term is to expand the dedicated ambulance service to provide 24/7 coverage for the community.",
+      },
+      "q1-gov": {
+        time: "26:45",
+        summary:
+          "He refutes any claims of a lack of transparency, stating he is one of the most accessible and responsive mayors in the region through platforms like Facebook, email, and phone. He asserts that both he and the township council are consistently available to address resident concerns.",
+      },
+      "q2-gov": {
+        time: "28:17",
+        summary:
+          "Mayor Marathe deems a 311-style system unnecessary, as residents can already report issues like potholes and missed garbage pickups efficiently through the township website. He states that the current system works well, with most issues being resolved within a day.",
+      },
+      "q3-gov": {
+        time: "29:03",
+        summary:
+          "He highlights the township's strong record of preserving open space, including purchasing the Hall Farm to prevent a large housing development. On sustainability, he believes in a shared responsibility between the town and its residents, encouraging personal actions like reducing online deliveries alongside municipal efforts.",
+      },
+      "q4-gov": {
+        time: "30:52",
+        summary:
+          "While he would prefer no new large-scale housing, he acknowledges it is mandated by the state. His focus is on supporting small businesses to ensure local commercial centers remain vibrant and fully occupied.",
+      },
+      "q5-gov": {
+        time: "33:04",
+        summary:
+          "He confirms that creating a walkable downtown area between the train station and High School South is a feasible goal that will be achieved in the next four years. The plan includes redesigning Route 571 with new lanes, sidewalks, and bike paths to foster a vibrant town center.",
+      },
+      "q6-gov": {
+        time: "35:10",
+        summary:
+          "The mayor clarifies that the library is part of the Mercer County system, which controls its funding and operations, not the township. He states that his administration continues to work with the county to advocate for improvements to the West Windsor branch.",
+      },
+      "q1-regional": {
+        time: "36:28",
+        summary:
+          "He describes his relationship with other local and state leaders as excellent and collaborative. He provides the example of working with the mayors of Princeton and Hamilton during the pandemic to successfully advocate for local control over vaccination efforts.",
+      },
+      "q1-closing": {
+        time: "37:53",
+        summary:
+          "Expressing disappointment over the lack of a live debate, the mayor says he would ask his opponent why he declined to participate in a face-to-face forum. He believes such an event is critical for voters to directly compare candidates.",
+      },
+      "q2-closing": {
+        time: "38:37",
+        summary:
+          "His favorite thing about West Windsor is that it is his home. Having lived in the same house for 31 years and raised his family there, he feels a deep, personal connection to the town.",
+      },
+      "q3-closing": {
+        time: "39:18",
+        summary:
+          "Declining to name a single favorite, he says he made an effort to support every restaurant in town during the pandemic. He encourages residents to shop and dine locally to strengthen the community's economy.",
+      },
+      "q4-closing": {
+        time: "40:04",
+        summary:
+          "A perfect weekend for him consists of spending time with family and friends and attending community events. He stresses the importance of fostering a strong sense of community and neighborliness as the town continues to grow.",
+      },
+    },
+    singh: {
+      // Mayor - WW Together (UPDATED SUMMARIES)
+      "q0-opening": {
+        time: "0:34",
+        summary:
+          "Mr. Singh introduces himself as a resident since 2011, a father of three, and a tech consultant for 30 years. He highlights his community involvement, including connecting residents with elected officials and serving on the board of a nonprofit that supports adults with disabilities, stating he wants to make a positive impact as mayor.",
+      },
+      "q1-vision": {
+        time: "2:03",
+        summary:
+          "He views the mayor's role as crucial for addressing the town's infrastructure issues and dense development through collaboration with county and state officials. He emphasizes a \"community first\" attitude to ensure future development is suburban and safe, not a repeat of the high-density Transit Village.",
+      },
+      "q2-vision": {
+        time: "3:40",
+        summary:
+          'Mr. Singh gives the current administration an "F" grade, citing the 900+ unit Transit Village development, which he says has no open space and was built without supporting sidewalks. He states the administration has failed to invest in basic infrastructure like roads, despite residents paying high taxes.',
+      },
+      "q3-vision": {
+        time: "5:05",
+        summary:
+          "He states that based on speaking with thousands of residents, the main frustrations are public safety (citing tragic accidents), high property taxes, and dense development that doesn't fit the town's suburban character. He also notes the \"pathetic state\" of the library and missing sidewalk links as key infrastructure frustrations.",
+      },
+      "q1-future": {
+        time: "7:03",
+        summary:
+          "His three main priorities for the first 100 days are to approve flashing beacon lights for accident-prone intersections, initiate discussions with the warehouse developer (Bridge Point) to explore a mixed-use alternative, and identify new services for seniors and empty nesters.",
+      },
+      "q2-future": {
+        time: "8:49",
+        summary:
+          'His long-term goals are to pause dense development by actively acquiring and preserving open space, implement a "Vision Zero" framework to improve public safety on roads, and work to get the township\'s library upgraded and improved.',
+      },
+      "q1-warehouse": {
+        time: "11:01",
+        summary:
+          'Mr. Singh characterizes the current administration\'s approval of the 5.5 million-square-foot warehouse project as a "colossal" decision made against the wishes of 90% of residents. He states this was done without collaborating with neighboring towns and is not good for West Windsor.',
+      },
+      "q2-warehouse": {
+        time: "12:27",
+        summary:
+          "He argues that the project will be a low-ratable distribution center that will not generate the $14 million in revenue the administration claims, but will create significant traffic and safety issues. He believes a mixed-use development, like those in other towns, would provide four to eight times the ratables and be more beneficial for the community.",
+      },
+      "q3-warehouse": {
+        time: "14:51",
+        summary:
+          "He is unequivocally opposed to any new warehouse proposals, stating they do not fit the suburban, green character of West Windsor. He argues that such development negatively impacts not just the township but the entire greater Princeton area.",
+      },
+      "q1-taxes": {
+        time: "15:55",
+        summary:
+          "Mr. Singh's plan for affordability focuses on stabilizing property taxes, which he says are making the town unaffordable for many, including seniors and young families. He plans to achieve this by preserving open space to limit new development mandates, attracting more commercial revenue, and improving the township's operational efficiency.",
+      },
+      "q2-taxes": {
+        time: "17:49",
+        summary:
+          "He plans to conduct a full audit of the budget to find savings and will ensure that money already appropriated for infrastructure is actually spent. He also aims to improve the productivity of township staff using better technology to control operational costs and maintain fiscal discipline.",
+      },
+      "q3-taxes": {
+        time: "19:13",
+        summary:
+          'Mr. Singh argues that West Windsor\'s fund balance has "ballooned" to $13 million because the current administration is not investing appropriated money into services and infrastructure, which is why residents don\'t see returns on their high taxes. He also suggests exploring shared services with neighboring towns to avoid "shortsighted" service cuts, such as the reduction in summer garbage collection.',
+      },
+      "q1-infra": {
+        time: "20:56",
+        summary:
+          'His plan to improve roads and traffic centers on implementing the "Vision Zero" framework, a public safety initiative used by other towns to add traffic calming measures, better signage, and flashing beacons. He also makes it a high priority to fill in the gaps in the town\'s sidewalk network so people are not forced to walk in the street.',
+      },
+      "q2-infra": {
+        time: "22:22",
+        summary:
+          "He supports creating safer, more connected bike paths and sidewalks, stating they are essential for both physical and mental well-being. He plans to invest funds that have already been approved—but not spent—on this infrastructure, starting with projects to make areas like the Windsor Plaza more walkable.",
+      },
+      "q3-infra": {
+        time: "23:58",
+        summary:
+          'Mr. Singh states that he supports the police and EMS staff and that they are doing a "wonderful job." His plan is to ensure there is better coordination between departments and to work with them to see if any process improvements or additional resources are needed.',
+      },
+      "q1-gov": {
+        time: "24:31",
+        summary:
+          "To improve transparency, he pledges to upgrade the township website to provide quarterly snapshots of project statuses and budgets. He also plans to implement a Civic App (a 311-style application) for residents to submit and track service tickets, and he will hold regular town halls to answer resident questions.",
+      },
+      "q2-gov": {
+        time: "26:01",
+        summary:
+          'He "absolutely" supports implementing a Civic App for service requests, stating the township is currently using "19th-century tools." He believes this technology will make reporting issues more efficient for residents and improve the township\'s internal productivity and workflow.',
+      },
+      "q3-gov": {
+        time: "26:49",
+        summary:
+          "He positions himself as a strong proponent of open space, pledging to proactively identify and purchase private land to preserve it from development, similar to what Princeton has done. He also states that all future development must include green space and exceed state stormwater management guidelines to prevent flooding.",
+      },
+      "q4-gov": {
+        time: "28:26",
+        summary:
+          "He would like to attract mixed-use developments, potentially on the warehouse site, that include a public-private wellness center, restaurants, and clean energy or AI startups. He also wants to support existing small businesses by making strip malls more walkable so residents can shop and dine locally.",
+      },
+      "q5-gov": {
+        time: "30:12",
+        summary:
+          'Mr. Singh believes West Windsor needs a "heart" or town center, which he says the Transit Village failed to become. He proposes a two-part plan: first, make existing shopping plazas more walkable, and second, explore creating a new town center with a wellness center, hospitality, and parks, possibly by working with developers on a mixed-use project.',
+      },
+      "q6-gov": {
+        time: "32:30",
+        summary:
+          'He criticizes the current administration for blaming the county for the library\'s poor, "leaking" condition. He promises to personally take charge, seek grants, and work with county officials to secure funding to expand, upgrade, and properly maintain the library.',
+      },
+      "q1-regional": {
+        time: "33:56",
+        summary:
+          'He states that he has strong, pre-existing relationships with county and state elected officials, with whom he already connects the community annually. He will leverage these relationships to collaborate on regional solutions for West Windsor, always taking a "community first" approach.',
+      },
+      "q1-closing": {
+        time: "35:14",
+        summary:
+          "Mr. Singh would ask his opponent: Why did you approve the 5.5 million-square-foot warehouse project instead of investing in and taking care of our township's public safety infrastructure?",
+      },
+      "q2-closing": {
+        time: "35:43",
+        summary:
+          "He loves that West Windsor is a close, thriving community with beautiful schools and a strategic location near Princeton, New York City, and Philadelphia, all centered around the train station.",
+      },
+      "q3-closing": {
+        time: "36:23",
+        summary: "His favorite restaurant in town is Tommy's Tavern.",
+      },
+      "q4-closing": {
+        time: "36:34",
+        summary:
+          "His perfect weekend involves going to the farmer's market and enjoying lunch or dinner at a local restaurant, such as one in the U.S. 1 Market Fair.",
+      },
+    },
+    geeversCharles: {
+      // Council - Proven Leaders (Embeds from MpSLuk4TBQg)
+      "q0-opening": {
+        time: "0:30",
+        summary:
+          "Councilwoman Geevers highlights her 30 years in town and extensive experience, including six years on the school board, 20 years on the council, and nine years on the Planning Board. Mr. Charles introduces himself as a 17-year resident and a CPA with 29 years of financial experience, noting his community involvement in youth sports and fostering rescue dogs.",
+      },
+      "q1-council-vision": {
+        time: "2:20",
+        summary:
+          "Mr. Charles describes the role as a serious public service commitment to make thoughtful, independent decisions for the long-term benefit of all residents, citing his CPA background. Councilwoman Geevers explains the council's functional role as the legislative branch in the town's strong-mayor government, with primary responsibilities for approving the annual budget, passing ordinances, and serving as liaisons to township committees.",
+      },
+      "q2-vision": {
+        time: "4:32",
+        summary:
+          "Both candidates give the administration an 'A,' stating that the mayor and council have done a great job managing the constant challenge of growth. They specifically note that this growth is largely driven by state-mandated affordable housing obligations, which the administration has handled well.",
+      },
+      "q4-council-vision": {
+        time: "5:55",
+        summary:
+          "Councilwoman Geevers describes her philosophy as collaborative, using her good relationship with the mayor to discuss disagreements, while Mr. Charles emphasizes his independence, stating he is not a 'rubber stamp' and will always study issues thoughtfully. Both candidates highlight their recent successful campaign to keep West Windsor's elections nonpartisan as proof of their focus on local issues.",
+      },
+      "q1-future": {
+        time: "8:12",
+        summary:
+          "Mr. Charles states his priority is to incorporate resident feedback into the upcoming budget, specifically by increasing funding for street lighting and sidewalk repairs. Councilwoman Geevers notes the first 100 days are dominated by the start of the annual budget season, and her priority is managing the council's open and public review of the operating and capital budgets.",
+      },
+      "q2-future": {
+        time: "10:21",
+        summary:
+          "Both candidates identify managing growth as the primary long-term goal. Councilwoman Geevers emphasizes doing so in a fiscally responsible way to keep municipal taxes flat, while Mr. Charles highlights the strategy of legally challenging the state's affordable housing mandates and preserving open space to limit residential development.",
+      },
+      "q1-warehouse": {
+        time: "12:41",
+        summary:
+          "Both candidates explain the situation as a choice between two outcomes, stating the developer was pursuing litigation to build 2,000 residential units, which would have severely impacted schools and traffic. They support the administration's decision to reach a settlement agreement that instead zoned the land for commercial warehouses, avoiding the high-density housing.",
+      },
+      "q2-warehouse": {
+        time: "14:29",
+        summary:
+          "Mr. Charles addresses traffic concerns by highlighting that the Planning Board's approval includes over 80 conditions, one of which prohibits trucks from turning onto Clarksville Road, directing them to Route 1. Councilwoman Geevers adds that all towns are competing for ratables, and this project provides necessary ratables to keep the township affordable.",
+      },
+      "q4-council-warehouse": {
+        time: "16:46",
+        summary:
+          "Councilwoman Geevers states the goal is to maintain a balance between residential and commercial zoning, while also ensuring open space and recreational parks are developed throughout town. Mr. Charles emphasizes that a key planning priority should be proactively preserving open space by using the town's open space list and tax fund to acquire land.",
+      },
+      "q2-taxes": {
+        time: "18:36",
+        summary:
+          "Mr. Charles emphasizes that the council controls only 14-15% of the total tax bill and has kept that portion flat, with increases coming from the county and schools. Councilwoman Geevers adds that the council manages this budget through an open process and, based on resident feedback, will likely increase funding for street lights and sidewalk repairs.",
+      },
+      "q4-council-taxes": {
+        time: "21:21",
+        summary:
+          "Both candidates agree on the need to increase the capital budget for road repaving. Councilwoman Geevers also suggests investing in a more interactive township website, while Mr. Charles defends the council's unanimous decision to reduce summer garbage pickup as a fiscally responsible choice that saved over $1.1 million.",
+      },
+      "q1-infra": {
+        time: "24:43",
+        summary:
+          "Mr. Charles explains that the township has a systematic plan for road improvement, using a study that rates every road from one to five. This allows the engineering department to prioritize repaving the roads that are in the worst condition first.",
+      },
+      "q2-infra": {
+        time: "25:46",
+        summary:
+          "Both candidates affirm their close collaboration with the West Windsor Bicycle and Pedestrian Alliance. Councilwoman Geevers highlights budgeting for safety items like crosswalks and working with police to combat speeding, while Mr. Charles points to the upcoming county project on Route 571 that will add continuous sidewalks and bike lanes.",
+      },
+      "q3-infra": {
+        time: "28:17",
+        summary:
+          "Both candidates state that West Windsor is a very safe community with outstanding public safety services. Mr. Charles praises the police, fire, and EMS departments, while Councilwoman Geevers, a fire police officer herself, expresses pride in the high level of training and professionalism from both paid and volunteer staff.",
+      },
+      "q2-gov": {
+        time: "30:11",
+        summary:
+          "Both candidates are open to discussing a 311-style app. Councilwoman Geevers notes that a similar online system for potholes already exists and could be expanded, while Mr. Charles states he would want to see a cost-benefit analysis before committing.",
+      },
+      "q7-council-gov": {
+        time: "31:13",
+        summary:
+          "Councilwoman Geevers clarifies the process, noting that the council appoints to the Zoning Board and Parking Authority, and she looks for residents with relevant backgrounds. Mr. Charles states his primary criteria would be the candidate's qualifications and their ability to bring a 'diversity of thought' to the boards.",
+      },
+      "q8-council-disagreement": {
+        time: "33:42",
+        summary:
+          "Councilwoman Geevers states that she handles disagreements by fostering good communication and relationships, which allows council members to learn from each other. Mr. Charles emphasizes that he and his running mates are independent thinkers who resolve differences through healthy debate, noting they each wrote their own responses to a newspaper, unlike their opponents.",
+      },
+      "q3-gov": {
+        time: "35:49",
+        summary:
+          "Both candidates support using the town's open space tax to preserve land. Councilwoman Geevers cites the successful purchase of the Hall property to prevent 400 townhouses, while Mr. Charles points to a recent warehouse deal that blocked 600 homes and resulted in 25 acres of farmland being preserved.",
+      },
+      "q4-gov": {
+        time: "38:09",
+        summary:
+          "Councilwoman Geevers expresses support for the new commercial developments and restaurants along Route 1, which provide strong ratables and new dining options. Mr. Charles highlights the successful attraction of small businesses to the redeveloped Route 571 area and the potential for new growth from tech businesses like the new AI hub.",
+      },
+      "q5-gov": {
+        time: "40:46",
+        summary:
+          "Both candidates agree this is a feasible and active goal. Councilwoman Geevers points to the 30,000 sq. ft. of retail in the train station plan and the revitalization of Windsor Plaza, while Mr. Charles highlights the upcoming Route 571 redesign and the replacement of derelict buildings with new mixed-use developments.",
+      },
+      "q6-gov": {
+        time: "43:23",
+        summary:
+          "Both candidates agree that the library is a county responsibility and that collaborating with the county is the best approach. Councilwoman Geevers is hopeful the new county executive will finally fund needed physical repairs, while Mr. Charles adds that building a separate town library would likely not be financially sensible.",
+      },
+      "q1-closing": {
+        time: "45:18",
+        summary:
+          "Councilwoman Geevers would ask her opponents why they decided to run, given that they have not previously participated in any township boards or committees. Mr. Charles would ask what their actual plan is, why they don't offer alternatives when they criticize, and why they block residents who ask questions on social media.",
+      },
+      "q2-closing": {
+        time: "46:26",
+        summary:
+          "Councilwoman Geevers says her favorite thing is the town's dynamic range of amenities, including the Senior Center, the schools, and the parks, which offer something for all ages. Mr. Charles states his favorite thing is the sense of community and the diverse, long-term friendships his family has made.",
+      },
+      "q3-closing": {
+        time: "47:40",
+        summary:
+          "Mr. Charles names Aljon's as a favorite, calling it a 'pillar of the community.' Councilwoman Geevers states she has many favorites depending on the occasion, including Aljon's, PJ's Pancake House, and Seasons 52.",
+      },
+      "q4-closing": {
+        time: "49:02",
+        summary:
+          "Mr. Charles describes a perfect weekend as hiking on a town trail with his dogs, followed by smoking meats in his backyard and having friends over. Councilwoman Geevers describes her perfect weekend as exercising by walking in a park and spending time with her family, including her new grandchild.",
+      },
+    },
+    tomarWinters: {
+      // Council - WW Together (Placeholders)
+      "q0-opening": {
+        time: "0:37",
+        summary:
+          "Mr. Tomar introduces himself as an 18-year resident who wants to give back to the community that gave his family opportunities. Mr. Winters, a newcomer who moved here for the schools, aims to bring fresh ideas and outside perspectives from other towns to West Windsor.",
+      },
+      "q1-council-vision": {
+        time: "2:08",
+        summary:
+          "Mr. Winters defines the role as a fiduciary for town spending, with a broader responsibility to market the town; he cites his corporate strategy background as his main qualification. Mr. Tomar views the council as 'guardians' to hold the administration accountable, qualifying himself with 30 years of corporate experience and 15 years in nonprofit management.",
+      },
+      "q2-vision": {
+        time: "5:36",
+        summary:
+          "Mr. Tomar gives a failing assessment, stating he cannot point to a single success and criticizes the administration for the 'worst roads' in the county and underinvesting in infrastructure. Mr. Winters, as a newcomer, states that he sees many areas that 'could be better' and that he wants to facilitate stronger connections within the community.",
+      },
+      "q4-council-vision": {
+        time: "7:25",
+        summary:
+          "Both candidates state that while collaboration with the mayor is important, their primary duty is to be an independent voice for the residents. Mr. Winters notes council should not just 'appease a mayor,' and Mr. Tomar affirms he will not be a 'rubber stamp' for the administration.",
+      },
+      "q1-future": {
+        time: "9:42",
+        summary:
+          "Mr. Tomar's immediate goals are installing flashing beacons at dangerous crosswalks and launching a Civic App. Mr. Winters also prioritizes the Civic App for streamlining resident services and wants to immediately pass a resolution to adopt the 'Vision Zero' pedestrian safety framework.",
+      },
+      "q2-future": {
+        time: "12:08",
+        summary:
+          "Mr. Winters's long-term goal is to find sustainable, 'community first' development models, such as 100% affordable housing projects, to avoid the 'band-aid' solution of warehouses. Mr. Tomar's primary goal is to 'materially improve' the town's infrastructure, particularly the roads, and to ensure all new projects are built with thoughtful planning.",
+      },
+      "q1-warehouse": {
+        time: "14:39",
+        summary:
+          "Both candidates strongly oppose the project, calling it 'inappropriate' for the community. Mr. Tomar highlights the 'tens of thousands' of trucks and pollution it will bring, while Mr. Winters argues it doesn't fit the town's character and won't deliver the promised tax revenue.",
+      },
+      "q2-warehouse": {
+        time: "16:57",
+        summary:
+          "Mr. Winters doubts the project will be financially positive, arguing the ratables will be low while the traffic from delivery vans and employees will be high. Mr. Tomar argues the project is an environmental threat, calculating 'tens of thousands' of new truck trips daily and warning that paving 650 acres will cause 'really bad flooding problems.'",
+      },
+      "q4-council-warehouse": {
+        time: "19:30",
+        summary:
+          "Mr. Tomar states that any new zoning must be strictly evaluated on its alignment with suburban values, its ratable value, and its impact on infrastructure. Mr. Winters adds that the town needs a comprehensive long-term master plan and must be 'bold' in negotiating with developers to achieve community-focused goals.",
+      },
+      "q2-taxes": {
+        time: "21:46",
+        summary:
+          "Both candidates argue the key to stabilizing municipal and school taxes is to stop approving high-density residential developments. Mr. Winters stresses the need to actually spend the money appropriated in the budget on improvements, while Mr. Tomar advocates for attracting more commercial ratables.",
+      },
+      "q4-council-taxes": {
+        time: "25:32",
+        summary:
+          "Mr. Tomar criticizes the budget's lack of transparency and says his priority is to create clear, trackable project plans while increasing investment in roads and safety. Mr. Winters would add specific investments for a Civic App and a new town composting program to lead on sustainability.",
+      },
+      "q1-infra": {
+        time: "28:55",
+        summary:
+          "Mr. Winters states that since roads can't be widened, the plan must be traffic optimization and better traffic studies for new developments. Mr. Tomar's plan is to use the town's budget surplus and seek grants to 'heavily invest' in repairing the existing roads, which he says are in a state of despair.",
+      },
+      "q2-infra": {
+        time: "31:06",
+        summary:
+          "Both candidates strongly advocate for adopting the 'Vision Zero' framework, which they say is a proven plan for implementing traffic-calming measures and improving pedestrian safety. They criticize the current administration for failing to invest in infrastructure and pledge to work with the local Bicycle and Pedestrian Alliance to connect communities.",
+      },
+      "q3-infra": {
+        time: "34:47",
+        summary:
+          "Both candidates praise the town's police, fire, and EMS departments as 'very good' and 'fortunate.' Mr. Tomar adds a specific goal of supporting the volunteer fire companies to improve recruitment and ensure they remain strong.",
+      },
+      "q2-gov": {
+        time: "36:12",
+        summary:
+          "Both candidates 'absolutely' and 'wholeheartedly' support implementing a Civic App (311 system) immediately. Mr. Tomar states the town is '10 years behind' on this, and Mr. Winters notes it will provide clear benefits to the community.",
+      },
+      "q7-council-gov": {
+        time: "37:01",
+        summary:
+          "Mr. Winters states he would evaluate appointees based on their expertise and alignment with the community's values. Mr. Tomar adds that he will be an 'independent evaluator' to ensure the mayor appoints qualified residents, not just political allies.",
+      },
+      "q8-council-disagreement": {
+        time: "38:49",
+        summary:
+          "Both candidates state their approach to disagreement is professional and collaborative, based on their corporate backgrounds. Mr. Tomar says he will 'look for common grounds,' and Mr. Winters notes their daily job is to manage relationships between people with competing views.",
+      },
+      "q3-gov": {
+        time: "40:18",
+        summary:
+          "Mr. Winters focuses on proactively acquiring open space using grants and developer offsets, as well as implementing new sustainability initiatives like composting. Mr. Tomar also supports preserving land and suggests re-evaluating farming practices on preserved land to be more environmentally friendly.",
+      },
+      "q4-gov": {
+        time: "43:00",
+        summary:
+          "Mr. Tomar wants to focus on development that serves young residents (like cafes) and seniors, ensuring infrastructure can support it. Mr. Winters adds that the council should act as 'chief marketing officers' to proactively attract desirable businesses, such as a winery, to town.",
+      },
+      "q5-gov": {
+        time: "45:08",
+        summary:
+          "Both candidates agree a vibrant town center is 'absolutely needed' but express concerns about whether the train station area can still support it after recent high-density development. They state that any plan must be 'very thoughtful' and first confirm that the infrastructure can handle it.",
+      },
+      "q6-gov": {
+        time: "47:24",
+        summary:
+          "Both candidates strongly support improving the 'not very good' library. Their primary strategy is to collaborate more forcefully with the county to get a better return on the taxes West Windsor pays, and they are also open to exploring grants for a new facility.",
+      },
+      "q1-closing": {
+        time: "48:51",
+        summary:
+          "Both candidates would ask their incumbent opponents a similar question: Why should voters trust that you will suddenly make improvements now, like fixing the roads, when you have failed to do so for the many years you have already been in office?",
+      },
+      "q2-closing": {
+        time: "49:58",
+        summary:
+          "Mr. Tomar's favorite thing is the abundant open space available for walking. Mr. Winters says his favorite thing is the 'special' and diverse people who live in the community.",
+      },
+      "q3-closing": {
+        time: "51:20",
+        summary:
+          "Mr. Winters names Capuano's pizza as a favorite. Mr. Tomar says his go-to place for lunch is First Wok.",
+      },
+      "q4-closing": {
+        time: "51:57",
+        summary:
+          "Mr. Tomar describes a perfect weekend as playing golf at the local course. Mr. Winters's perfect weekend involves visiting the farmer's market and enjoying the town's open spaces with his family.",
+      },
+    },
+  };
 
-  const keyDates = [
-    {
-      date: "Oct. 14, 2025",
-      event: "Voter Registration Deadline",
-      target: "2025-10-14T23:59:59",
-    },
-    { date: "Oct. 25 - Nov. 2", event: "Early In-Person Voting Period" },
-    { date: "Oct. 28", event: "Deadline to Apply for a Mail-In Ballot" },
-    {
-      date: "Nov. 4, 2025",
-      event: "General Election Day",
-      target: "2025-11-04T20:00:00",
-    },
-  ];
+  const questionOrder = useMemo(
+    () => [
+      "q0-opening",
+      // Vision
+      "q1-vision",
+      "q1-council-vision",
+      "q2-vision",
+      "q3-vision",
+      "q4-council-vision",
+      // Future
+      "q1-future",
+      "q2-future",
+      // Warehouses
+      "q1-warehouse",
+      "q2-warehouse",
+      "q3-warehouse",
+      "q4-council-warehouse",
+      // Taxes
+      "q1-taxes",
+      "q2-taxes",
+      "q3-taxes",
+      "q4-council-taxes",
+      // Infra
+      "q1-infra",
+      "q2-infra",
+      "q3-infra",
+      // Governance
+      "q1-gov",
+      "q2-gov",
+      "q7-council-gov",
+      "q8-council-disagreement",
+      "q3-gov",
+      "q4-gov",
+      "q5-gov",
+      "q6-gov",
+      // Regional
+      "q1-regional",
+      // Closing
+      "q1-closing",
+      "q2-closing",
+      "q3-closing",
+      "q4-closing",
+    ],
+    []
+  );
 
-  const fullCancellationStatement = `West Windsor, NJ – September 18, 2025 – It is with deep regret and disappointment that West Windsor Forward must announce the cancellation of our 2025 Candidate Forum, which was scheduled for September 25th. The forum has been cancelled because the campaigns for Mayor and Council were unable to agree on a format.
+  const keyDates = [
+    {
+      date: "Oct. 14, 2025",
+      event: "Voter Registration Deadline",
+      target: "2025-10-14T23:59:59",
+    },
+    { date: "Oct. 25 - Nov. 2", event: "Early In-Person Voting Period" },
+    { date: "Oct. 28", event: "Deadline to Apply for a Mail-In Ballot" },
+    {
+      date: "Nov. 4, 2025",
+      event: "General Election Day",
+      target: "2025-11-04T20:00:00",
+    },
+  ];
+
+  const fullCancellationStatement = `West Windsor, NJ – September 18, 2025 – It is with deep regret and disappointment that West Windsor Forward must announce the cancellation of our 2025 Candidate Forum, which was scheduled for September 25th. The forum has been cancelled because the campaigns for Mayor and Council were unable to agree on a format.
 
 This cancellation represents a significant loss for West Windsor residents, who were anticipating a direct and unbiased opportunity to hear from all certified candidates on the issues that matter most. The West Windsor Forward team invested ten months of effort, countless hours, and a great deal of resources into restoring this vital civic tradition.
 
@@ -3410,1304 +3409,938 @@ Sincerely,
 Parth Gupta and Darshan Chidambaram
 Co-Executive Directors @ West Windsor Forward`;
 
-  const rasmussenBio = forumData.panelists.find(
-    (p) => p.id === "micah-rasmussen"
-  )?.bio;
+  const rasmussenBio = forumData.panelists.find(
+    (p) => p.id === "micah-rasmussen"
+  )?.bio;
 
-  const convertTimeToSeconds = (time: string | undefined): number => {
-    if (!time) return 0;
-    const parts = time.split(":").map(Number);
-    if (parts.length === 2) return parts[0] * 60 + parts[1];
-    if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
-    return 0;
-  };
+  const convertTimeToSeconds = (time: string | undefined): number => {
+    if (!time) return 0;
+    const parts = time.split(":").map(Number);
+    if (parts.length === 2) return parts[0] * 60 + parts[1];
+    if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+    return 0;
+  };
 
-  const doesQuestionApply = (
-    question: ElectionQuestion,
-    office: OfficeType
-  ): boolean => {
-    return Array.isArray(question.office)
-      ? question.office.includes(office)
-      : question.office === office;
-  };
+  const doesQuestionApply = (
+    question: ElectionQuestion,
+    office: OfficeType
+  ): boolean => {
+    return Array.isArray(question.office)
+      ? question.office.includes(office)
+      : question.office === office;
+  };
 
-  const filteredIssues = useMemo(() => {
-    return electionData.issues
-      .map((issue) => {
-        const matchingQuestions = issue.questions.filter((question) => {
-          const officeMatch =
-            !activeOffice ||
-            (Array.isArray(question.office)
-              ? question.office.includes(activeOffice)
-              : question.office === activeOffice);
-          const searchMatch =
-            !searchQuery ||
-            question.text.toLowerCase().includes(searchQuery.toLowerCase());
-          return officeMatch && searchMatch;
-        });
-        return { ...issue, questions: matchingQuestions };
-      })
-      .filter((issue) => issue.questions.length > 0);
-  }, [activeOffice, searchQuery]);
+  const filteredIssues = useMemo(() => {
+    return electionData.issues
+      .map((issue) => {
+        const matchingQuestions = issue.questions.filter((question) => {
+          const officeMatch =
+            !activeOffice ||
+            (Array.isArray(question.office)
+              ? question.office.includes(activeOffice)
+              : question.office === activeOffice);
+          const searchMatch =
+            !searchQuery ||
+            question.text.toLowerCase().includes(searchQuery.toLowerCase());
+          return officeMatch && searchMatch;
+        });
+        return { ...issue, questions: matchingQuestions };
+      })
+      .filter((issue) => issue.questions.length > 0);
+  }, [activeOffice, searchQuery]);
 
-  const handleTopicToggle = (issueId: string, questionCount: number) => {
-    const isCurrentlySelected = selectedTopic === issueId;
-    setSelectedTopic(isCurrentlySelected ? null : issueId);
+  const handleTopicToggle = (issueId: string, questionCount: number) => {
+    const isCurrentlySelected = selectedTopic === issueId;
+    setSelectedTopic(isCurrentlySelected ? null : issueId);
 
-    if (isCurrentlySelected && questionCount > 3) {
-      const topicButton = document.querySelector(
-        `button[data-topic-id="${issueId}"]`
-      );
-      if (topicButton) {
-        setTimeout(() => {
-          topicButton.scrollIntoView({ behavior: "smooth", block: "nearest" });
-        }, 100);
-      } else if (filterBarRef.current) {
-        filterBarRef.current.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      }
-    }
-  };
+    // Scroll logic when collapsing a large topic
+    if (isCurrentlySelected && questionCount > 3) {
+        const topicButton = document.querySelector(`button[data-topic-id="${issueId}"]`);
+        if (topicButton) {
+            setTimeout(() => {
+                topicButton.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100); // Small delay to allow collapse animation
+        } else if (filterBarRef.current) {
+              // Fallback: Scroll to filter bar if button not found
+             filterBarRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+  };
 
-  // --- EFFECT FOR HANDLING HASH SCROLLING ---
-  useEffect(() => {
-    // Helper function to find which topic a question ID belongs to
-    // We search the data object, not the DOM, because the element
-    // might not be rendered yet.
-    const getTopicIdForQuestion = (questionId: string): string | null => {
-      for (const issue of electionData.issues as ElectionIssue[]) {
-        if (issue.questions.some((q) => q.id === questionId)) {
-          return issue.id;
-        }
-      }
-      return null;
-    };
 
-    const handleScrollAndExpansion = () => {
-      const hash = window.location.hash.substring(1);
-      if (!hash) return;
+  // --- EFFECT FOR HANDLING HASH SCROLLING ---
+  useEffect(() => {
+    const handleScrollAndExpansion = () => {
+      const hash = window.location.hash.substring(1);
+      if (!hash) return; // No hash, do nothing
 
-      // 1. Find the topic ID from our data
-      const topicId = getTopicIdForQuestion(hash);
+      const element = document.getElementById(hash);
+      if (!element) return; // Element not found
 
-      // 2. If the topic is found but not open, open it.
-      // The effect will re-run after state update, and the 'else'
-      // block will handle the scroll.
-      if (topicId && topicId !== selectedTopic) {
-        setSelectedTopic(topicId);
-        return;
-      }
+      const topicSection = element.closest('[data-topic-section-id]');
+      const topicId = topicSection?.getAttribute('data-topic-section-id');
 
-      // 3. If topic is already open (or it's not a question hash),
-      // try to find the element and scroll.
-      const element = document.getElementById(hash);
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    };
+      // If the target element is inside a topic section...
+      if (topicId) {
+        // ...and that topic is not currently open...
+        if (topicId !== selectedTopic) {
+          // ...open the topic. The effect will re-run after state update.
+          setSelectedTopic(topicId);
+          return; // Stop processing, let the re-render handle the scroll.
+        }
+      }
 
-    // This handles scrolling *after* a topic has been expanded via state update
-    if (selectedTopic && window.location.hash) {
-      const hash = window.location.hash.substring(1);
-      const topicId = getTopicIdForQuestion(hash);
+      // If the topic is already open, or the element is not inside a topic section,
+      // or if this is the re-run after opening the topic, scroll smoothly.
+      // Use a timeout to ensure the DOM is fully rendered after expansion.
+      const timeoutId = setTimeout(() => {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 150); // Adjust delay if needed
 
-      // Only scroll if the selectedTopic matches the hash's topic
-      if (topicId === selectedTopic) {
-        // Use a timeout to ensure the DOM is ready after expansion animation
-        const timeoutId = setTimeout(() => {
-          const element = document.getElementById(hash);
-          if (element) {
-            element.scrollIntoView({ behavior: "smooth", block: "start" });
-          }
-        }, 150);
-        return () => clearTimeout(timeoutId);
-      }
-    }
+      // Clean up timeout if component unmounts or effect re-runs
+      return () => clearTimeout(timeoutId);
+    };
 
-    // This handles initial page load with a hash
-    handleScrollAndExpansion();
+    // Run on initial load or when selectedTopic changes (to handle the scroll *after* expansion)
+    const cleanupTimeout = handleScrollAndExpansion();
 
-    // This handles user clicking on another hash link *while on the page*
-    window.addEventListener("hashchange", handleScrollAndExpansion);
-    return () => {
-      window.removeEventListener("hashchange", handleScrollAndExpansion);
-    };
-  }, [selectedTopic]); // Dependency on selectedTopic is key
+    // Add listener for hash changes while on the page
+    window.addEventListener('hashchange', handleScrollAndExpansion);
 
-  return (
-    <>
-      <Modal
-        isOpen={isStatementModalOpen}
-        onClose={() => setIsStatementModalOpen(false)}
-      >
-        <h2 className="text-2xl font-bold text-slate-800 mb-4">
-          Official Statement on Forum Cancellation
-        </h2>
-        <div className="prose prose-sm sm:prose-base max-w-none text-slate-700 whitespace-pre-wrap">
-          {fullCancellationStatement}
-        </div>
-      </Modal>
-      <Modal
-        isOpen={isRasmussenBioOpen}
-        onClose={() => setIsRasmussenBioOpen(false)}
-      >
-        <h2 className="text-2xl font-bold text-slate-800 mb-4">
-          Thank you Micah Rasmussen for developing the questions for this
-          interview series!
-        </h2>
-        <div className="flex items-center mb-4">
-          <img
-            src="/micah.png"
-            alt="Micah Rasmussen"
-            className="w-24 h-24 rounded-full mr-4"
-          />
-          <div>
-            <h3 className="text-xl font-bold">Micah Rasmussen</h3>
-            <p className="text-slate-600">
-              Director, Rebovich Institute for NJ Politics
-            </p>
-          </div>
-        </div>
-        <div className="prose prose-sm sm:prose-base max-w-none text-slate-700 whitespace-pre-wrap">
-          {rasmussenBio}
-        </div>
-      </Modal>
+    // Cleanup function
+    return () => {
+      window.removeEventListener('hashchange', handleScrollAndExpansion);
+      if (cleanupTimeout) cleanupTimeout(); // Clear any pending timeout
+    };
+ }, [selectedTopic]); // Re-run effect when selectedTopic changes
 
-      <div className="min-h-screen bg-slate-100 font-body text-slate-700 animate-fadeIn">
-        <header
-          ref={headerRef}
-          className="relative bg-gradient-to-br from-slate-900 via-sky-800 to-indigo-900 text-white py-12 sm:py-16 px-4 rounded-b-2xl shadow-2xl overflow-hidden"
-        >
-          <DotPattern dotColor="text-sky-700 opacity-10" rows={8} cols={10} />
-          <div className="relative z-10 container mx-auto text-center">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 leading-tight">
-              West Windsor 2025 Municipal Election
-            </h1>
-            <p className="text-lg sm:text-xl text-sky-200 max-w-3xl mx-auto mb-8">
-              Your non-partisan hub for the upcoming election, featuring
-              candidate interviews, financial data, and key voter information.
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto bg-black bg-opacity-20 backdrop-blur-sm p-6 rounded-xl">
-              <div className="text-center">
-                <Countdown
-                  targetDate="2025-11-04T20:00:00"
-                  title="Countdown to Election Day"
-                />
-              </div>
-              <div className="text-center border-y-2 border-white/20 md:border-y-0 md:border-x-2 md:border-white/20 py-6 md:py-0 px-4 flex flex-col justify-center">
-                <h4 className="text-sm font-semibold mb-2">
-                  Seats Up for Election
-                </h4>
-                <div className="flex justify-center md:flex-col gap-4">
-                  <div>
-                    <div className="text-3xl lg:text-4xl font-bold">1</div>
-                    <div className="text-xs uppercase">Mayoral Seat</div>
-                  </div>
-                  <div>
-                    <div className="text-3xl lg:text-4xl font-bold">2</div>
-                    <div className="text-xs uppercase">
-                      Township Council Seats
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="text-center flex flex-col justify-center">
-                <h4 className="text-sm font-semibold mb-2">
-                  Voter Registration Deadline
-                </h4>
-                <p className="text-2xl font-bold">October 14, 2025</p>
-                <p className="text-sm text-amber-300">
-                  This deadline has passed.
-                </p>
-              </div>
-            </div>
-          </div>
-        </header>
 
-        <div className="container mx-auto px-4">
-          <div className="mt-8 mb-4 flex flex-col sm:flex-row justify-center gap-3">
-            <Button
-              href="#interviews"
-              type="secondary"
-              size="md"
-              icon={<IconMicrophone />}
-              target="_self"
-            >
-              Jump to Interviews
-            </Button>
-            <Button
-              href="#finance"
-              type="secondary"
-              size="md"
-              icon={<IconDocument />}
-              target="_self"
-            >
-              Jump to Campaign Finance
-            </Button>
-            <Button
-              href="#voter-tools"
-              type="secondary"
-              size="md"
-              icon={<IconBallotBox />}
-              target="_self"
-            >
-              Jump to Voter Tools
-            </Button>
-          </div>
-        </div>
+  // --- Helper Function for Jump Buttons ---
+  const handleJumpTo = useCallback((id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, []);
 
-        <div className="container mx-auto px-4 py-8 sm:py-12 space-y-12">
-          {/* ... all section content remains the same as previous correct version ... */}
-          <Card
-            noHoverEffect
-            className="p-0 -mb-6 border-amber-300 bg-amber-50"
-          >
-            <div className="p-6">
-              <h2 className="text-2xl font-bold text-amber-800 mb-4">
-                An Update on the 2025 Candidate Forum
-              </h2>
-              <div className="prose prose-sm sm:prose-base max-w-none text-slate-700">
-                <p>
-                  <strong>West Windsor, NJ – September 18, 2025</strong> – It is
-                  with deep regret and disappointment that{" "}
-                  <strong>
-                    West Windsor Forward must announce the cancellation of our
-                    2025 Candidate Forum...
-                  </strong>
-                </p>
-              </div>
-              <Button
-                onClick={() => setIsStatementModalOpen(true)}
-                type="secondary"
-                size="sm"
-                className="mt-4"
-                icon={<IconDocument />}
-              >
-                Read Full Statement
-              </Button>
-            </div>
-          </Card>
-          {/* --- Meet the Candidates (Grouped) --- */}
-          <section>
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 mt-12 mb-8 text-center">
-              Meet the Slates
-            </h2>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Proven Leaders for West Windsor */}
-              <div className="flex flex-col">
-                <div className="p-4 rounded-t-xl border-t-4 border-blue-600 bg-slate-200 shadow-lg flex flex-col items-center">
-                  <h3 className="text-2xl font-bold text-blue-800 text-center tracking-wide">
-                    Proven Leaders for West Windsor
-                  </h3>
-                  <Button
-                    size="sm"
-                    type="secondary"
-                    href="http://teammarathe4ww.com"
-                    icon={<IconExternalLink />}
-                    className="mt-2"
-                  >
-                    Visit Slate Website
-                  </Button>
-                </div>
-                <div className="p-6 bg-white border-x border-b border-gray-200 rounded-b-xl shadow-lg flex-grow">
-                  <div className="space-y-8">
-                    {electionData.candidates
-                      .filter(
-                        (c) => c.slate === "Proven Leaders for West Windsor"
-                      )
-                      .map((candidate) => (
-                        <BioCard
-                          key={candidate.id}
-                          candidate={candidate}
-                          borderColor="border-blue-500"
-                          textColor="text-blue-700"
-                        />
-                      ))}
-                  </div>
-                </div>
-              </div>
 
-              {/* West Windsor Together */}
-              <div className="flex flex-col">
-                <div className="p-4 rounded-t-xl border-t-4 border-green-600 bg-slate-200 shadow-lg flex flex-col items-center">
-                  <h3 className="text-2xl font-bold text-green-800 text-center tracking-wide">
-                    West Windsor Together
-                  </h3>
-                  <Button
-                    size="sm"
-                    type="secondary"
-                    href="https://www.wwtogether.org/"
-                    icon={<IconExternalLink />}
-                    className="mt-2"
-                  >
-                    Visit Slate Website
-                  </Button>
-                </div>
-                <div className="p-6 bg-white border-x border-b border-gray-200 rounded-b-xl shadow-lg flex-grow">
-                  <div className="space-y-8">
-                    {electionData.candidates
-                      .filter((c) => c.slate === "West Windsor Together")
-                      .map((candidate) => (
-                        <BioCard
-                          key={candidate.id}
-                          candidate={candidate}
-                          borderColor="border-green-500"
-                          textColor="text-green-700"
-                        />
-                      ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-          {/* --- Interview Series & Comparison Tool --- */}
-          <section id="interviews" className="scroll-mt-24">
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 mb-6 text-center">
-              West Windsor Forward Interview Series
-            </h2>
-            <Card noHoverEffect className="p-0">
-              <div className="p-6">
-                <p className="text-center text-slate-600 max-w-3xl mx-auto mb-8">
-                  To help voters make an informed choice, we conducted a series
-                  of non-partisan interviews (on October 12th and 19th). We
-                  asked identical questions to each slate to allow for direct
-                  comparisons. Some questions differ between council and mayoral
-                  candidates. Explore the full recordings or use the tool below
-                  to compare candidate responses on key topics.
-                </p>
-                <p className="text-center text-sm italic text-slate-500 max-w-3xl mx-auto mb-8">
-                  All interviews conducted by{" "}
-                  <span className="font-semibold">Parth Gupta</span>,
-                  Co-Executive Director of West Windsor Forward.
-                </p>
-                <h3 className="text-xl font-bold text-slate-800 mb-6 text-center">
-                  Full Interview Recordings
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
-                  {/* Mayor Marathe */}
-                  <div className="lg:col-span-1">
-                    <h4 className="font-bold text-lg text-blue-800 mb-2 text-center">
-                      Mayoral Candidate: <br /> Hemant Marathe{" "}
-                    </h4>
-                    <div className="aspect-video bg-slate-200 rounded-lg mb-2 flex items-center justify-center">
-                      <iframe
-                        width="560"
-                        height="315"
-                        src={`https://www.youtube.com/embed/${mayorMaratheVideoId}`}
-                        title="YouTube video player: Mayoral Candidate Hemant Marathe"
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        referrerPolicy="strict-origin-when-cross-origin"
-                        allowFullScreen
-                        className="w-full h-full rounded-lg"
-                      ></iframe>
-                    </div>
-                  </div>
-                  {/* Mayor Singh */}
-                  <div className="lg:col-span-1">
-                    <h4 className="font-bold text-lg text-green-800 mb-2 text-center">
-                      Mayoral Candidate: <br /> Sujit Singh{" "}
-                    </h4>
-                    <div className="aspect-video bg-slate-200 rounded-lg mb-2 flex items-center justify-center">
-                      {mayorSinghVideoId ? (
-                        <iframe
-                          width="560"
-                          height="315"
-                          src={`https://www.youtube.com/embed/${mayorSinghVideoId}`}
-                          title="YouTube video player: Mayoral Candidate Sujit Singh"
-                          frameBorder="0"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                          referrerPolicy="strict-origin-when-cross-origin"
-                          allowFullScreen
-                          className="w-full h-full rounded-lg"
-                        ></iframe>
-                      ) : (
-                        <IconVideoCamera className="text-slate-400 h-10 w-10" />
-                      )}
-                    </div>
-                  </div>
-                  {/* Council Geevers/Charles */}
-                  <div className="lg:col-span-1">
-                    <h4 className="font-bold text-lg text-blue-800 mb-2 text-center">
-                      Council Candidates: <br /> Geevers & Charles{" "}
-                    </h4>
-                    <div className="aspect-video bg-slate-200 rounded-lg mb-2 flex items-center justify-center">
-                      {councilGeeversCharlesVideoId ? (
-                        <iframe
-                          width="560"
-                          height="315"
-                          src={`https://www.youtube.com/embed/${councilGeeversCharlesVideoId}`}
-                          title="YouTube video player: Council Candidates Geevers & Charles"
-                          frameBorder="0"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                          referrerPolicy="strict-origin-when-cross-origin"
-                          allowFullScreen
-                          className="w-full h-full rounded-lg"
-                        ></iframe>
-                      ) : (
-                        <IconVideoCamera className="text-slate-400 h-10 w-10" />
-                      )}
-                    </div>
-                  </div>
-                  {/* Council Tomar/Winters */}
-                  <div className="lg:col-span-1">
-                    <h4 className="font-bold text-lg text-green-800 mb-2 text-center">
-                      Council Candidates: <br /> Tomar & Winters{" "}
-                    </h4>
-                    <div className="aspect-video bg-slate-200 rounded-lg mb-2 flex items-center justify-center">
-                      {councilTomarWintersVideoId ? (
-                        <iframe
-                          width="560"
-                          height="315"
-                          src={`https://www.youtube.com/embed/${councilTomarWintersVideoId}`}
-                          title="YouTube video player: Council Candidates Tomar & Winters"
-                          frameBorder="0"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                          referrerPolicy="strict-origin-when-cross-origin"
-                          allowFullScreen
-                          className="w-full h-full rounded-lg"
-                        ></iframe>
-                      ) : (
-                        <IconVideoCamera className="text-slate-400 h-10 w-10" />
-                      )}
-                    </div>
-                  </div>
-                </div>
+  return (
+    <>
+      <Modal
+        isOpen={isStatementModalOpen}
+        onClose={() => setIsStatementModalOpen(false)}
+      >
+        <h2 className="text-2xl font-bold text-slate-800 mb-4">
+          Official Statement on Forum Cancellation
+        </h2>
+        <div className="prose prose-sm sm:prose-base max-w-none text-slate-700 whitespace-pre-wrap">
+          {fullCancellationStatement}
+        </div>
+      </Modal>
+      <Modal
+        isOpen={isRasmussenBioOpen}
+        onClose={() => setIsRasmussenBioOpen(false)}
+      >
+        <h2 className="text-2xl font-bold text-slate-800 mb-4">
+          Thank you Micah Rasmussen for developing the questions for this
+          interview series!
+        </h2>
+        <div className="flex items-center mb-4">
+          <img
+            src="/micah.png"
+            alt="Micah Rasmussen"
+            className="w-24 h-24 rounded-full mr-4"
+          />
+          <div>
+            <h3 className="text-xl font-bold">Micah Rasmussen</h3>
+            <p className="text-slate-600">
+              Director, Rebovich Institute for NJ Politics
+            </p>
+          </div>
+        </div>
+        <div className="prose prose-sm sm:prose-base max-w-none text-slate-700 whitespace-pre-wrap">
+          {rasmussenBio}
+        </div>
+      </Modal>
 
-                <hr className="my-10 border-t-2 border-slate-200" />
+      <div className="min-h-screen bg-slate-100 font-body text-slate-700 animate-fadeIn">
+        <header ref={headerRef} className="relative bg-gradient-to-br from-slate-900 via-sky-800 to-indigo-900 text-white py-12 sm:py-16 px-4 rounded-b-2xl shadow-2xl overflow-hidden">
+          <DotPattern dotColor="text-sky-700 opacity-10" rows={8} cols={10} />
+          <div className="relative z-10 container mx-auto text-center">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 leading-tight">
+              West Windsor 2025 Municipal Election
+            </h1>
+            <p className="text-lg sm:text-xl text-sky-200 max-w-3xl mx-auto mb-8">
+              Your non-partisan hub for the upcoming election, featuring
+              candidate interviews, financial data, and key voter information.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto bg-black bg-opacity-20 backdrop-blur-sm p-6 rounded-xl">
+              <div className="text-center">
+                <Countdown
+                  targetDate="2025-11-04T20:00:00"
+                  title="Countdown to Election Day"
+                />
+              </div>
+              <div className="text-center border-y-2 border-white/20 md:border-y-0 md:border-x-2 md:border-white/20 py-6 md:py-0 px-4 flex flex-col justify-center">
+                <h4 className="text-sm font-semibold mb-2">
+                  Seats Up for Election
+                </h4>
+                <div className="flex justify-center md:flex-col gap-4">
+                  <div>
+                    <div className="text-3xl lg:text-4xl font-bold">1</div>
+                    <div className="text-xs uppercase">Mayoral Seat</div>
+                  </div>
+                  <div>
+                    <div className="text-3xl lg:text-4xl font-bold">2</div>
+                    <div className="text-xs uppercase">
+                      Township Council Seats
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="text-center flex flex-col justify-center">
+                <h4 className="text-sm font-semibold mb-2">
+                  Voter Registration Deadline
+                </h4>
+                <p className="text-2xl font-bold">October 14, 2025</p>
+                <p className="text-sm text-amber-300">
+                  This deadline has passed.
+                </p>
+              </div>
+            </div>
+          </div>
+        </header>
 
-                <h3 className="text-xl font-bold text-slate-800 mb-2 text-center">
-                  Interview Question Explorer
-                </h3>
-                <div className="text-center text-slate-500 text-sm mb-6 max-w-3xl mx-auto">
-                  <p className="mb-4">
-                    Use the filters to find responses by topic, question, or
-                    office. Click on a topic to expand questions.
-                  </p>
-                  <p className="text-xs italic"></p>
-                </div>
-                <div
-                  ref={filterBarRef}
-                  className="sticky top-[calc(4rem)] md:top-[calc(4.5rem)] bg-white/80 backdrop-blur-sm z-10 py-4 mb-6 -mx-6 px-6 border-b border-gray-200"
-                >
-                  <div className="space-y-4 max-w-4xl mx-auto">
-                    <div className="relative">
-                      <input
-                        type="text"
-                        placeholder="Search questions..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-sky-500"
-                      />
-                      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                        <IconSearch />
-                      </div>
-                    </div>
-                    <div className="flex flex-wrap gap-2 items-center">
-                      <span className="text-sm font-semibold text-slate-600 mr-2">
-                        Filter by Office:
-                      </span>
-                      <button
-                        onClick={() => setActiveOffice(null)}
-                        className={`px-3 py-1 text-xs font-medium rounded-full transition-colors duration-200 ${
-                          !activeOffice
-                            ? "bg-sky-600 text-white shadow"
-                            : "bg-slate-200 text-slate-700 hover:bg-slate-300"
-                        }`}
-                      >
-                        All
-                      </button>
-                      <button
-                        onClick={() => setActiveOffice("Mayor")}
-                        className={`px-3 py-1 text-xs font-medium rounded-full transition-colors duration-200 ${
-                          activeOffice === "Mayor"
-                            ? "bg-sky-600 text-white shadow"
-                            : "bg-slate-200 text-slate-700 hover:bg-slate-300"
-                        }`}
-                      >
-                        Mayor
-                      </button>
-                      <button
-                        onClick={() => setActiveOffice("Township Council")}
-                        className={`px-3 py-1 text-xs font-medium rounded-full transition-colors duration-200 ${
-                          activeOffice === "Township Council"
-                            ? "bg-sky-600 text-white shadow"
-                            : "bg-slate-200 text-slate-700 hover:bg-slate-300"
-                        }`}
-                      >
-                        Council
-                      </button>
-                    </div>
-                  </div>
-                </div>
+        <div className="container mx-auto px-4">
+            {/* --- UPDATED JUMP BUTTONS --- */}
+            <div className="mt-8 mb-4 flex flex-col sm:flex-row justify-center gap-3">
+                <Button onClick={() => handleJumpTo('interviews')} type="secondary" size="md" icon={<IconMicrophone />}>
+                Jump to Interviews
+                </Button>
+                <Button onClick={() => handleJumpTo('finance')} type="secondary" size="md" icon={<IconDocument />}>
+                Jump to Campaign Finance
+                </Button>
+                <Button onClick={() => handleJumpTo('voter-tools')} type="secondary" size="md" icon={<IconBallotBox />}>
+                Jump to Voter Tools
+                </Button>
+            </div>
+        </div>
 
-                <div className="space-y-4">
-                  {filteredIssues.map((issue) => (
-                    <div
-                      key={issue.id}
-                      data-topic-section-id={issue.id}
-                      className="border border-gray-200 rounded-lg overflow-hidden"
-                    >
-                      <button
-                        data-topic-id={issue.id}
-                        onClick={() =>
-                          handleTopicToggle(issue.id, issue.questions.length)
-                        }
-                        className="w-full flex items-center justify-between p-4 text-left bg-slate-50 hover:bg-slate-100 transition-colors"
-                      >
-                        <span className="text-lg font-bold text-slate-800">
-                          {issue.title}
-                        </span>
-                        {selectedTopic === issue.id ? (
-                          <IconChevronUp className="text-gray-500" />
-                        ) : (
-                          <IconChevronDown className="text-gray-500" />
-                        )}
-                      </button>
-                      {selectedTopic === issue.id && (
-                        <div className="p-4 space-y-6">
-                          {issue.questions.map((question) => {
-                            // @ts-ignore
-                            const maratheResponse =
-                              responsesData.marathe[question.id];
-                            // @ts-ignore
-                            const singhResponse =
-                              responsesData.singh[question.id];
-                            // @ts-ignore
-                            const geeversCharlesResponse =
-                              responsesData.geeversCharles[question.id];
-                            // @ts-ignore
-                            const tomarWintersResponse =
-                              responsesData.tomarWinters[question.id];
+        <div className="container mx-auto px-4 py-8 sm:py-12 space-y-12">
+           <Card
+            noHoverEffect
+            className="p-0 -mb-6 border-amber-300 bg-amber-50"
+          >
+            <div className="p-6">
+              <h2 className="text-2xl font-bold text-amber-800 mb-4">
+                An Update on the 2025 Candidate Forum
+              </h2>
+              <div className="prose prose-sm sm:prose-base max-w-none text-slate-700">
+                <p>
+                  <strong>West Windsor, NJ – September 18, 2025</strong> – It is
+                  with deep regret and disappointment that{" "}
+                  <strong>
+                    West Windsor Forward must announce the cancellation of our
+                    2025 Candidate Forum...
+                  </strong>
+                </p>
+              </div>
+              <Button
+                onClick={() => setIsStatementModalOpen(true)}
+                type="secondary"
+                size="sm"
+                className="mt-4"
+                icon={<IconDocument />}
+              >
+                Read Full Statement
+              </Button>
+            </div>
+          </Card>
+          {/* --- Meet the Candidates (Grouped) --- */}
+          <section>
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 mt-12 mb-8 text-center">
+              Meet the Slates
+            </h2>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Proven Leaders for West Windsor */}
+              <div className="flex flex-col">
+                <div className="p-4 rounded-t-xl border-t-4 border-blue-600 bg-slate-200 shadow-lg flex flex-col items-center">
+                  <h3 className="text-2xl font-bold text-blue-800 text-center tracking-wide">
+                    Proven Leaders for West Windsor
+                  </h3>
+                  <Button
+                    size="sm"
+                    type="secondary"
+                    href="http://teammarathe4ww.com"
+                    icon={<IconExternalLink />}
+                    className="mt-2"
+                  >
+                    Visit Slate Website
+                  </Button>
+                </div>
+                <div className="p-6 bg-white border-x border-b border-gray-200 rounded-b-xl shadow-lg flex-grow">
+                  <div className="space-y-8">
+                    {electionData.candidates
+                      .filter(
+                        (c) => c.slate === "Proven Leaders for West Windsor"
+                      )
+                      .map((candidate) => (
+                        <BioCard
+                          key={candidate.id}
+                          candidate={candidate}
+                          borderColor="border-blue-500"
+                          textColor="text-blue-700"
+                        />
+                      ))}
+                  </div>
+                </div>
+              </div>
 
-                            const showMayor =
-                              !activeOffice || activeOffice === "Mayor";
-                            const showCouncil =
-                              !activeOffice ||
-                              activeOffice === "Township Council";
-                            const questionIsMayor = doesQuestionApply(
-                              question,
-                              "Mayor"
-                            );
-                            const questionIsCouncil = doesQuestionApply(
-                              question,
-                              "Township Council"
-                            );
+              {/* West Windsor Together */}
+              <div className="flex flex-col">
+                <div className="p-4 rounded-t-xl border-t-4 border-green-600 bg-slate-200 shadow-lg flex flex-col items-center">
+                  <h3 className="text-2xl font-bold text-green-800 text-center tracking-wide">
+                    West Windsor Together
+                  </h3>
+                  <Button
+                    size="sm"
+                    type="secondary"
+                    href="https://www.wwtogether.org/"
+                    icon={<IconExternalLink />}
+                    className="mt-2"
+                  >
+                    Visit Slate Website
+                  </Button>
+                </div>
+                <div className="p-6 bg-white border-x border-b border-gray-200 rounded-b-xl shadow-lg flex-grow">
+                  <div className="space-y-8">
+                    {electionData.candidates
+                      .filter((c) => c.slate === "West Windsor Together")
+                      .map((candidate) => (
+                        <BioCard
+                          key={candidate.id}
+                          candidate={candidate}
+                          borderColor="border-green-500"
+                          textColor="text-green-700"
+                        />
+                      ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+          {/* --- Interview Series & Comparison Tool --- */}
+          <section id="interviews" className="scroll-mt-24">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 mb-6 text-center">
+              West Windsor Forward Interview Series
+            </h2>
+            <Card noHoverEffect className="p-0">
+              <div className="p-6">
+                <p className="text-center text-slate-600 max-w-3xl mx-auto mb-8">
+                  To help voters make an informed choice, we conducted a series
+                  of non-partisan interviews (on October 12th and 19th). We
+                  asked identical questions to each slate to allow for direct
+                  comparisons. Some questions differ between council and mayoral
+                  candidates. Explore the full recordings or use the tool below
+                  to compare candidate responses on key topics.
+                </p>
+                <p className="text-center text-sm italic text-slate-500 max-w-3xl mx-auto mb-8">
+                  All interviews conducted by{" "}
+                  <span className="font-semibold">Parth Gupta</span>,
+                  Co-Executive Director of West Windsor Forward.
+                </p>
+                <h3 className="text-xl font-bold text-slate-800 mb-6 text-center">
+                  Full Interview Recordings
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+                  {/* Mayor Marathe */}
+                  <div className="lg:col-span-1">
+                    <h4 className="font-bold text-lg text-blue-800 mb-2 text-center">
+                      Mayoral Candidate: <br /> Hemant Marathe{" "}
+                    </h4>
+                    <div className="aspect-video bg-slate-200 rounded-lg mb-2 flex items-center justify-center">
+                      <iframe
+                        width="560"
+                        height="315"
+                        src={`https://www.youtube.com/embed/${mayorMaratheVideoId}`}
+                        title="YouTube video player: Mayoral Candidate Hemant Marathe"
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerPolicy="strict-origin-when-cross-origin"
+                        allowFullScreen
+                        className="w-full h-full rounded-lg"
+                      ></iframe>
+                    </div>
+                  </div>
+                  {/* Mayor Singh */}
+                  <div className="lg:col-span-1">
+                    <h4 className="font-bold text-lg text-green-800 mb-2 text-center">
+                      Mayoral Candidate: <br /> Sujit Singh{" "}
+                    </h4>
+                    <div className="aspect-video bg-slate-200 rounded-lg mb-2 flex items-center justify-center">
+                      {mayorSinghVideoId ? (
+                        <iframe
+                          width="560"
+                          height="315"
+                          src={`https://www.youtube.com/embed/${mayorSinghVideoId}`}
+                          title="YouTube video player: Mayoral Candidate Sujit Singh"
+                          frameBorder="0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                          referrerPolicy="strict-origin-when-cross-origin"
+                          allowFullScreen
+                          className="w-full h-full rounded-lg"
+                        ></iframe>
+                      ) : (
+                        <IconVideoCamera className="text-slate-400 h-10 w-10" />
+                      )}
+                    </div>
+                  </div>
+                  {/* Council Geevers/Charles */}
+                  <div className="lg:col-span-1">
+                    <h4 className="font-bold text-lg text-blue-800 mb-2 text-center">
+                      Council Candidates: <br /> Geevers & Charles{" "}
+                    </h4>
+                    <div className="aspect-video bg-slate-200 rounded-lg mb-2 flex items-center justify-center">
+                      {councilGeeversCharlesVideoId ? (
+                        <iframe
+                          width="560"
+                          height="315"
+                          src={`https://www.youtube.com/embed/${councilGeeversCharlesVideoId}`}
+                          title="YouTube video player: Council Candidates Geevers & Charles"
+                          frameBorder="0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                          referrerPolicy="strict-origin-when-cross-origin"
+                          allowFullScreen
+                          className="w-full h-full rounded-lg"
+                        ></iframe>
+                      ) : (
+                        <IconVideoCamera className="text-slate-400 h-10 w-10" />
+                      )}
+                    </div>
+                  </div>
+                  {/* Council Tomar/Winters */}
+                  <div className="lg:col-span-1">
+                    <h4 className="font-bold text-lg text-green-800 mb-2 text-center">
+                      Council Candidates: <br /> Tomar & Winters{" "}
+                    </h4>
+                    <div className="aspect-video bg-slate-200 rounded-lg mb-2 flex items-center justify-center">
+                      {councilTomarWintersVideoId ? (
+                        <iframe
+                          width="560"
+                          height="315"
+                          src={`https://www.youtube.com/embed/${councilTomarWintersVideoId}`}
+                          title="YouTube video player: Council Candidates Tomar & Winters"
+                          frameBorder="0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                          referrerPolicy="strict-origin-when-cross-origin"
+                          allowFullScreen
+                          className="w-full h-full rounded-lg"
+                        ></iframe>
+                      ) : (
+                        <IconVideoCamera className="text-slate-400 h-10 w-10" />
+                      )}
+                    </div>
+                  </div>
+                </div>
 
-                            const renderResponseBlock = (
-                              slateName: string,
-                              slateColorClass: string,
-                              responseData: any,
-                              fullVideoId: string | null,
-                              currentQuestionId: string
-                            ) => {
-                              const hasData =
-                                responseData &&
-                                responseData.time &&
-                                responseData.summary;
+                <hr className="my-10 border-t-2 border-slate-200" />
 
-                              let nextQuestionTimeSeconds = 0;
-                              const currentQuestionIndex =
-                                questionOrder.indexOf(currentQuestionId);
+                <h3 className="text-xl font-bold text-slate-800 mb-2 text-center">
+                  Interview Question Explorer
+                </h3>
+                <div className="text-center text-slate-500 text-sm mb-6 max-w-3xl mx-auto">
+                  <p className="mb-4">
+                    Use the filters to find responses by topic, question, or
+                    office. Click on a topic to expand questions. Click the <IconClipboard className="inline h-4 w-4 text-slate-600 -mt-1"/> icon to copy a direct link to a specific question.
+                  </p>
+                </div>
+                <div
+                  ref={filterBarRef}
+                  className="sticky top-[calc(4rem)] md:top-[calc(4.5rem)] bg-white/80 backdrop-blur-sm z-10 py-4 mb-6 -mx-6 px-6 border-b border-gray-200"
+                >
+                  <div className="space-y-4 max-w-4xl mx-auto">
+                    <div className="relative">
+                      <input
+                        type="text"
+                        placeholder="Search questions..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-sky-500"
+                      />
+                      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                        <IconSearch />
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-2 items-center">
+                      <span className="text-sm font-semibold text-slate-600 mr-2">
+                        Filter by Office:
+                      </span>
+                      <button
+                        onClick={() => setActiveOffice(null)}
+                        className={`px-3 py-1 text-xs font-medium rounded-full transition-colors duration-200 ${
+                          !activeOffice
+                            ? "bg-sky-600 text-white shadow"
+                            : "bg-slate-200 text-slate-700 hover:bg-slate-300"
+                        }`}
+                      >
+                        All
+                      </button>
+                      <button
+                        onClick={() => setActiveOffice("Mayor")}
+                        className={`px-3 py-1 text-xs font-medium rounded-full transition-colors duration-200 ${
+                          activeOffice === "Mayor"
+                            ? "bg-sky-600 text-white shadow"
+                            : "bg-slate-200 text-slate-700 hover:bg-slate-300"
+                        }`}
+                      >
+                        Mayor
+                      </button>
+                      <button
+                        onClick={() => setActiveOffice("Township Council")}
+                        className={`px-3 py-1 text-xs font-medium rounded-full transition-colors duration-200 ${
+                          activeOffice === "Township Council"
+                            ? "bg-sky-600 text-white shadow"
+                            : "bg-slate-200 text-slate-700 hover:bg-slate-300"
+                        }`}
+                      >
+                        Council
+                      </button>
+                    </div>
+                  </div>
+                </div>
 
-                              if (
-                                currentQuestionIndex !== -1 &&
-                                currentQuestionIndex < questionOrder.length - 1
-                              ) {
-                                for (
-                                  let i = currentQuestionIndex + 1;
-                                  i < questionOrder.length;
-                                  i++
-                                ) {
-                                  const nextQuestionId = questionOrder[i];
-                                  const nextQuestion =
-                                    (electionData.issues
-                                      .flatMap((iss) => iss.questions)
-                                      .find(
-                                        (q) => q.id === nextQuestionId
-                                      ) as ElectionQuestion) || null;
+                <div className="space-y-4">
+                  {filteredIssues.map((issue) => (
+                    <div
+                      key={issue.id}
+                      data-topic-section-id={issue.id}
+                      className="border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm" // Added bg-white and shadow-sm
+                    >
+                      <button
+                        data-topic-id={issue.id}
+                        onClick={() =>
+                          handleTopicToggle(issue.id, issue.questions.length)
+                        }
+                        className="w-full flex items-center justify-between p-4 text-left bg-slate-50 hover:bg-slate-100 transition-colors border-b border-gray-200" // Added border-b
+                      >
+                        <span className="text-lg font-bold text-slate-800">
+                          {issue.title}
+                        </span>
+                        {selectedTopic === issue.id ? (
+                          <IconChevronUp className="text-gray-500" />
+                        ) : (
+                          <IconChevronDown className="text-gray-500" />
+                        )}
+                      </button>
+                      {selectedTopic === issue.id && (
+                        <div className="p-4 space-y-6">
+                          {issue.questions.map((question, index) => { // Added index
+                            // @ts-ignore
+                            const maratheResponse =
+                              responsesData.marathe[question.id];
+                            // @ts-ignore
+                            const singhResponse =
+                              responsesData.singh[question.id];
+                            // @ts-ignore
+                            const geeversCharlesResponse =
+                              responsesData.geeversCharles[question.id];
+                            // @ts-ignore
+                            const tomarWintersResponse =
+                              responsesData.tomarWinters[question.id];
 
-                                  if (!nextQuestion) continue;
+                            const showMayor =
+                              !activeOffice || activeOffice === "Mayor";
+                            const showCouncil =
+                              !activeOffice ||
+                              activeOffice === "Township Council";
+                            const questionIsMayor = doesQuestionApply(
+                              question,
+                              "Mayor"
+                            );
+                            const questionIsCouncil = doesQuestionApply(
+                              question,
+                              "Township Council"
+                            );
 
-                                  let nextResponseForCurrentSlate: any;
+                            const renderResponseBlock = (
+                              slateName: string,
+                              slateColorClass: string,
+                              responseData: any,
+                              fullVideoId: string | null,
+                              currentQuestionId: string
+                            ) => {
+                              const hasData =
+                                responseData &&
+                                responseData.time &&
+                                responseData.summary;
 
-                                  if (slateName.includes("Marathe")) {
-                                    if (
-                                      doesQuestionApply(nextQuestion, "Mayor")
-                                    ) {
-                                      nextResponseForCurrentSlate =
-                                        responsesData.marathe[nextQuestionId];
-                                    }
-                                  } else if (slateName.includes("Singh")) {
-                                    if (
-                                      doesQuestionApply(nextQuestion, "Mayor")
-                                    ) {
-                                      nextResponseForCurrentSlate =
-                                        responsesData.singh[nextQuestionId];
-                                    }
-                                  } else if (
-                                    slateName.includes("Geevers & Charles")
-                                  ) {
-                                    if (
-                                      doesQuestionApply(
-                                        nextQuestion,
-                                        "Township Council"
-                                      )
-                                    ) {
-                                      nextResponseForCurrentSlate =
-                                        responsesData.geeversCharles[
-                                          nextQuestionId
-                                        ];
-                                    }
-                                  } else if (
-                                    slateName.includes("Tomar & Winters")
-                                  ) {
-                                    if (
-                                      doesQuestionApply(
-                                        nextQuestion,
-                                        "Township Council"
-                                      )
-                                    ) {
-                                      nextResponseForCurrentSlate =
-                                        responsesData.tomarWinters[
-                                          nextQuestionId
-                                        ];
-                                    }
-                                  }
+                              let nextQuestionTimeSeconds = 0;
+                              const currentQuestionIndex =
+                                questionOrder.indexOf(currentQuestionId);
 
-                                  if (
-                                    nextResponseForCurrentSlate &&
-                                    nextResponseForCurrentSlate.time
-                                  ) {
-                                    nextQuestionTimeSeconds =
-                                      convertTimeToSeconds(
-                                        nextResponseForCurrentSlate.time
-                                      );
-                                    break;
-                                  }
-                                }
-                              }
+                              if (
+                                currentQuestionIndex !== -1 &&
+                                currentQuestionIndex < questionOrder.length - 1
+                              ) {
+                                for (
+                                  let i = currentQuestionIndex + 1;
+                                  i < questionOrder.length;
+                                  i++
+                                ) {
+                                  const nextQuestionId = questionOrder[i];
+                                  const nextQuestion =
+                                    electionData.issues
+                                      .flatMap((iss) => iss.questions)
+                                      .find((q) => q.id === nextQuestionId) ||
+                                    null;
 
-                              return (
-                                <div className="mb-4">
-                                  <h5
-                                    className={`font-bold ${slateColorClass} mb-2`}
-                                  >
-                                    {slateName}
-                                  </h5>
-                                  {hasData && fullVideoId ? (
-                                    <>
-                                      <div className="aspect-video bg-slate-200 rounded-lg mb-2 shadow-inner">
-                                        {(() => {
-                                          const startSeconds =
-                                            convertTimeToSeconds(
-                                              responseData.time
-                                            );
-                                          let videoSrc = `https://www.youtube.com/embed/${fullVideoId}?start=${startSeconds}`;
+                                  if (!nextQuestion) continue;
 
-                                          if (
-                                            nextQuestionTimeSeconds >
-                                            startSeconds
-                                          ) {
-                                            videoSrc += `&end=${
-                                              nextQuestionTimeSeconds + 2
-                                            }`;
-                                          }
+                                  let nextResponseForCurrentSlate: any;
 
-                                          return (
-                                            <iframe
-                                              className="w-full h-full rounded-lg"
-                                              src={videoSrc}
-                                              title={`${slateName}'s response to: ${question.text}`}
-                                              frameBorder="0"
-                                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                              allowFullScreen
-                                            ></iframe>
-                                          );
-                                        })()}
-                                      </div>
-                                      <p className="text-xs text-slate-600 bg-slate-50 p-2 rounded border border-slate-200">
-                                        <strong>Summary:</strong>{" "}
-                                        {responseData.summary}
-                                      </p>
-                                    </>
-                                  ) : (
-                                    <>
-                                      <div className="aspect-video bg-slate-200 rounded-lg mb-2 flex items-center justify-center shadow-inner">
-                                        <IconVideoCamera className="text-slate-400 h-8 w-8" />
-                                      </div>
-                                      <p className="text-xs text-slate-500 italic">
-                                        Response pending or clip unavailable.
-                                      </p>
-                                    </>
-                                  )}
-                                </div>
-                              );
-                            };
+                                  // Determine which dataset to check based on slateName
+                                  let dataSetToCheck: keyof typeof responsesData | null = null;
+                                  let officeToCheck: OfficeType | null = null;
 
-                            return (
-                              <div
-                                key={question.id}
-                                id={question.id}
-                                className="relative bg-white shadow-xl rounded-xl border-2 border-gray-300 p-4 sm:p-6 scroll-mt-[10rem]"
-                              >
-                                <button
-                                  onClick={() => handleCopyLink(question.id)}
-                                  className={`absolute top-2 right-2 sm:top-3 sm:right-3 p-1.5 rounded-full transition-colors duration-200 ${
-                                    copiedLinks[question.id]
-                                      ? "bg-green-100 text-green-600 hover:bg-green-200"
-                                      : "bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-700"
-                                  }`}
-                                  aria-label="Copy link to this question"
-                                  title={
-                                    copiedLinks[question.id]
-                                      ? "Link Copied!"
-                                      : "Copy link to this question"
-                                  }
-                                >
-                                  {copiedLinks[question.id] ? (
-                                    <IconCheckCircle className="h-4 w-4 sm:h-5 sm:w-5" />
-                                  ) : (
-                                    <IconClipboard className="h-4 w-4 sm:h-5 sm:w-5" />
-                                  )}
-                                </button>
+                                  if (slateName.includes("Marathe")) {
+                                    dataSetToCheck = "marathe";
+                                    officeToCheck = "Mayor";
+                                  } else if (slateName.includes("Singh")) {
+                                    dataSetToCheck = "singh";
+                                    officeToCheck = "Mayor";
+                                  } else if (slateName.includes("Geevers & Charles")) {
+                                    dataSetToCheck = "geeversCharles";
+                                    officeToCheck = "Township Council";
+                                  } else if (slateName.includes("Tomar & Winters")) {
+                                    dataSetToCheck = "tomarWinters";
+                                    officeToCheck = "Township Council";
+                                  }
 
-                                <div className="text-center mb-6 pr-8">
-                                  <div className="mb-2">
-                                    {Array.isArray(question.office) ? (
-                                      question.office.map((off) => (
-                                        <span
-                                          key={off}
-                                          className={`inline-block text-xs font-semibold mr-2 px-2.5 py-1 rounded-full ${
-                                            officeStyles[off] ||
-                                            "bg-gray-100 text-gray-800"
-                                          }`}
-                                        >
-                                          {off} Question
-                                        </span>
-                                      ))
-                                    ) : question.office ? (
-                                      <span
-                                        className={`inline-block text-xs font-semibold mr-2 px-2.5 py-1 rounded-full ${
-                                          officeStyles[question.office] ||
-                                          "bg-gray-100 text-gray-800"
-                                        }`}
-                                      >
-                                        {question.office} Question
-                                      </span>
-                                    ) : (
-                                      <span className="inline-block text-xs font-semibold mr-2 px-2.5 py-1 rounded-full bg-gray-100 text-gray-800">
-                                        General Question
-                                      </span>
-                                    )}
-                                  </div>
-                                  <p className="font-semibold text-slate-700 italic max-w-2xl mx-auto">
-                                    "{question.text}"
-                                  </p>
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                                  {showMayor &&
-                                    questionIsMayor &&
-                                    renderResponseBlock(
-                                      "Mayoral Candidate: Hemant Marathe",
-                                      "text-blue-700",
-                                      maratheResponse,
-                                      mayorMaratheVideoId,
-                                      question.id
-                                    )}
-                                  {showMayor &&
-                                    questionIsMayor &&
-                                    renderResponseBlock(
-                                      "Mayoral Candidate: Sujit Singh",
-                                      "text-green-700",
-                                      singhResponse,
-                                      mayorSinghVideoId,
-                                      question.id
-                                    )}
-                                  {showCouncil &&
-                                    questionIsCouncil &&
-                                    renderResponseBlock(
-                                      "Council Candidates: Geevers & Charles",
-                                      "text-blue-700",
-                                      geeversCharlesResponse,
-                                      councilGeeversCharlesVideoId,
-                                      question.id
-                                    )}
-                                  {showCouncil &&
-                                    questionIsCouncil &&
-                                    renderResponseBlock(
-                                      "Council Candidates: Tomar & Winters",
-                                      "text-green-700",
-                                      tomarWintersResponse,
-                                      councilTomarWintersVideoId,
-                                      question.id
-                                    )}
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
+                                  if (dataSetToCheck && officeToCheck && doesQuestionApply(nextQuestion, officeToCheck)) {
+                                    // @ts-ignore - Indexing with string variable
+                                    nextResponseForCurrentSlate = responsesData[dataSetToCheck]?.[nextQuestionId];
+                                  }
 
-                {filteredIssues.length === 0 &&
-                  (searchQuery || activeOffice) && (
-                    <p className="text-slate-500 italic col-span-full text-center py-8">
-                      No results match your filters.
-                    </p>
-                  )}
-              </div>
-            </Card>
-          </section>
+                                  if (
+                                    nextResponseForCurrentSlate &&
+                                    nextResponseForCurrentSlate.time
+                                  ) {
+                                    nextQuestionTimeSeconds =
+                                      convertTimeToSeconds(
+                                        nextResponseForCurrentSlate.time
+                                      );
+                                    break; // Found the next relevant time, exit loop
+                                  }
+                                }
+                              }
 
-          {/* --- Campaign Finance Section --- */}
-          <section id="finance" className="scroll-mt-24">
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 mb-6 text-center">
-              Campaign Finance & Transparency
-            </h2>
-            <Card noHoverEffect className="p-0">
-              <div className="p-6">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center mb-6 bg-amber-50 border border-amber-200 rounded-lg p-4">
-                  <IconInfo className="text-amber-600 mr-3 flex-shrink-0 mt-1 sm:mt-0" />
-                  <div>
-                    <h3 className="font-semibold text-amber-800">
-                      Important Disclaimer
-                    </h3>
-                    <p className="text-sm text-amber-700">
-                      The financial data presented below is sourced from the
-                      29-Day Pre-Election R-1 reports filed with NJ ELEC on
-                      October 6, 2025. This is a snapshot in time and may not
-                      reflect the most current fundraising or expenditure
-                      totals. NJ ELEC will be releasing the 11-day Pre-Election
-                      report on October 24th, 2025 and this tool will be updated
-                      shortly thereafter.
-                    </p>
-                  </div>
-                </div>
+                              return (
+                                <div className="mb-4">
+                                  <h5
+                                    className={`font-bold ${slateColorClass} mb-2`}
+                                  >
+                                    {slateName}
+                                  </h5>
+                                  {hasData && fullVideoId ? (
+                                    <>
+                                      <div className="aspect-video bg-slate-200 rounded-lg mb-2 shadow-inner overflow-hidden"> {/* Added overflow-hidden */}
+                                        {(() => {
+                                          const startSeconds =
+                                            convertTimeToSeconds(
+                                              responseData.time
+                                            );
+                                          let videoSrc = `https://www.youtube.com/embed/${fullVideoId}?start=${startSeconds}`;
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {/* Proven Leaders */}
-                  <div className="p-6 bg-slate-50 rounded-xl border-2 border-slate-200 h-full flex flex-col">
-                    <h4 className="font-bold text-lg text-blue-800 mb-4 text-center">
-                      Proven Leaders for West Windsor
-                    </h4>
-                    <div className="grid grid-cols-2 gap-3 text-sm mb-6 text-center">
-                      <div>
-                        <div className="text-xs text-slate-500">Raised</div>
-                        <div className="font-bold text-lg">$28,953.71</div>
-                      </div>
-                      <div>
-                        <div className="text-xs text-slate-500">Spent</div>
-                        <div className="font-bold text-lg">$13,764.07</div>
-                      </div>
-                      <div className="col-span-2">
-                        <div className="text-xs text-slate-500">
-                          Cash on Hand
-                        </div>
-                        <div className="font-bold text-2xl text-green-700">
-                          $21,554.38
-                        </div>
-                      </div>
-                    </div>
-                    <div className="space-y-8 flex-grow flex flex-col">
-                      <div className="relative">
-                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700 border border-orange-200">
-                            <span className="w-1.5 h-1.5 bg-orange-500 rounded-full mr-1.5 animate-pulse"></span>
-                            Only includes donations &gt; $200
-                          </span>
-                        </div>
-                        <div className="bg-white border-2 border-slate-400 rounded-lg p-4 pt-6 space-y-8">
-                          <div>
-                            <div className="text-center mb-1">
-                              <h5 className="font-semibold text-slate-700 text-sm">
-                                Funding Sources¹
-                              </h5>
-                            </div>
-                            <div className="text-center mb-1 text-sm font-medium text-slate-700">
-                              <span>100% from Individuals</span>
-                            </div>
-                            <div className="w-full bg-slate-200 rounded-full h-2.5">
-                              <div
-                                className="bg-sky-500 h-2.5 rounded-full"
-                                style={{ width: "100%" }}
-                              ></div>
-                            </div>
-                          </div>
-                          <div>
-                            <div className="text-center mb-1">
-                              <h5 className="font-semibold text-slate-700 text-sm">
-                                Donation Origin (by $ Amount)²
-                              </h5>
-                            </div>
-                            <div className="text-center mb-1 text-sm font-medium text-slate-700">
-                              <span>29.4% from In-Town</span>
-                            </div>
-                            <div className="w-full bg-slate-200 rounded-full h-2.5">
-                              <div
-                                className="bg-sky-500 h-2.5 rounded-full"
-                                style={{ width: "29.4%" }}
-                              ></div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-center mb-1">
-                          <h5 className="font-semibold text-slate-700 text-sm">
-                            Donation Size (% of Total Raised)
-                          </h5>
-                        </div>
-                        <div className="flex justify-between mb-1 text-sm font-medium text-slate-700 px-1">
-                          <span>17.3% donations of $200 or less</span>
-                          <span>82.7% donations of over $200</span>
-                        </div>
-                        <div className="w-full bg-slate-200 rounded-full h-2.5 flex">
-                          <div
-                            className="bg-sky-500 h-2.5 rounded-l-full"
-                            style={{ width: "17.3%" }}
-                          ></div>
-                          <div
-                            className="bg-slate-400 h-2.5 rounded-r-full"
-                            style={{ width: "82.7%" }}
-                          ></div>
-                        </div>
-                      </div>
-                    </div>
-                    <Button
-                      size="sm"
-                      type="secondary"
-                      className="w-full mt-10"
-                      href="/3892476.pdf"
-                      icon={<IconExternalLink />}
-                    >
-                      View Full ELEC Report
-                    </Button>
-                  </div>
-                  {/* WW Together */}
-                  <div className="p-6 bg-slate-50 rounded-xl border-2 border-slate-200 h-full flex flex-col">
-                    <h4 className="font-bold text-lg text-green-800 mb-4 text-center">
-                      West Windsor Together
-                    </h4>
-                    <div className="grid grid-cols-2 gap-3 text-sm mb-6 text-center">
-                      <div>
-                        <div className="text-xs text-slate-500">Raised</div>
-                        <div className="font-bold text-lg">$37,731.31</div>
-                      </div>
-                      <div>
-                        <div className="text-xs text-slate-500">Spent</div>
-                        <div className="font-bold text-lg">$14,787.36</div>
-                      </div>
-                      <div className="col-span-2">
-                        <div className="text-xs text-slate-500">
-                          Cash on Hand
-                        </div>
-                        <div className="font-bold text-2xl text-green-700">
-                          $22,943.95
-                        </div>
-                      </div>
-                    </div>
-                    <div className="space-y-8 flex-grow flex flex-col">
-                      <div className="relative">
-                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700 border border-orange-200">
-                            <span className="w-1.5 h-1.5 bg-orange-500 rounded-full mr-1.5 animate-pulse"></span>
-                            Only includes donations &gt; $200
-                          </span>
-                        </div>
-                        <div className="bg-white border-2 border-slate-400 rounded-lg p-4 pt-6 space-y-8">
-                          <div>
-                            <div className="text-center mb-1">
-                              <h5 className="font-semibold text-slate-700 text-sm">
-                                Funding Sources¹
-                              </h5>
-                            </div>
-                            <div className="flex justify-between mb-1 text-sm font-medium text-slate-700 px-1">
-                              <span>96.9% Individuals</span>
-                              <span>3.1% Committees</span>
-                            </div>
-                            <div className="w-full bg-slate-200 rounded-full h-2.5 flex">
-                              <div
-                                className="bg-sky-500 h-2.5 rounded-l-full"
-                                style={{ width: "96.9%" }}
-                              ></div>
-                              <div
-                                className="bg-slate-400 h-2.5 rounded-r-full"
-                                style={{ width: "3.1%" }}
-                              ></div>
-                            </div>
-                          </div>
-                          <div>
-                            <div className="text-center mb-1">
-                              <h5 className="font-semibold text-slate-700 text-sm">
-                                Donation Origin (by $ Amount)²
-                              </h5>
-                            </div>
-                            <div className="text-center mb-1 text-sm font-medium text-slate-700">
-                              <span>33.6% from In-Town</span>
-                            </div>
-                            <div className="w-full bg-slate-200 rounded-full h-2.5">
-                              <div
-                                className="bg-sky-500 h-2.5 rounded-full"
-                                style={{ width: "33.6%" }}
-                              ></div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-center mb-1">
-                          <h5 className="font-semibold text-slate-700 text-sm">
-                            Donation Size (% of Total Raised)
-                          </h5>
-                        </div>
-                        <div className="flex justify-between mb-1 text-sm font-medium text-slate-700 px-1">
-                          <span>6.2% donations of $200 or less</span>
-                          <span>93.8% donations of over $200</span>
-                        </div>
-                        <div className="w-full bg-slate-200 rounded-full h-2.5 flex">
-                          <div
-                            className="bg-sky-500 h-2.5 rounded-l-full"
-                            style={{ width: "6.2%" }}
-                          ></div>
-                          <div
-                            className="bg-slate-400 h-2.5 rounded-r-full"
-                            style={{ width: "93.8%" }}
-                          ></div>
-                        </div>
-                      </div>
-                    </div>
-                    <Button
-                      size="sm"
-                      type="secondary"
-                      className="w-full mt-10"
-                      href="/3892561.pdf"
-                      icon={<IconExternalLink />}
-                    >
-                      View Full ELEC Report
-                    </Button>
-                  </div>
-                </div>
+                                          // Add end time only if the next question starts *after* this one
+                                          if (
+                                            nextQuestionTimeSeconds >
+                                            startSeconds
+                                          ) {
+                                            // Add a small buffer (e.g., 2 seconds) to avoid cutting off too early
+                                            videoSrc += `&end=${
+                                              nextQuestionTimeSeconds + 2
+                                            }`;
+                                          }
 
-                <div className="mt-6 text-xs text-slate-600 space-y-2">
-                  <p>
-                    <strong>¹ About 'Funding Sources'</strong>
-                    <br />
-                    The breakdown of funding sources... (rest of text)
-                  </p>
-                  <p>
-                    <strong>² About 'Donation Origin' (In-Town Percentage)</strong>
-                    <br />
-                    The "In-Town" percentage is calculated... (rest of text)
-                  </p>
-                </div>
-              </div>
-            </Card>
-          </section>
+                                          return (
+                                            <iframe
+                                              className="w-full h-full rounded-lg"
+                                              src={videoSrc}
+                                              title={`${slateName}'s response to: ${question.text}`}
+                                              frameBorder="0"
+                                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                              allowFullScreen
+                                            ></iframe>
+                                          );
+                                        })()}
+                                      </div>
+                                      <p className="text-xs text-slate-600 bg-slate-50 p-2 rounded border border-slate-200">
+                                        <strong>Summary:</strong>{" "}
+                                        {responseData.summary}
+                                      </p>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <div className="aspect-video bg-slate-200 rounded-lg mb-2 flex items-center justify-center shadow-inner">
+                                        <IconVideoCamera className="text-slate-400 h-8 w-8" />
+                                      </div>
+                                      <p className="text-xs text-slate-500 italic">
+                                        Response pending or clip unavailable.
+                                      </p>
+                                    </>
+                                  )}
+                                </div>
+                              );
+                            };
 
-          {/* --- Voter Information Hub --- */}
-          <section id="voter-tools" className="scroll-mt-24">
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 mb-6 text-center">
-              Voter Toolkit
-            </h2>
-            <Card noHoverEffect className="p-0">
-              <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div>
-                  <div className="flex items-center mb-3">
-                    <IconCalendar className="h-6 w-6 text-sky-600 mr-2" />
-                    <h3 className="text-lg font-semibold text-slate-800">
-                      Key Dates
-                    </h3>
-                  </div>
-                  <ul className="space-y-2">
-                    {keyDates.map((item) => (
-                      <li key={item.event} className="text-sm">
-                        <strong className="text-sky-700">{item.date}:</strong>{" "}
-                        {item.event}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div>
-                  <div className="flex items-center mb-3">
-                    <IconUserCheck className="h-6 w-6 text-sky-600 mr-2" />
-                    <h3 className="text-lg font-semibold text-slate-800">
-                      Voter Tools
-                    </h3>
-                  </div>
-                  <div className="space-y-3">
-                    <Button
-                      type="secondary"
-                      href="https://voter.svrs.nj.gov/registration-check"
-                      icon={<IconExternalLink />}
-                      className="w-full justify-center"
-                    >
-                      Check Status
-                    </Button>
-                    <Button
-                      type="primary"
-                      href="https://voter.svrs.nj.gov/register"
-                      icon={<IconUserCheck />}
-                      className="w-full justify-center"
-                    >
-                      Register Online
-                    </Button>
-                    <Button
-                      type="secondary"
-                      href="https://voter.svrs.nj.gov/polling-place-search"
-                      icon={<IconMapMarker className="h-4 w-4" />}
-                      className="w-full justify-center"
-                    >
-                      Find Polling Place
-                    </Button>
-                  </div>
-                </div>
-                <div>
-                  <div className="flex items-center mb-3">
-                    <IconBallotBox className="h-6 w-6 text-sky-600 mr-2" />
-                    <h3 className="text-lg font-semibold text-slate-800">
-                      Three Ways to Vote
-                    </h3>
-                  </div>
-                  <div className="flex border-b border-gray-200">
-                    <button
-                      onClick={() => setActiveTab("mail")}
-                      className={`flex-1 py-2 text-sm font-medium ${
-                        activeTab === "mail"
-                          ? "border-b-2 border-sky-600 text-sky-600"
-                          : "text-gray-500"
-                      }`}
-                    >
-                      By Mail
-                    </button>
-                    <button
-                      onClick={() => setActiveTab("early")}
-                      className={`flex-1 py-2 text-sm font-medium ${
-                        activeTab === "early"
-                          ? "border-b-2 border-sky-600 text-sky-600"
-                          : "text-gray-500"
-                      }`}
-                    >
-                      Early
-                    </button>
-                    <button
-                      onClick={() => setActiveTab("electionDay")}
-                      className={`flex-1 py-2 text-sm font-medium ${
-                        activeTab === "electionDay"
-                          ? "border-b-2 border-sky-600 text-sky-600"
-                          : "text-gray-500"
-                      }`}
-                    >
-                      Election Day
-                    </button>
-                  </div>
-                  <div className="mt-3 text-sm animate-fadeIn">
-                    {activeTab === "mail" && (
-                      <div>
-                        {" "}
-                        <p>
-                          {" "}
-                          Apply for your mail-in ballot by Oct. 28. Return it
-                          via USPS or a secure ballot drop box.{" "}
-                        </p>{" "}
-                        <Button
-                          size="sm"
-                          type="secondary"
-                          href="https://www.nj.gov/state/elections/vote-by-mail.shtml"
-                          icon={<IconExternalLink />}
-                          className="mt-2"
-                        >
-                          Learn More
-                        </Button>
-                      </div>
-                    )}
-                    {activeTab === "early" && (
-                      <div>
-                        {" "}
-                        <p>
-                          {" "}
-                          From Oct. 25 to Nov. 2, vote at any designated early
-                          voting location in Mercer County.{" "}
-                        </p>{" "}
-                        <Button
-                          size="sm"
-                          type="secondary"
-                          href="https://www.nj.gov/state/elections/vote-early-voting.shtml"
-                          icon={<IconExternalLink />}
-                          className="mt-2"
-                        >
-                          Find Locations
-                        </Button>
-                      </div>
-                    )}
-                    {activeTab === "electionDay" && (
-                      <div>
-                        {" "}
-                        <p>
-                          {" "}
-                          Go to your assigned polling place on Tuesday, Nov. 4,
-                          between 6:00 AM and 8:00 PM.{" "}
-                        </p>{" "}
-                        <Button
-                          size="sm"
-                          type="secondary"
-                          href="https://voter.svrs.nj.gov/polling-place-search"
-                          icon={<IconExternalLink />}
-                          className="mt-2"
-                        >
-                          Find Polling Place
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </section>
+                            return (
+                              <div
+                                key={question.id}
+                                id={question.id}
+                                className={`relative bg-white shadow-md rounded-xl border-2 border-gray-300 p-4 sm:p-6 scroll-mt-[10rem] ${
+                                  index > 0 ? 'mt-6' : '' // Add margin-top to separate questions visually
+                                }`}
+                              >
+                                <button
+                                    onClick={() => handleCopyLink(question.id)}
+                                    className={`absolute top-2 right-2 sm:top-3 sm:right-3 p-1.5 rounded-full transition-colors duration-200 ${
+                                        copiedLinks[question.id]
+                                        ? 'bg-green-100 text-green-600 hover:bg-green-200'
+                                        : 'bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-700'
+                                    }`}
+                                    aria-label="Copy link to this question"
+                                    title={copiedLinks[question.id] ? "Link Copied!" : "Copy link to this question"}
+                                >
+                                    {copiedLinks[question.id] ? <IconCheckCircle className="h-4 w-4 sm:h-5 sm:w-5"/> : <IconClipboard className="h-4 w-4 sm:h-5 sm:w-5" />}
+                                </button>
 
-          {/* --- Section Divider --- */}
-          <div className="py-10 my-6">
-            <div className="relative">
-              <div
-                className="absolute inset-0 flex items-center"
-                aria-hidden="true"
-              >
-                <div className="w-full h-1.5 bg-gradient-to-r from-sky-400 via-indigo-500 to-pink-500" />
-              </div>
-              <div className="relative flex justify-center">
-                <span className="bg-slate-100 px-6 text-lg font-bold text-slate-700">
-                  Forum Initiative Archive
-                </span>
-              </div>
-            </div>
-          </div>
-          {/* --- Forum Archive --- */}
-          <section>
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 mb-6 text-center">
-              2025 Candidate Forum Initiative (Cancelled)
-            </h2>
-            <p className="text-center text-slate-600 max-w-3xl mx-auto mb-8">
-              The following sections contain archival information regarding the
-              planning and unfortunate cancellation of the 2025 candidate forum.
-              This is preserved for transparency.
-            </p>
-            <div className="space-y-8">
-              <PanelistSection />
-              <DocumentComparisonSection />
-              <StatementsSection />
-              <ForumFormatSection />
-              <KeyInformationSection />
-              <PressCoverageSection />
-            </div>
-          </section>
-        </div>
-      </div>
-    </>
-  );
+                                <div className="text-center mb-6 pr-8">
+                                    <div className="mb-2">
+                                    {Array.isArray(question.office) ? (
+                                        question.office.map((off) => (
+                                        <span
+                                            key={off}
+                                            className={`inline-block text-xs font-semibold mr-2 px-2.5 py-1 rounded-full ${
+                                            officeStyles[off] || "bg-gray-100 text-gray-800"
+                                            }`}
+                                        >
+                                            {off} Question
+                                        </span>
+                                        ))
+                                    ) : question.office ? (
+                                        <span
+                                        className={`inline-block text-xs font-semibold mr-2 px-2.5 py-1 rounded-full ${
+                                            officeStyles[question.office] || "bg-gray-100 text-gray-800"
+                                        }`}
+                                        >
+                                        {question.office} Question
+                                        </span>
+                                    ) : (
+                                        <span className="inline-block text-xs font-semibold mr-2 px-2.5 py-1 rounded-full bg-gray-100 text-gray-800">
+                                        General Question
+                                        </span>
+                                    )}
+                                    </div>
+                                    <p className="font-semibold text-slate-700 italic max-w-2xl mx-auto">
+                                    "{question.text}"
+                                    </p>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                                    {showMayor &&
+                                    questionIsMayor &&
+                                    renderResponseBlock(
+                                        "Mayoral Candidate: Hemant Marathe",
+                                        "text-blue-700",
+                                        maratheResponse,
+                                        mayorMaratheVideoId,
+                                        question.id
+                                    )}
+                                    {showMayor &&
+                                    questionIsMayor &&
+                                    renderResponseBlock(
+                                        "Mayoral Candidate: Sujit Singh",
+                                        "text-green-700",
+                                        singhResponse,
+                                        mayorSinghVideoId,
+                                        question.id
+                                    )}
+                                    {showCouncil &&
+                                    questionIsCouncil &&
+                                    renderResponseBlock(
+                                        "Council Candidates: Geevers & Charles",
+                                        "text-blue-700",
+                                        geeversCharlesResponse,
+                                        councilGeeversCharlesVideoId,
+                                        question.id
+                                    )}
+                                    {showCouncil &&
+                                    questionIsCouncil &&
+                                    renderResponseBlock(
+                                        "Council Candidates: Tomar & Winters",
+                                        "text-green-700",
+                                        tomarWintersResponse,
+                                        councilTomarWintersVideoId,
+                                        question.id
+                                    )}
+                                </div>
+                                </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                {filteredIssues.length === 0 &&
+                  (searchQuery || activeOffice) && (
+                    <p className="text-slate-500 italic col-span-full text-center py-8">
+                      No results match your filters.
+                    </p>
+                  )}
+              </div>
+            </Card>
+          </section>
+
+          {/* --- Campaign Finance Section --- */}
+          <section id="finance" className="scroll-mt-24">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 mb-6 text-center">
+              Campaign Finance & Transparency
+            </h2>
+            <Card noHoverEffect className="p-0">
+              <div className="p-6">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center mb-6 bg-amber-50 border border-amber-200 rounded-lg p-4">
+                  <IconInfo className="text-amber-600 mr-3 flex-shrink-0 mt-1 sm:mt-0" />
+                  <div>
+                    <h3 className="font-semibold text-amber-800">
+                      Important Disclaimer
+                    </h3>
+                    <p className="text-sm text-amber-700">
+                      The financial data presented below is sourced from the
+                      29-Day Pre-Election R-1 reports filed with NJ ELEC on
+                      October 6, 2025. This is a snapshot in time and may not
+                      reflect the most current fundraising or expenditure
+                      totals. NJ ELEC will be releasing the 11-day Pre-Election
+                      report on October 24th, 2025 and this tool will be updated
+                      shortly thereafter.
+                    </p>
+                  </div>
+                </div>
+
+                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                     {/* Proven Leaders */}
+                     <div className="p-6 bg-slate-50 rounded-xl border-2 border-slate-200 h-full flex flex-col">
+                        <h4 className="font-bold text-lg text-blue-800 mb-4 text-center">
+                            Proven Leaders for West Windsor
+                        </h4>
+                        <div className="grid grid-cols-2 gap-3 text-sm mb-6 text-center">
+                            <div><div className="text-xs text-slate-500">Raised</div><div className="font-bold text-lg">$28,953.71</div></div>
+                            <div><div className="text-xs text-slate-500">Spent</div><div className="font-bold text-lg">$13,764.07</div></div>
+                            <div className="col-span-2"><div className="text-xs text-slate-500">Cash on Hand</div><div className="font-bold text-2xl text-green-700">$21,554.38</div></div>
+                        </div>
+                        <div className="space-y-8 flex-grow flex flex-col">
+                            <div className="relative">
+                                <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10"><span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700 border border-orange-200"><span className="w-1.5 h-1.5 bg-orange-500 rounded-full mr-1.5 animate-pulse"></span>Only includes donations &gt; $200</span></div>
+                                <div className="bg-white border-2 border-slate-400 rounded-lg p-4 pt-6 space-y-8">
+                                    <div><div className="text-center mb-1"><h5 className="font-semibold text-slate-700 text-sm">Funding Sources¹</h5></div><div className="text-center mb-1 text-sm font-medium text-slate-700"><span>100% from Individuals</span></div><div className="w-full bg-slate-200 rounded-full h-2.5"><div className="bg-sky-500 h-2.5 rounded-full" style={{width: "100%"}}></div></div></div>
+                                    <div><div className="text-center mb-1"><h5 className="font-semibold text-slate-700 text-sm">Donation Origin (by $ Amount)²</h5></div><div className="text-center mb-1 text-sm font-medium text-slate-700"><span>29.4% from In-Town</span></div><div className="w-full bg-slate-200 rounded-full h-2.5"><div className="bg-sky-500 h-2.5 rounded-full" style={{width: "29.4%"}}></div></div></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div className="text-center mb-1"><h5 className="font-semibold text-slate-700 text-sm">Donation Size (% of Total Raised)</h5></div>
+                                <div className="flex justify-between mb-1 text-sm font-medium text-slate-700 px-1"><span>17.3% donations of $200 or less</span><span>82.7% donations of over $200</span></div>
+                                <div className="w-full bg-slate-200 rounded-full h-2.5 flex"><div className="bg-sky-500 h-2.5 rounded-l-full" style={{width: "17.3%"}}></div><div className="bg-slate-400 h-2.5 rounded-r-full" style={{width: "82.7%"}}></div></div>
+                            </div>
+                        </div>
+                        <Button size="sm" type="secondary" className="w-full mt-10" href="/3892476.pdf" icon={<IconExternalLink />}>View Full ELEC Report</Button>
+                     </div>
+                     {/* WW Together */}
+                     <div className="p-6 bg-slate-50 rounded-xl border-2 border-slate-200 h-full flex flex-col">
+                        <h4 className="font-bold text-lg text-green-800 mb-4 text-center">West Windsor Together</h4>
+                        <div className="grid grid-cols-2 gap-3 text-sm mb-6 text-center">
+                            <div><div className="text-xs text-slate-500">Raised</div><div className="font-bold text-lg">$37,731.31</div></div>
+                            <div><div className="text-xs text-slate-500">Spent</div><div className="font-bold text-lg">$14,787.36</div></div>
+                            <div className="col-span-2"><div className="text-xs text-slate-500">Cash on Hand</div><div className="font-bold text-2xl text-green-700">$22,943.95</div></div>
+                        </div>
+                        <div className="space-y-8 flex-grow flex flex-col">
+                            <div className="relative">
+                                <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10"><span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700 border border-orange-200"><span className="w-1.5 h-1.5 bg-orange-500 rounded-full mr-1.5 animate-pulse"></span>Only includes donations &gt; $200</span></div>
+                                <div className="bg-white border-2 border-slate-400 rounded-lg p-4 pt-6 space-y-8">
+                                    <div><div className="text-center mb-1"><h5 className="font-semibold text-slate-700 text-sm">Funding Sources¹</h5></div><div className="flex justify-between mb-1 text-sm font-medium text-slate-700 px-1"><span>96.9% Individuals</span><span>3.1% Committees</span></div><div className="w-full bg-slate-200 rounded-full h-2.5 flex"><div className="bg-sky-500 h-2.5 rounded-l-full" style={{width: "96.9%"}}></div><div className="bg-slate-400 h-2.5 rounded-r-full" style={{width: "3.1%"}}></div></div></div>
+                                    <div><div className="text-center mb-1"><h5 className="font-semibold text-slate-700 text-sm">Donation Origin (by $ Amount)²</h5></div><div className="text-center mb-1 text-sm font-medium text-slate-700"><span>33.6% from In-Town</span></div><div className="w-full bg-slate-200 rounded-full h-2.5"><div className="bg-sky-500 h-2.5 rounded-full" style={{width: "33.6%"}}></div></div></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div className="text-center mb-1"><h5 className="font-semibold text-slate-700 text-sm">Donation Size (% of Total Raised)</h5></div>
+                                <div className="flex justify-between mb-1 text-sm font-medium text-slate-700 px-1"><span>6.2% donations of $200 or less</span><span>93.8% donations of over $200</span></div>
+                                <div className="w-full bg-slate-200 rounded-full h-2.5 flex"><div className="bg-sky-500 h-2.5 rounded-l-full" style={{width: "6.2%"}}></div><div className="bg-slate-400 h-2.5 rounded-r-full" style={{width: "93.8%"}}></div></div>
+                            </div>
+                        </div>
+                        <Button size="sm" type="secondary" className="w-full mt-10" href="/3892561.pdf" icon={<IconExternalLink />}>View Full ELEC Report</Button>
+                     </div>
+                 </div>
+
+                <div className="mt-6 text-xs text-slate-600 space-y-2">
+                  <p><strong>¹ About 'Funding Sources'</strong><br />The breakdown of funding sources only includes itemized contributions (typically those over $200) as reported on Schedule A of the ELEC R-1 filing. It categorizes these contributions based on the type of donor (Individual, Committee, Corporation, etc.).</p>
+                  <p><strong>² About 'Donation Origin' (In-Town Percentage)</strong><br />The "In-Town" percentage is calculated based on the dollar amount of itemized contributions (typically those over $200) where the donor's address listed on the ELEC R-1 filing is within West Windsor (Zip Code 08550). This calculation does not include smaller, non-itemized donations as address information is not typically reported for those.</p>
+                </div>
+              </div>
+            </Card>
+          </section>
+
+          {/* --- Voter Information Hub --- */}
+          <section id="voter-tools" className="scroll-mt-24">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 mb-6 text-center">
+              Voter Toolkit
+            </h2>
+             <Card noHoverEffect className="p-0">
+               <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-8">
+                 <div><div className="flex items-center mb-3"><IconCalendar className="h-6 w-6 text-sky-600 mr-2" /><h3 className="text-lg font-semibold text-slate-800">Key Dates</h3></div><ul className="space-y-2">{keyDates.map((item) => (<li key={item.event} className="text-sm"><strong className="text-sky-700">{item.date}:</strong> {item.event}</li>))}</ul></div>
+                 <div><div className="flex items-center mb-3"><IconUserCheck className="h-6 w-6 text-sky-600 mr-2" /><h3 className="text-lg font-semibold text-slate-800">Voter Tools</h3></div><div className="space-y-3"><Button type="secondary" href="https://voter.svrs.nj.gov/registration-check" icon={<IconExternalLink />} className="w-full justify-center">Check Status</Button><Button type="primary" href="https://voter.svrs.nj.gov/register" icon={<IconUserCheck />} className="w-full justify-center">Register Online</Button><Button type="secondary" href="https://voter.svrs.nj.gov/polling-place-search" icon={<IconMapMarker className="h-4 w-4" />} className="w-full justify-center">Find Polling Place</Button></div></div>
+                 <div><div className="flex items-center mb-3"><IconBallotBox className="h-6 w-6 text-sky-600 mr-2" /><h3 className="text-lg font-semibold text-slate-800">Three Ways to Vote</h3></div><div className="flex border-b border-gray-200"><button onClick={() => setActiveTab("mail")} className={`flex-1 py-2 text-sm font-medium ${ activeTab === "mail" ? "border-b-2 border-sky-600 text-sky-600" : "text-gray-500 hover:text-gray-700" } transition-colors`}>By Mail</button><button onClick={() => setActiveTab("early")} className={`flex-1 py-2 text-sm font-medium ${ activeTab === "early" ? "border-b-2 border-sky-600 text-sky-600" : "text-gray-500 hover:text-gray-700" } transition-colors`}>Early</button><button onClick={() => setActiveTab("electionDay")} className={`flex-1 py-2 text-sm font-medium ${ activeTab === "electionDay" ? "border-b-2 border-sky-600 text-sky-600" : "text-gray-500 hover:text-gray-700" } transition-colors`}>Election Day</button></div><div className="mt-3 text-sm animate-fadeIn">{activeTab === "mail" && ( <div> <p> Apply for your mail-in ballot by Oct. 28. Return it via USPS or a secure ballot drop box. </p> <Button size="sm" type="secondary" href="https://www.nj.gov/state/elections/vote-by-mail.shtml" icon={<IconExternalLink />} className="mt-2">Learn More</Button></div>)}{activeTab === "early" && ( <div> <p> From Oct. 25 to Nov. 2, vote at any designated early voting location in Mercer County. </p> <Button size="sm" type="secondary" href="https://www.nj.gov/state/elections/vote-early-voting.shtml" icon={<IconExternalLink />} className="mt-2">Find Locations</Button></div>)}{activeTab === "electionDay" && ( <div> <p> Go to your assigned polling place on Tuesday, Nov. 4, between 6:00 AM and 8:00 PM. </p> <Button size="sm" type="secondary" href="https://voter.svrs.nj.gov/polling-place-search" icon={<IconExternalLink />} className="mt-2">Find Polling Place</Button></div>)}</div></div>
+               </div>
+             </Card>
+          </section>
+
+          {/* --- Section Divider --- */}
+          <div className="py-10 my-6">
+            <div className="relative">
+              <div
+                className="absolute inset-0 flex items-center"
+                aria-hidden="true"
+              >
+                <div className="w-full h-1.5 bg-gradient-to-r from-sky-400 via-indigo-500 to-pink-500" />
+              </div>
+              <div className="relative flex justify-center">
+                <span className="bg-slate-100 px-6 text-lg font-bold text-slate-700">
+                  Forum Initiative Archive
+                </span>
+              </div>
+            </div>
+          </div>
+          {/* --- Forum Archive --- */}
+          <section>
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 mb-6 text-center">
+              2025 Candidate Forum Initiative (Cancelled)
+            </h2>
+            <p className="text-center text-slate-600 max-w-3xl mx-auto mb-8">
+              The following sections contain archival information regarding the
+              planning and unfortunate cancellation of the 2025 candidate forum.
+              This is preserved for transparency.
+            </p>
+            <div className="space-y-8">
+              <PanelistSection />
+              <DocumentComparisonSection />
+              <StatementsSection />
+              <ForumFormatSection />
+              <KeyInformationSection />
+              <PressCoverageSection />
+            </div>
+          </section>
+        </div>
+      </div>
+    </>
+  );
 };
 
 const ContactPage: FC = () => {
