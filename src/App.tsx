@@ -2715,31 +2715,34 @@ const BioCard: FC<{
 };
 
 const ElectionPage: FC<PageProps> = ({ setActivePage }) => {
-  const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
+  const [selectedTopic, setSelectedTopic] = useState<string | null>(null); // Start with all collapsed
   const [activeTab, setActiveTab] = useState("mail");
   const [isStatementModalOpen, setIsStatementModalOpen] = useState(false);
   const [isRasmussenBioOpen, setIsRasmussenBioOpen] = useState(false);
   const [copiedLinks, setCopiedLinks] = useState<{ [key: string]: boolean }>({});
-  const filterBarRef = useRef<HTMLDivElement>(null);
-  const headerRef = useRef<HTMLElement>(null); // Ref for sticky header/filter
+  const filterBarRef = useRef<HTMLDivElement>(null); // Ref for the filter bar
+  const headerRef = useRef<HTMLElement>(null); // Ref for the sticky header/filter bar
 
   const handleCopyLink = useCallback((questionId: string) => {
+    // Guard against environments where clipboard API is not available
     if (navigator.clipboard && navigator.clipboard.writeText) {
+      // Construct URL with hash
       const url = `${window.location.origin}${window.location.pathname}#${questionId}`;
       navigator.clipboard.writeText(url).then(() => {
-        setCopiedLinks(prev => ({ ...prev, [questionId]: true }));
-        setTimeout(() => {
-          setCopiedLinks(prev => ({ ...prev, [questionId]: false }));
-        }, 2000);
+          setCopiedLinks(prev => ({ ...prev, [questionId]: true }));
+          setTimeout(() => {
+              setCopiedLinks(prev => ({ ...prev, [questionId]: false }));
+          }, 2000);
       }).catch(err => {
-        console.error("Failed to copy link: ", err);
+          console.error("Failed to copy link: ", err);
       });
     } else {
-      console.error("Clipboard API not supported.");
+      console.error("Clipboard API not supported in this environment.");
     }
   }, []);
 
-  const [activeOffice, setActiveOffice] = useState<OfficeType | null>(null);
+
+  const [activeOffice, setActiveOffice] = useState<OfficeType | null>(null); // Use OfficeType
   const [searchQuery, setSearchQuery] = useState("");
 
   const officeStyles: { [key: string]: string } = {
@@ -2752,7 +2755,6 @@ const ElectionPage: FC<PageProps> = ({ setActivePage }) => {
   const councilGeeversCharlesVideoId = "nZ1YuORz3Ug";
   const councilTomarWintersVideoId = "76l6GSE4lkU";
 
-  // --- Assume responsesData is defined here as in previous examples ---
   const responsesData = {
     marathe: {
       // Mayor - Proven Leaders
@@ -3275,445 +3277,1057 @@ const ElectionPage: FC<PageProps> = ({ setActivePage }) => {
           "Mr. Tomar describes a perfect weekend as playing golf at the local course. Mr. Winters's perfect weekend involves visiting the farmer's market and enjoying the town's open spaces with his family.",
       },
     },
-  };
+  };
 
-  // --- Assume questionOrder is defined here ---
-  // --- Assume keyDates is defined here ---
-  // --- Assume fullCancellationStatement is defined here ---
-  // --- Assume rasmussenBio is defined here ---
-  // --- Assume convertTimeToSeconds is defined here ---
-  // --- Assume doesQuestionApply is defined here ---
-  // --- Assume filteredIssues is defined here ---
-  // --- Assume handleTopicToggle is defined here ---
+  const questionOrder = useMemo(
+    () => [
+      "q0-opening",
+      // Vision
+      "q1-vision",
+      "q1-council-vision",
+      "q2-vision",
+      "q3-vision",
+      "q4-council-vision",
+      // Future
+      "q1-future",
+      "q2-future",
+      // Warehouses
+      "q1-warehouse",
+      "q2-warehouse",
+      "q3-warehouse",
+      "q4-council-warehouse",
+      // Taxes
+      "q1-taxes",
+      "q2-taxes",
+      "q3-taxes",
+      "q4-council-taxes",
+      // Infra
+      "q1-infra",
+      "q2-infra",
+      "q3-infra",
+      // Governance
+      "q1-gov",
+      "q2-gov",
+      "q7-council-gov",
+      "q8-council-disagreement",
+      "q3-gov",
+      "q4-gov",
+      "q5-gov",
+      "q6-gov",
+      // Regional
+      "q1-regional",
+      // Closing
+      "q1-closing",
+      "q2-closing",
+      "q3-closing",
+      "q4-closing",
+    ],
+    []
+  );
 
-  // --- REVISED EFFECT FOR HASH SCROLLING ---
+  const keyDates = [
+    {
+      date: "Oct. 14, 2025",
+      event: "Voter Registration Deadline",
+      target: "2025-10-14T23:59:59",
+    },
+    { date: "Oct. 25 - Nov. 2", event: "Early In-Person Voting Period" },
+    { date: "Oct. 28", event: "Deadline to Apply for a Mail-In Ballot" },
+    {
+      date: "Nov. 4, 2025",
+      event: "General Election Day",
+      target: "2025-11-04T20:00:00",
+    },
+  ];
+
+  const fullCancellationStatement = `West Windsor, NJ – September 18, 2025 – It is with deep regret and disappointment that West Windsor Forward must announce the cancellation of our 2025 Candidate Forum, which was scheduled for September 25th. The forum has been cancelled because the campaigns for Mayor and Council were unable to agree on a format.
+
+This cancellation represents a significant loss for West Windsor residents, who were anticipating a direct and unbiased opportunity to hear from all certified candidates on the issues that matter most. The West Windsor Forward team invested ten months of effort, countless hours, and a great deal of resources into restoring this vital civic tradition.
+
+We extend our deepest gratitude to all who supported our efforts. We are especially thankful for the unwavering support of the League of Women Voters of the Greater Princeton Area (lwvprinceton.org), and we encourage everyone in West Windsor to support their longstanding commitment to informing voters in Central Jersey. We also thank our panelists, Micah Rasmussen and David Matthau, for their immense trust in us and their invaluable assistance. We would also like to express our sincere appreciation to Mercer County Community College and the Kelsey Theatre for their generosity in offering their venue and their patience throughout our planning process. To everyone who offered to volunteer, your commitment to our town and its residents was a true inspiration. Finally, to the community, your words of encouragement privately, on our social media, and at our tabling events reaffirmed our efforts throughout this process.
+
+While this is a disappointing outcome, it does not mark the end of West Windsor Forward's commitment to civic engagement. We will remain actively involved in this year's Municipal election through other non-partisan projects focused on informing voters, including working with both campaigns to set up informative interviews for the community. We will also continue our other community-focused projects, such as pushing for our adoption of the Princeton Junction Train Station. We encourage residents to submit ideas for further civic and community initiatives. We are looking for High Schoolers who want to join us and make a difference in West Windsor to sign up to volunteer by emailing at contact@westwindsorforward.org.
+
+The last Mayoral and Council forums were held in 2017. The cancellation of this event—after coming so close to reinstating this tradition—is a worrying development for the health of the democratic process in West Windsor. Our town deserves and needs constructive, productive, and fair dialogue. It is on all of us, as a community, to advocate for that standard in subsequent election cycles. The future of our town's civic health depends on the collective voice of its citizens demanding accountability.
+
+Sincerely,
+Parth Gupta and Darshan Chidambaram
+Co-Executive Directors @ West Windsor Forward`;
+
+  const rasmussenBio = forumData.panelists.find(
+    (p) => p.id === "micah-rasmussen"
+  )?.bio;
+
+  const convertTimeToSeconds = (time: string | undefined): number => {
+    if (!time) return 0;
+    const parts = time.split(":").map(Number);
+    if (parts.length === 2) return parts[0] * 60 + parts[1];
+    if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+    return 0;
+  };
+
+  const doesQuestionApply = (
+    question: ElectionQuestion,
+    office: OfficeType
+  ): boolean => {
+    return Array.isArray(question.office)
+      ? question.office.includes(office)
+      : question.office === office;
+  };
+
+  const filteredIssues = useMemo(() => {
+    return electionData.issues
+      .map((issue) => {
+        const matchingQuestions = issue.questions.filter((question) => {
+          const officeMatch =
+            !activeOffice ||
+            (Array.isArray(question.office)
+              ? question.office.includes(activeOffice)
+              : question.office === activeOffice);
+          const searchMatch =
+            !searchQuery ||
+            question.text.toLowerCase().includes(searchQuery.toLowerCase());
+          return officeMatch && searchMatch;
+        });
+        return { ...issue, questions: matchingQuestions };
+      })
+      .filter((issue) => issue.questions.length > 0);
+  }, [activeOffice, searchQuery]);
+
+  const handleTopicToggle = (issueId: string, questionCount: number) => {
+    const isCurrentlySelected = selectedTopic === issueId;
+    setSelectedTopic(isCurrentlySelected ? null : issueId);
+
+    // Scroll logic when collapsing a large topic
+    if (isCurrentlySelected && questionCount > 3) {
+        const topicButton = document.querySelector(`button[data-topic-id="${issueId}"]`);
+        if (topicButton) {
+            setTimeout(() => {
+                topicButton.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100); // Small delay to allow collapse animation
+        } else if (filterBarRef.current) {
+              // Fallback: Scroll to filter bar if button not found
+             filterBarRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+  };
+
+
+  // --- EFFECT FOR HANDLING HASH SCROLLING ---
   useEffect(() => {
-    const scrollToElementWithOffset = (element: HTMLElement) => {
-      // Use filterBarRef as the reference for sticky element height
-      const offset = filterBarRef.current?.offsetHeight ?? 60; // Default offset if ref not ready
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - offset - 20; // Added extra 20px padding
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth"
-      });
-    };
-
-    const handleHashNavigation = () => {
+    const handleScrollAndExpansion = () => {
       const hash = window.location.hash.substring(1);
-      if (!hash) return;
+      if (!hash) return; // No hash, do nothing
 
       const element = document.getElementById(hash);
-      if (!element) return;
+      if (!element) return; // Element not found
 
       const topicSection = element.closest('[data-topic-section-id]');
       const topicId = topicSection?.getAttribute('data-topic-section-id');
 
-      // Check if the correct topic is open
-      const isCorrectTopicOpen = topicId ? selectedTopic === topicId : true; // No topic needed or correct one open
-
-      if (topicId && !isCorrectTopicOpen) {
-        // If the topic needs to be opened, set the state.
-        // The scrolling will happen in the subsequent effect run triggered by selectedTopic change.
-        setSelectedTopic(topicId);
-      } else {
-        // If the topic is already open OR the element isn't in a topic
-        // Use requestAnimationFrame to wait for the next paint cycle, ensuring layout is stable
-        requestAnimationFrame(() => {
-           // Double-check element exists after potential re-render
-           const targetElement = document.getElementById(hash);
-           if (targetElement) {
-               scrollToElementWithOffset(targetElement);
-           }
-        });
+      // If the target element is inside a topic section...
+      if (topicId) {
+        // ...and that topic is not currently open...
+        if (topicId !== selectedTopic) {
+          // ...open the topic. The effect will re-run after state update.
+          setSelectedTopic(topicId);
+          return; // Stop processing, let the re-render handle the scroll.
+        }
       }
+
+      // If the topic is already open, or the element is not inside a topic section,
+      // or if this is the re-run after opening the topic, scroll smoothly.
+      // Use a timeout to ensure the DOM is fully rendered after expansion.
+      const timeoutId = setTimeout(() => {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 150); // Adjust delay if needed
+
+      // Clean up timeout if component unmounts or effect re-runs
+      return () => clearTimeout(timeoutId);
     };
 
-    // Listener for hash changes triggered by user clicking links
-    window.addEventListener('hashchange', handleHashNavigation);
+    // Run on initial load or when selectedTopic changes (to handle the scroll *after* expansion)
+    const cleanupTimeout = handleScrollAndExpansion();
 
-    // Run on initial mount and when selectedTopic changes
-    // This handles both initial load with hash and scrolling *after* a topic is expanded
-    const timeoutId = setTimeout(handleHashNavigation, 100); // Small delay on initial load/topic change
+    // Add listener for hash changes while on the page
+    window.addEventListener('hashchange', handleScrollAndExpansion);
 
-    // Cleanup
+    // Cleanup function
     return () => {
-      window.removeEventListener('hashchange', handleHashNavigation);
-      clearTimeout(timeoutId);
+      window.removeEventListener('hashchange', handleScrollAndExpansion);
+      if (cleanupTimeout) cleanupTimeout(); // Clear any pending timeout
     };
-  }, [selectedTopic]); // Dependency on selectedTopic is crucial
+ }, [selectedTopic]); // Re-run effect when selectedTopic changes
 
-// --- Helper Function for Jump Buttons ---
-  const handleJumpTo = useCallback((id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }, []);
 
-  // ADD THIS NEW USEEFFECT HERE:
+  // --- Helper Function for Jump Buttons ---
+  const handleJumpTo = useCallback((id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, []);
+// Add this right after handleJumpTo and before the return statement
+// --- EFFECT FOR HANDLING HASH SCROLLING ---
   useEffect(() => {
     const handleScrollAndExpansion = () => {
       const hash = window.location.hash.substring(1);
-      if (!hash) return;
+      if (!hash) return; // No hash, do nothing
 
+      // Wait a bit for the page to fully render
       setTimeout(() => {
         const element = document.getElementById(hash);
-        if (!element) return;
+        if (!element) return; // Element not found
 
         const topicSection = element.closest('[data-topic-section-id]');
         const topicId = topicSection?.getAttribute('data-topic-section-id');
 
+        // If the target element is inside a topic section...
         if (topicId) {
+          // ...and that topic is not currently open...
           if (topicId !== selectedTopic) {
+            // ...open the topic. The effect will re-run after state update.
             setSelectedTopic(topicId);
-            return;
+            return; // Stop processing, let the re-render handle the scroll.
           }
         }
 
+        // If the topic is already open, or the element is not inside a topic section,
+        // or if this is the re-run after opening the topic, scroll smoothly.
+        // Use a timeout to ensure the DOM is fully rendered after expansion.
         setTimeout(() => {
           element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 300);
-      }, 100);
+        }, 300); // Longer delay to ensure expansion animation completes
+      }, 100); // Initial delay to ensure page is rendered
     };
 
+    // Run on initial load or when selectedTopic changes
     handleScrollAndExpansion();
+
+    // Add listener for hash changes while on the page
     window.addEventListener('hashchange', handleScrollAndExpansion);
 
+    // Cleanup function
     return () => {
       window.removeEventListener('hashchange', handleScrollAndExpansion);
     };
-  }, [selectedTopic]);
-
-  return (
-    <>
-      <Modal
-
+ }, [selectedTopic]); // Re-run effect when selectedTopic changes
 
   return (
     <>
-      {/* --- Modals --- */}
-      <Modal isOpen={isStatementModalOpen} onClose={() => setIsStatementModalOpen(false)}>
-        <h2 className="text-2xl font-bold text-slate-800 mb-4">Official Statement on Forum Cancellation</h2>
-        <div className="prose prose-sm sm:prose-base max-w-none text-slate-700 whitespace-pre-wrap">{fullCancellationStatement}</div>
+      <Modal
+        isOpen={isStatementModalOpen}
+        onClose={() => setIsStatementModalOpen(false)}
+      >
+        <h2 className="text-2xl font-bold text-slate-800 mb-4">
+          Official Statement on Forum Cancellation
+        </h2>
+        <div className="prose prose-sm sm:prose-base max-w-none text-slate-700 whitespace-pre-wrap">
+          {fullCancellationStatement}
+        </div>
       </Modal>
-      <Modal isOpen={isRasmussenBioOpen} onClose={() => setIsRasmussenBioOpen(false)}>
-        <h2 className="text-2xl font-bold text-slate-800 mb-4">Thank you Micah Rasmussen...</h2>
+      <Modal
+        isOpen={isRasmussenBioOpen}
+        onClose={() => setIsRasmussenBioOpen(false)}
+      >
+        <h2 className="text-2xl font-bold text-slate-800 mb-4">
+          Thank you Micah Rasmussen for developing the questions for this
+          interview series!
+        </h2>
         <div className="flex items-center mb-4">
-          <img src="/micah.png" alt="Micah Rasmussen" className="w-24 h-24 rounded-full mr-4" />
+          <img
+            src="/micah.png"
+            alt="Micah Rasmussen"
+            className="w-24 h-24 rounded-full mr-4"
+          />
           <div>
             <h3 className="text-xl font-bold">Micah Rasmussen</h3>
-            <p className="text-slate-600">Director, Rebovich Institute for NJ Politics</p>
+            <p className="text-slate-600">
+              Director, Rebovich Institute for NJ Politics
+            </p>
           </div>
         </div>
-        <div className="prose prose-sm sm:prose-base max-w-none text-slate-700 whitespace-pre-wrap">{rasmussenBio}</div>
+        <div className="prose prose-sm sm:prose-base max-w-none text-slate-700 whitespace-pre-wrap">
+          {rasmussenBio}
+        </div>
       </Modal>
 
       <div className="min-h-screen bg-slate-100 font-body text-slate-700 animate-fadeIn">
-        {/* --- Header --- */}
         <header ref={headerRef} className="relative bg-gradient-to-br from-slate-900 via-sky-800 to-indigo-900 text-white py-12 sm:py-16 px-4 rounded-b-2xl shadow-2xl overflow-hidden">
           <DotPattern dotColor="text-sky-700 opacity-10" rows={8} cols={10} />
           <div className="relative z-10 container mx-auto text-center">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 leading-tight">West Windsor 2025 Municipal Election</h1>
-            <p className="text-lg sm:text-xl text-sky-200 max-w-3xl mx-auto mb-8">Your non-partisan hub...</p>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 leading-tight">
+              West Windsor 2025 Municipal Election
+            </h1>
+            <p className="text-lg sm:text-xl text-sky-200 max-w-3xl mx-auto mb-8">
+              Your non-partisan hub for the upcoming election, featuring
+              candidate interviews, financial data, and key voter information.
+            </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto bg-black bg-opacity-20 backdrop-blur-sm p-6 rounded-xl">
-              <div className="text-center"><Countdown targetDate="2025-11-04T20:00:00" title="Countdown to Election Day"/></div>
-              <div className="text-center border-y-2 md:border-y-0 md:border-x-2 border-white/20 py-6 md:py-0 px-4 flex flex-col justify-center">
-                <h4 className="text-sm font-semibold mb-2">Seats Up for Election</h4>
+              <div className="text-center">
+                <Countdown
+                  targetDate="2025-11-04T20:00:00"
+                  title="Countdown to Election Day"
+                />
+              </div>
+              <div className="text-center border-y-2 border-white/20 md:border-y-0 md:border-x-2 md:border-white/20 py-6 md:py-0 px-4 flex flex-col justify-center">
+                <h4 className="text-sm font-semibold mb-2">
+                  Seats Up for Election
+                </h4>
                 <div className="flex justify-center md:flex-col gap-4">
-                  <div><div className="text-3xl lg:text-4xl font-bold">1</div><div className="text-xs uppercase">Mayoral Seat</div></div>
-                  <div><div className="text-3xl lg:text-4xl font-bold">2</div><div className="text-xs uppercase">Township Council Seats</div></div>
+                  <div>
+                    <div className="text-3xl lg:text-4xl font-bold">1</div>
+                    <div className="text-xs uppercase">Mayoral Seat</div>
+                  </div>
+                  <div>
+                    <div className="text-3xl lg:text-4xl font-bold">2</div>
+                    <div className="text-xs uppercase">
+                      Township Council Seats
+                    </div>
+                  </div>
                 </div>
               </div>
               <div className="text-center flex flex-col justify-center">
-                <h4 className="text-sm font-semibold mb-2">Voter Registration Deadline</h4>
+                <h4 className="text-sm font-semibold mb-2">
+                  Voter Registration Deadline
+                </h4>
                 <p className="text-2xl font-bold">October 14, 2025</p>
-                <p className="text-sm text-amber-300">This deadline has passed.</p>
+                <p className="text-sm text-amber-300">
+                  This deadline has passed.
+                </p>
               </div>
             </div>
           </div>
         </header>
 
         <div className="container mx-auto px-4">
-            {/* --- JUMP BUTTONS using onClick --- */}
+            {/* --- UPDATED JUMP BUTTONS --- */}
             <div className="mt-8 mb-4 flex flex-col sm:flex-row justify-center gap-3">
-                <Button onClick={() => handleJumpTo('interviews')} type="secondary" size="md" icon={<IconMicrophone />}>Jump to Interviews</Button>
-                <Button onClick={() => handleJumpTo('finance')} type="secondary" size="md" icon={<IconDocument />}>Jump to Campaign Finance</Button>
-                <Button onClick={() => handleJumpTo('voter-tools')} type="secondary" size="md" icon={<IconBallotBox />}>Jump to Voter Tools</Button>
+                <Button onClick={() => handleJumpTo('interviews')} type="secondary" size="md" icon={<IconMicrophone />}>
+                Jump to Interviews
+                </Button>
+                <Button onClick={() => handleJumpTo('finance')} type="secondary" size="md" icon={<IconDocument />}>
+                Jump to Campaign Finance
+                </Button>
+                <Button onClick={() => handleJumpTo('voter-tools')} type="secondary" size="md" icon={<IconBallotBox />}>
+                Jump to Voter Tools
+                </Button>
             </div>
         </div>
 
         <div className="container mx-auto px-4 py-8 sm:py-12 space-y-12">
-            {/* --- Forum Update Card --- */}
-            <Card noHoverEffect className="p-0 -mb-6 border-amber-300 bg-amber-50">
+           <Card
+            noHoverEffect
+            className="p-0 -mb-6 border-amber-300 bg-amber-50"
+          >
+            <div className="p-6">
+              <h2 className="text-2xl font-bold text-amber-800 mb-4">
+                An Update on the 2025 Candidate Forum
+              </h2>
+              <div className="prose prose-sm sm:prose-base max-w-none text-slate-700">
+                <p>
+                  <strong>West Windsor, NJ – September 18, 2025</strong> – It is
+                  with deep regret and disappointment that{" "}
+                  <strong>
+                    West Windsor Forward must announce the cancellation of our
+                    2025 Candidate Forum...
+                  </strong>
+                </p>
+              </div>
+              <Button
+                onClick={() => setIsStatementModalOpen(true)}
+                type="secondary"
+                size="sm"
+                className="mt-4"
+                icon={<IconDocument />}
+              >
+                Read Full Statement
+              </Button>
+            </div>
+          </Card>
+          {/* --- Meet the Candidates (Grouped) --- */}
+          <section>
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 mt-12 mb-8 text-center">
+              Meet the Slates
+            </h2>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Proven Leaders for West Windsor */}
+              <div className="flex flex-col">
+                <div className="p-4 rounded-t-xl border-t-4 border-blue-600 bg-slate-200 shadow-lg flex flex-col items-center">
+                  <h3 className="text-2xl font-bold text-blue-800 text-center tracking-wide">
+                    Proven Leaders for West Windsor
+                  </h3>
+                  <Button
+                    size="sm"
+                    type="secondary"
+                    href="http://teammarathe4ww.com"
+                    icon={<IconExternalLink />}
+                    className="mt-2"
+                  >
+                    Visit Slate Website
+                  </Button>
+                </div>
+                <div className="p-6 bg-white border-x border-b border-gray-200 rounded-b-xl shadow-lg flex-grow">
+                  <div className="space-y-8">
+                    {electionData.candidates
+                      .filter(
+                        (c) => c.slate === "Proven Leaders for West Windsor"
+                      )
+                      .map((candidate) => (
+                        <BioCard
+                          key={candidate.id}
+                          candidate={candidate}
+                          borderColor="border-blue-500"
+                          textColor="text-blue-700"
+                        />
+                      ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* West Windsor Together */}
+              <div className="flex flex-col">
+                <div className="p-4 rounded-t-xl border-t-4 border-green-600 bg-slate-200 shadow-lg flex flex-col items-center">
+                  <h3 className="text-2xl font-bold text-green-800 text-center tracking-wide">
+                    West Windsor Together
+                  </h3>
+                  <Button
+                    size="sm"
+                    type="secondary"
+                    href="https://www.wwtogether.org/"
+                    icon={<IconExternalLink />}
+                    className="mt-2"
+                  >
+                    Visit Slate Website
+                  </Button>
+                </div>
+                <div className="p-6 bg-white border-x border-b border-gray-200 rounded-b-xl shadow-lg flex-grow">
+                  <div className="space-y-8">
+                    {electionData.candidates
+                      .filter((c) => c.slate === "West Windsor Together")
+                      .map((candidate) => (
+                        <BioCard
+                          key={candidate.id}
+                          candidate={candidate}
+                          borderColor="border-green-500"
+                          textColor="text-green-700"
+                        />
+                      ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+          {/* --- Interview Series & Comparison Tool --- */}
+          <section id="interviews" className="scroll-mt-24">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 mb-6 text-center">
+              West Windsor Forward Interview Series
+            </h2>
+            <Card noHoverEffect className="p-0">
               <div className="p-6">
-                <h2 className="text-2xl font-bold text-amber-800 mb-4">An Update on the 2025 Candidate Forum</h2>
-                <div className="prose prose-sm sm:prose-base max-w-none text-slate-700"><p><strong>West Windsor, NJ – September 18, 2025</strong> – ...</p></div>
-                <Button onClick={() => setIsStatementModalOpen(true)} type="secondary" size="sm" className="mt-4" icon={<IconDocument />}>Read Full Statement</Button>
-              </div>
-            </Card>
-
-            {/* --- Meet the Slates --- */}
-            <section>
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 mt-12 mb-8 text-center">Meet the Slates</h2>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Proven Leaders Card */}
-                <div className="flex flex-col">
-                  <div className="p-4 rounded-t-xl border-t-4 border-blue-600 bg-slate-200 shadow-lg flex flex-col items-center">
-                    <h3 className="text-2xl font-bold text-blue-800 text-center tracking-wide">Proven Leaders for West Windsor</h3>
-                    <Button size="sm" type="secondary" href="http://teammarathe4ww.com" icon={<IconExternalLink />} className="mt-2">Visit Slate Website</Button>
+                <p className="text-center text-slate-600 max-w-3xl mx-auto mb-8">
+                  To help voters make an informed choice, we conducted a series
+                  of non-partisan interviews (on October 12th and 19th). We
+                  asked identical questions to each slate to allow for direct
+                  comparisons. Some questions differ between council and mayoral
+                  candidates. Explore the full recordings or use the tool below
+                  to compare candidate responses on key topics.
+                </p>
+                <p className="text-center text-sm italic text-slate-500 max-w-3xl mx-auto mb-8">
+                  All interviews conducted by{" "}
+                  <span className="font-semibold">Parth Gupta</span>,
+                  Co-Executive Director of West Windsor Forward.
+                </p>
+                <h3 className="text-xl font-bold text-slate-800 mb-6 text-center">
+                  Full Interview Recordings
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+                  {/* Mayor Marathe */}
+                  <div className="lg:col-span-1">
+                    <h4 className="font-bold text-lg text-blue-800 mb-2 text-center">
+                      Mayoral Candidate: <br /> Hemant Marathe{" "}
+                    </h4>
+                    <div className="aspect-video bg-slate-200 rounded-lg mb-2 flex items-center justify-center">
+                      <iframe
+                        width="560"
+                        height="315"
+                        src={`https://www.youtube.com/embed/${mayorMaratheVideoId}`}
+                        title="YouTube video player: Mayoral Candidate Hemant Marathe"
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerPolicy="strict-origin-when-cross-origin"
+                        allowFullScreen
+                        className="w-full h-full rounded-lg"
+                      ></iframe>
+                    </div>
                   </div>
-                  <div className="p-6 bg-white border-x border-b border-gray-200 rounded-b-xl shadow-lg flex-grow">
-                    <div className="space-y-8">
-                      {electionData.candidates.filter(c => c.slate === "Proven Leaders for West Windsor").map((candidate) => (
-                        <BioCard key={candidate.id} candidate={candidate} borderColor="border-blue-500" textColor="text-blue-700" />
-                      ))}
+                  {/* Mayor Singh */}
+                  <div className="lg:col-span-1">
+                    <h4 className="font-bold text-lg text-green-800 mb-2 text-center">
+                      Mayoral Candidate: <br /> Sujit Singh{" "}
+                    </h4>
+                    <div className="aspect-video bg-slate-200 rounded-lg mb-2 flex items-center justify-center">
+                      {mayorSinghVideoId ? (
+                        <iframe
+                          width="560"
+                          height="315"
+                          src={`https://www.youtube.com/embed/${mayorSinghVideoId}`}
+                          title="YouTube video player: Mayoral Candidate Sujit Singh"
+                          frameBorder="0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                          referrerPolicy="strict-origin-when-cross-origin"
+                          allowFullScreen
+                          className="w-full h-full rounded-lg"
+                        ></iframe>
+                      ) : (
+                        <IconVideoCamera className="text-slate-400 h-10 w-10" />
+                      )}
+                    </div>
+                  </div>
+                  {/* Council Geevers/Charles */}
+                  <div className="lg:col-span-1">
+                    <h4 className="font-bold text-lg text-blue-800 mb-2 text-center">
+                      Council Candidates: <br /> Geevers & Charles{" "}
+                    </h4>
+                    <div className="aspect-video bg-slate-200 rounded-lg mb-2 flex items-center justify-center">
+                      {councilGeeversCharlesVideoId ? (
+                        <iframe
+                          width="560"
+                          height="315"
+                          src={`https://www.youtube.com/embed/${councilGeeversCharlesVideoId}`}
+                          title="YouTube video player: Council Candidates Geevers & Charles"
+                          frameBorder="0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                          referrerPolicy="strict-origin-when-cross-origin"
+                          allowFullScreen
+                          className="w-full h-full rounded-lg"
+                        ></iframe>
+                      ) : (
+                        <IconVideoCamera className="text-slate-400 h-10 w-10" />
+                      )}
+                    </div>
+                  </div>
+                  {/* Council Tomar/Winters */}
+                  <div className="lg:col-span-1">
+                    <h4 className="font-bold text-lg text-green-800 mb-2 text-center">
+                      Council Candidates: <br /> Tomar & Winters{" "}
+                    </h4>
+                    <div className="aspect-video bg-slate-200 rounded-lg mb-2 flex items-center justify-center">
+                      {councilTomarWintersVideoId ? (
+                        <iframe
+                          width="560"
+                          height="315"
+                          src={`https://www.youtube.com/embed/${councilTomarWintersVideoId}`}
+                          title="YouTube video player: Council Candidates Tomar & Winters"
+                          frameBorder="0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                          referrerPolicy="strict-origin-when-cross-origin"
+                          allowFullScreen
+                          className="w-full h-full rounded-lg"
+                        ></iframe>
+                      ) : (
+                        <IconVideoCamera className="text-slate-400 h-10 w-10" />
+                      )}
                     </div>
                   </div>
                 </div>
-                {/* WW Together Card */}
-                <div className="flex flex-col">
-                  <div className="p-4 rounded-t-xl border-t-4 border-green-600 bg-slate-200 shadow-lg flex flex-col items-center">
-                    <h3 className="text-2xl font-bold text-green-800 text-center tracking-wide">West Windsor Together</h3>
-                    <Button size="sm" type="secondary" href="https://www.wwtogether.org/" icon={<IconExternalLink />} className="mt-2">Visit Slate Website</Button>
-                  </div>
-                  <div className="p-6 bg-white border-x border-b border-gray-200 rounded-b-xl shadow-lg flex-grow">
-                    <div className="space-y-8">
-                      {electionData.candidates.filter(c => c.slate === "West Windsor Together").map((candidate) => (
-                        <BioCard key={candidate.id} candidate={candidate} borderColor="border-green-500" textColor="text-green-700" />
-                      ))}
-                    </div>
-                  </div>
+
+                <hr className="my-10 border-t-2 border-slate-200" />
+
+                <h3 className="text-xl font-bold text-slate-800 mb-2 text-center">
+                  Interview Question Explorer
+                </h3>
+                <div className="text-center text-slate-500 text-sm mb-6 max-w-3xl mx-auto">
+                  <p className="mb-4">
+                    Use the filters to find responses by topic, question, or
+                    office. Click on a topic to expand questions. Click the <IconClipboard className="inline h-4 w-4 text-slate-600 -mt-1"/> icon to copy a direct link to a specific question.
+                  </p>
                 </div>
-              </div>
-            </section>
-
-            {/* --- Interview Series --- */}
-            <section id="interviews" className="scroll-mt-24">
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 mb-6 text-center">West Windsor Forward Interview Series</h2>
-              <Card noHoverEffect className="p-0">
-                <div className="p-6">
-                  <p className="text-center text-slate-600 max-w-3xl mx-auto mb-8">To help voters...</p>
-                  <p className="text-center text-sm italic text-slate-500 max-w-3xl mx-auto mb-8">All interviews conducted by...</p>
-                  <h3 className="text-xl font-bold text-slate-800 mb-6 text-center">Full Interview Recordings</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
-                    {/* Video embeds */}
-                      {/* Marathe */}
-                      <div><h4>...Hemant Marathe</h4><div className="aspect-video..."><iframe src={`https://www.youtube.com/embed/${mayorMaratheVideoId}`} ...></iframe></div></div>
-                      {/* Singh */}
-                      <div><h4>...Sujit Singh</h4><div className="aspect-video...">{mayorSinghVideoId ? <iframe src={`https://www.youtube.com/embed/${mayorSinghVideoId}`} ...></iframe> : <IconVideoCamera />}</div></div>
-                      {/* Geevers/Charles */}
-                      <div><h4>...Geevers & Charles</h4><div className="aspect-video...">{councilGeeversCharlesVideoId ? <iframe src={`https://www.youtube.com/embed/${councilGeeversCharlesVideoId}`} ...></iframe> : <IconVideoCamera />}</div></div>
-                      {/* Tomar/Winters */}
-                      <div><h4>...Tomar & Winters</h4><div className="aspect-video...">{councilTomarWintersVideoId ? <iframe src={`https://www.youtube.com/embed/${councilTomarWintersVideoId}`} ...></iframe> : <IconVideoCamera />}</div></div>
-                  </div>
-                  <hr className="my-10 border-t-2 border-slate-200" />
-
-                  <h3 className="text-xl font-bold text-slate-800 mb-2 text-center">Interview Question Explorer</h3>
-                  <div className="text-center text-slate-500 text-sm mb-6 max-w-3xl mx-auto">
-                    <p className="mb-4">Use the filters... Click the <IconClipboard className="inline h-4 w-4 text-slate-600 -mt-1"/> icon to copy a direct link...</p>
-                  </div>
-
-                  {/* --- Filter Bar --- */}
-                  <div ref={filterBarRef} className="sticky top-[calc(4rem)] md:top-[calc(4.5rem)] bg-white/80 backdrop-blur-sm z-10 py-4 mb-6 -mx-6 px-6 border-b border-gray-200">
-                    <div className="space-y-4 max-w-4xl mx-auto">
-                      <div className="relative"><input type="text" placeholder="Search questions..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="..." /><div className="absolute ..."><IconSearch /></div></div>
-                      <div className="flex flex-wrap gap-2 items-center">
-                        <span className="text-sm font-semibold ...">Filter by Office:</span>
-                        <button onClick={() => setActiveOffice(null)} className={`... ${!activeOffice ? 'bg-sky-600 text-white' : 'bg-slate-200 ...'}`}>All</button>
-                        <button onClick={() => setActiveOffice("Mayor")} className={`... ${activeOffice === 'Mayor' ? 'bg-sky-600 text-white' : 'bg-slate-200 ...'}`}>Mayor</button>
-                        <button onClick={() => setActiveOffice("Township Council")} className={`... ${activeOffice === 'Township Council' ? 'bg-sky-600 text-white' : 'bg-slate-200 ...'}`}>Council</button>
+                <div
+                  ref={filterBarRef}
+                  className="sticky top-[calc(4rem)] md:top-[calc(4.5rem)] bg-white/80 backdrop-blur-sm z-10 py-4 mb-6 -mx-6 px-6 border-b border-gray-200"
+                >
+                  <div className="space-y-4 max-w-4xl mx-auto">
+                    <div className="relative">
+                      <input
+                        type="text"
+                        placeholder="Search questions..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-sky-500"
+                      />
+                      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                        <IconSearch />
                       </div>
                     </div>
+                    <div className="flex flex-wrap gap-2 items-center">
+                      <span className="text-sm font-semibold text-slate-600 mr-2">
+                        Filter by Office:
+                      </span>
+                      <button
+                        onClick={() => setActiveOffice(null)}
+                        className={`px-3 py-1 text-xs font-medium rounded-full transition-colors duration-200 ${
+                          !activeOffice
+                            ? "bg-sky-600 text-white shadow"
+                            : "bg-slate-200 text-slate-700 hover:bg-slate-300"
+                        }`}
+                      >
+                        All
+                      </button>
+                      <button
+                        onClick={() => setActiveOffice("Mayor")}
+                        className={`px-3 py-1 text-xs font-medium rounded-full transition-colors duration-200 ${
+                          activeOffice === "Mayor"
+                            ? "bg-sky-600 text-white shadow"
+                            : "bg-slate-200 text-slate-700 hover:bg-slate-300"
+                        }`}
+                      >
+                        Mayor
+                      </button>
+                      <button
+                        onClick={() => setActiveOffice("Township Council")}
+                        className={`px-3 py-1 text-xs font-medium rounded-full transition-colors duration-200 ${
+                          activeOffice === "Township Council"
+                            ? "bg-sky-600 text-white shadow"
+                            : "bg-slate-200 text-slate-700 hover:bg-slate-300"
+                        }`}
+                      >
+                        Council
+                      </button>
+                    </div>
                   </div>
+                </div>
 
-                  {/* --- Question Sections --- */}
-                  <div className="space-y-4">
-                    {filteredIssues.map((issue) => (
-                      <div key={issue.id} data-topic-section-id={issue.id} className="border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm">
-                        <button data-topic-id={issue.id} onClick={() => handleTopicToggle(issue.id, issue.questions.length)} className="w-full flex items-center justify-between p-4 text-left bg-slate-50 hover:bg-slate-100 transition-colors border-b border-gray-200">
-                          <span className="text-lg font-bold text-slate-800">{issue.title}</span>
-                          {selectedTopic === issue.id ? <IconChevronUp className="text-gray-500" /> : <IconChevronDown className="text-gray-500" />}
-                        </button>
-                        {selectedTopic === issue.id && (
-                          <div className="p-4 space-y-6">
-                            {issue.questions.map((question, index) => {
-                              // @ts-ignore
-                              const maratheResponse = responsesData.marathe[question.id];
-                              // @ts-ignore
-                              const singhResponse = responsesData.singh[question.id];
-                              // @ts-ignore
-                              const geeversCharlesResponse = responsesData.geeversCharles[question.id];
-                              // @ts-ignore
-                              const tomarWintersResponse = responsesData.tomarWinters[question.id];
+                <div className="space-y-4">
+                  {filteredIssues.map((issue) => (
+                    <div
+                      key={issue.id}
+                      data-topic-section-id={issue.id}
+                      className="border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm" // Added bg-white and shadow-sm
+                    >
+                      <button
+                        data-topic-id={issue.id}
+                        onClick={() =>
+                          handleTopicToggle(issue.id, issue.questions.length)
+                        }
+                        className="w-full flex items-center justify-between p-4 text-left bg-slate-50 hover:bg-slate-100 transition-colors border-b border-gray-200" // Added border-b
+                      >
+                        <span className="text-lg font-bold text-slate-800">
+                          {issue.title}
+                        </span>
+                        {selectedTopic === issue.id ? (
+                          <IconChevronUp className="text-gray-500" />
+                        ) : (
+                          <IconChevronDown className="text-gray-500" />
+                        )}
+                      </button>
+                      {selectedTopic === issue.id && (
+                        <div className="p-4 space-y-6">
+                          {issue.questions.map((question, index) => { // Added index
+                            // @ts-ignore
+                            const maratheResponse =
+                              responsesData.marathe[question.id];
+                            // @ts-ignore
+                            const singhResponse =
+                              responsesData.singh[question.id];
+                            // @ts-ignore
+                            const geeversCharlesResponse =
+                              responsesData.geeversCharles[question.id];
+                            // @ts-ignore
+                            const tomarWintersResponse =
+                              responsesData.tomarWinters[question.id];
 
-                              const showMayor = !activeOffice || activeOffice === "Mayor";
-                              const showCouncil = !activeOffice || activeOffice === "Township Council";
-                              const questionIsMayor = doesQuestionApply(question, "Mayor");
-                              const questionIsCouncil = doesQuestionApply(question, "Township Council");
+                            const showMayor =
+                              !activeOffice || activeOffice === "Mayor";
+                            const showCouncil =
+                              !activeOffice ||
+                              activeOffice === "Township Council";
+                            const questionIsMayor = doesQuestionApply(
+                              question,
+                              "Mayor"
+                            );
+                            const questionIsCouncil = doesQuestionApply(
+                              question,
+                              "Township Council"
+                            );
 
-                                  // --- renderResponseBlock function ---
-                              const renderResponseBlock = (
-                                slateName: string,
-                                slateColorClass: string,
-                                responseData: any,
-                                fullVideoId: string | null,
-                                currentQuestionId: string
-                              ) => {
-                                const hasData = responseData && responseData.time && responseData.summary;
-                                let nextQuestionTimeSeconds = 0;
-                                const currentQuestionIndex = questionOrder.indexOf(currentQuestionId);
+                            const renderResponseBlock = (
+                              slateName: string,
+                              slateColorClass: string,
+                              responseData: any,
+                              fullVideoId: string | null,
+                              currentQuestionId: string
+                            ) => {
+                              const hasData =
+                                responseData &&
+                                responseData.time &&
+                                responseData.summary;
 
-                                if (currentQuestionIndex !== -1 && currentQuestionIndex < questionOrder.length - 1) {
-                                  for (let i = currentQuestionIndex + 1; i < questionOrder.length; i++) {
-                                    const nextQuestionId = questionOrder[i];
-                                    const nextQuestion = electionData.issues.flatMap(iss => iss.questions).find(q => q.id === nextQuestionId) || null;
-                                    if (!nextQuestion) continue;
+                              let nextQuestionTimeSeconds = 0;
+                              const currentQuestionIndex =
+                                questionOrder.indexOf(currentQuestionId);
 
-                                    let nextResponseForCurrentSlate: any;
-                                    let dataSetToCheck: keyof typeof responsesData | null = null;
-                                    let officeToCheck: OfficeType | null = null;
+                              if (
+                                currentQuestionIndex !== -1 &&
+                                currentQuestionIndex < questionOrder.length - 1
+                              ) {
+                                for (
+                                  let i = currentQuestionIndex + 1;
+                                  i < questionOrder.length;
+                                  i++
+                                ) {
+                                  const nextQuestionId = questionOrder[i];
+                                  const nextQuestion =
+                                    electionData.issues
+                                      .flatMap((iss) => iss.questions)
+                                      .find((q) => q.id === nextQuestionId) ||
+                                    null;
 
-                                    if (slateName.includes("Marathe")) { dataSetToCheck = "marathe"; officeToCheck = "Mayor"; }
-                                    else if (slateName.includes("Singh")) { dataSetToCheck = "singh"; officeToCheck = "Mayor"; }
-                                    else if (slateName.includes("Geevers & Charles")) { dataSetToCheck = "geeversCharles"; officeToCheck = "Township Council"; }
-                                    else if (slateName.includes("Tomar & Winters")) { dataSetToCheck = "tomarWinters"; officeToCheck = "Township Council"; }
+                                  if (!nextQuestion) continue;
 
-                                    if (dataSetToCheck && officeToCheck && doesQuestionApply(nextQuestion, officeToCheck)) {
-                                      // @ts-ignore
-                                      nextResponseForCurrentSlate = responsesData[dataSetToCheck]?.[nextQuestionId];
-                                    }
+                                  let nextResponseForCurrentSlate: any;
 
-                                    if (nextResponseForCurrentSlate && nextResponseForCurrentSlate.time) {
-                                      nextQuestionTimeSeconds = convertTimeToSeconds(nextResponseForCurrentSlate.time);
-                                      break;
-                                    }
+                                  // Determine which dataset to check based on slateName
+                                  let dataSetToCheck: keyof typeof responsesData | null = null;
+                                  let officeToCheck: OfficeType | null = null;
+
+                                  if (slateName.includes("Marathe")) {
+                                    dataSetToCheck = "marathe";
+                                    officeToCheck = "Mayor";
+                                  } else if (slateName.includes("Singh")) {
+                                    dataSetToCheck = "singh";
+                                    officeToCheck = "Mayor";
+                                  } else if (slateName.includes("Geevers & Charles")) {
+                                    dataSetToCheck = "geeversCharles";
+                                    officeToCheck = "Township Council";
+                                  } else if (slateName.includes("Tomar & Winters")) {
+                                    dataSetToCheck = "tomarWinters";
+                                    officeToCheck = "Township Council";
+                                  }
+
+                                  if (dataSetToCheck && officeToCheck && doesQuestionApply(nextQuestion, officeToCheck)) {
+                                    // @ts-ignore - Indexing with string variable
+                                    nextResponseForCurrentSlate = responsesData[dataSetToCheck]?.[nextQuestionId];
+                                  }
+
+                                  if (
+                                    nextResponseForCurrentSlate &&
+                                    nextResponseForCurrentSlate.time
+                                  ) {
+                                    nextQuestionTimeSeconds =
+                                      convertTimeToSeconds(
+                                        nextResponseForCurrentSlate.time
+                                      );
+                                    break; // Found the next relevant time, exit loop
                                   }
                                 }
-
-                                return (
-                                  <div className="mb-4">
-                                    <h5 className={`font-bold ${slateColorClass} mb-2`}>{slateName}</h5>
-                                    {hasData && fullVideoId ? (
-                                      <>
-                                        <div className="aspect-video bg-slate-200 rounded-lg mb-2 shadow-inner overflow-hidden">
-                                          {(() => {
-                                            const startSeconds = convertTimeToSeconds(responseData.time);
-                                            let videoSrc = `https://www.youtube.com/embed/${fullVideoId}?start=${startSeconds}`;
-                                            if (nextQuestionTimeSeconds > startSeconds) {
-                                              videoSrc += `&end=${nextQuestionTimeSeconds + 2}`;
-                                            }
-                                            return (
-                                              <iframe className="w-full h-full rounded-lg" src={videoSrc} title={`${slateName}'s response...`} frameBorder="0" allow="..." allowFullScreen></iframe>
-                                            );
-                                          })()}
-                                        </div>
-                                        <p className="text-xs text-slate-600 bg-slate-50 p-2 rounded border border-slate-200"><strong>Summary:</strong> {responseData.summary}</p>
-                                      </>
-                                    ) : (
-                                      <>
-                                        <div className="aspect-video bg-slate-200 ..."><IconVideoCamera className="..." /></div>
-                                        <p className="text-xs text-slate-500 italic">Response pending...</p>
-                                      </>
-                                    )}
-                                  </div>
-                              );
-                              };
-
+                              }
 
                               return (
-                                <div
-                                  key={question.id}
-                                  id={question.id}
-                                  // Adjusted scroll-mt value, adjust '60px' based on filter bar height
-                                  className={`relative bg-white shadow-md rounded-xl border-2 border-gray-300 p-4 sm:p-6 scroll-mt-[calc(4.5rem_+_60px)] ${
-                                    index > 0 ? 'mt-6' : ''
-                                  }`}
+                                <div className="mb-4">
+                                  <h5
+                                    className={`font-bold ${slateColorClass} mb-2`}
+                                  >
+                                    {slateName}
+                                  </h5>
+                                  {hasData && fullVideoId ? (
+                                    <>
+                                      <div className="aspect-video bg-slate-200 rounded-lg mb-2 shadow-inner overflow-hidden"> {/* Added overflow-hidden */}
+                                        {(() => {
+                                          const startSeconds =
+                                            convertTimeToSeconds(
+                                              responseData.time
+                                            );
+                                          let videoSrc = `https://www.youtube.com/embed/${fullVideoId}?start=${startSeconds}`;
+
+                                          // Add end time only if the next question starts *after* this one
+                                          if (
+                                            nextQuestionTimeSeconds >
+                                            startSeconds
+                                          ) {
+                                            // Add a small buffer (e.g., 2 seconds) to avoid cutting off too early
+                                            videoSrc += `&end=${
+                                              nextQuestionTimeSeconds + 2
+                                            }`;
+                                          }
+
+                                          return (
+                                            <iframe
+                                              className="w-full h-full rounded-lg"
+                                              src={videoSrc}
+                                              title={`${slateName}'s response to: ${question.text}`}
+                                              frameBorder="0"
+                                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                              allowFullScreen
+                                            ></iframe>
+                                          );
+                                        })()}
+                                      </div>
+                                      <p className="text-xs text-slate-600 bg-slate-50 p-2 rounded border border-slate-200">
+                                        <strong>Summary:</strong>{" "}
+                                        {responseData.summary}
+                                      </p>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <div className="aspect-video bg-slate-200 rounded-lg mb-2 flex items-center justify-center shadow-inner">
+                                        <IconVideoCamera className="text-slate-400 h-8 w-8" />
+                                      </div>
+                                      <p className="text-xs text-slate-500 italic">
+                                        Response pending or clip unavailable.
+                                      </p>
+                                    </>
+                                  )}
+                                </div>
+                              );
+                            };
+
+                            return (
+                              <div
+                                key={question.id}
+                                id={question.id}
+                                className={`relative bg-white shadow-md rounded-xl border-2 border-gray-300 p-4 sm:p-6 scroll-mt-[10rem] ${
+                                  index > 0 ? 'mt-6' : '' // Add margin-top to separate questions visually
+                                }`}
+                              >
+                                <button
+                                    onClick={() => handleCopyLink(question.id)}
+                                    className={`absolute top-2 right-2 sm:top-3 sm:right-3 p-1.5 rounded-full transition-colors duration-200 ${
+                                        copiedLinks[question.id]
+                                        ? 'bg-green-100 text-green-600 hover:bg-green-200'
+                                        : 'bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-700'
+                                    }`}
+                                    aria-label="Copy link to this question"
+                                    title={copiedLinks[question.id] ? "Link Copied!" : "Copy link to this question"}
                                 >
-                                  <button onClick={() => handleCopyLink(question.id)} className={`absolute top-2 right-2 ... ${copiedLinks[question.id] ? 'bg-green-100...' : 'bg-slate-100...'}`} title={copiedLinks[question.id] ? "Link Copied!" : "Copy link..."}>
                                     {copiedLinks[question.id] ? <IconCheckCircle className="h-4 w-4 sm:h-5 sm:w-5"/> : <IconClipboard className="h-4 w-4 sm:h-5 sm:w-5" />}
-                                  </button>
-                                  <div className="text-center mb-6 pr-8">
+                                </button>
+
+                                <div className="text-center mb-6 pr-8">
                                     <div className="mb-2">
-                                      {/* Office Badges */}
-                                        {Array.isArray(question.office) ? ( question.office.map(off => (<span key={off} className={`... ${officeStyles[off] || '...'}`}>{off} Question</span>)) )
-                                         : question.office ? (<span className={`... ${officeStyles[question.office] || '...'}`}>{question.office} Question</span>)
-                                         : (<span className="...">General Question</span>) }
+                                    {Array.isArray(question.office) ? (
+                                        question.office.map((off) => (
+                                        <span
+                                            key={off}
+                                            className={`inline-block text-xs font-semibold mr-2 px-2.5 py-1 rounded-full ${
+                                            officeStyles[off] || "bg-gray-100 text-gray-800"
+                                            }`}
+                                        >
+                                            {off} Question
+                                        </span>
+                                        ))
+                                    ) : question.office ? (
+                                        <span
+                                        className={`inline-block text-xs font-semibold mr-2 px-2.5 py-1 rounded-full ${
+                                            officeStyles[question.office] || "bg-gray-100 text-gray-800"
+                                        }`}
+                                        >
+                                        {question.office} Question
+                                        </span>
+                                    ) : (
+                                        <span className="inline-block text-xs font-semibold mr-2 px-2.5 py-1 rounded-full bg-gray-100 text-gray-800">
+                                        General Question
+                                        </span>
+                                    )}
                                     </div>
-                                    <p className="font-semibold text-slate-700 italic max-w-2xl mx-auto">"{question.text}"</p>
-                                  </div>
-                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                                    {showMayor && questionIsMayor && renderResponseBlock("Mayoral Candidate: Hemant Marathe", "text-blue-700", maratheResponse, mayorMaratheVideoId, question.id)}
-                                    {showMayor && questionIsMayor && renderResponseBlock("Mayoral Candidate: Sujit Singh", "text-green-700", singhResponse, mayorSinghVideoId, question.id)}
-                                    {showCouncil && questionIsCouncil && renderResponseBlock("Council Candidates: Geevers & Charles", "text-blue-700", geeversCharlesResponse, councilGeeversCharlesVideoId, question.id)}
-                                    {showCouncil && questionIsCouncil && renderResponseBlock("Council Candidates: Tomar & Winters", "text-green-700", tomarWintersResponse, councilTomarWintersVideoId, question.id)}
-                                  </div>
+                                    <p className="font-semibold text-slate-700 italic max-w-2xl mx-auto">
+                                    "{question.text}"
+                                    </p>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                                    {showMayor &&
+                                    questionIsMayor &&
+                                    renderResponseBlock(
+                                        "Mayoral Candidate: Hemant Marathe",
+                                        "text-blue-700",
+                                        maratheResponse,
+                                        mayorMaratheVideoId,
+                                        question.id
+                                    )}
+                                    {showMayor &&
+                                    questionIsMayor &&
+                                    renderResponseBlock(
+                                        "Mayoral Candidate: Sujit Singh",
+                                        "text-green-700",
+                                        singhResponse,
+                                        mayorSinghVideoId,
+                                        question.id
+                                    )}
+                                    {showCouncil &&
+                                    questionIsCouncil &&
+                                    renderResponseBlock(
+                                        "Council Candidates: Geevers & Charles",
+                                        "text-blue-700",
+                                        geeversCharlesResponse,
+                                        councilGeeversCharlesVideoId,
+                                        question.id
+                                    )}
+                                    {showCouncil &&
+                                    questionIsCouncil &&
+                                    renderResponseBlock(
+                                        "Council Candidates: Tomar & Winters",
+                                        "text-green-700",
+                                        tomarWintersResponse,
+                                        councilTomarWintersVideoId,
+                                        question.id
+                                    )}
+                                </div>
                                 </div>
                             );
                           })}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* No Results */}
-                  {filteredIssues.length === 0 && (searchQuery || activeOffice) && (
-                    <p className="text-slate-500 italic text-center py-8">No results match your filters.</p>
-                  )}
+                        </div>
+                      )}
+                    </div>
+                  ))}
                 </div>
-              </Card>
-            </section>
 
-            {/* --- Campaign Finance Section --- */}
-            <section id="finance" className="scroll-mt-24">
-              <h2 className="text-xl sm:text-2xl md:text-3xl ...">Campaign Finance & Transparency</h2>
-              <Card noHoverEffect className="p-0">
-                  <div className="p-6">
-                      <div className="flex ... mb-6 bg-amber-50 ..."> {/* Disclaimer */} </div>
-                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                          {/* Proven Leaders Finance */}
-                          <div className="p-6 bg-slate-50 ..."> {/* ... */} </div>
-                          {/* WW Together Finance */}
-                          <div className="p-6 bg-slate-50 ..."> {/* ... */} </div>
-                      </div>
-                      <div className="mt-6 text-xs text-slate-600 space-y-2"> {/* Footnotes */} </div>
-                  </div>
-              </Card>
-            </section>
+                {filteredIssues.length === 0 &&
+                  (searchQuery || activeOffice) && (
+                    <p className="text-slate-500 italic col-span-full text-center py-8">
+                      No results match your filters.
+                    </p>
+                  )}
+              </div>
+            </Card>
+          </section>
 
-            {/* --- Voter Toolkit Section --- */}
-            <section id="voter-tools" className="scroll-mt-24">
-              <h2 className="text-xl sm:text-2xl md:text-3xl ...">Voter Toolkit</h2>
-              <Card noHoverEffect className="p-0">
-                  <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-8">
-                      {/* Key Dates */}
-                      <div> {/* ... */} </div>
-                      {/* Voter Tools */}
-                      <div> {/* ... */} </div>
-                      {/* Three Ways to Vote */}
-                      <div> {/* ... */} </div>
-                  </div>
-              </Card>
-            </section>
+          {/* --- Campaign Finance Section --- */}
+          <section id="finance" className="scroll-mt-24">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 mb-6 text-center">
+              Campaign Finance & Transparency
+            </h2>
+            <Card noHoverEffect className="p-0">
+              <div className="p-6">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center mb-6 bg-amber-50 border border-amber-200 rounded-lg p-4">
+                  <IconInfo className="text-amber-600 mr-3 flex-shrink-0 mt-1 sm:mt-0" />
+                  <div>
+                    <h3 className="font-semibold text-amber-800">
+                      Important Disclaimer
+                    </h3>
+                    <p className="text-sm text-amber-700">
+                      The financial data presented below is sourced from the
+                      29-Day Pre-Election R-1 reports filed with NJ ELEC on
+                      October 6, 2025. This is a snapshot in time and may not
+                      reflect the most current fundraising or expenditure
+                      totals. NJ ELEC will be releasing the 11-day Pre-Election
+                      report on October 24th, 2025 and this tool will be updated
+                      shortly thereafter.
+                    </p>
+                  </div>
+                </div>
 
-            {/* --- Forum Archive Divider & Sections --- */}
-            <div className="py-10 my-6"> {/* ... Divider ... */} </div>
-            <section>
-                <h2 className="text-xl sm:text-2xl ...">2025 Candidate Forum Initiative (Cancelled)</h2>
-                <p className="text-center ...">The following sections contain archival information...</p>
-                <div className="space-y-8">
-                    <PanelistSection />
-                    <DocumentComparisonSection />
-                    <StatementsSection />
-                    <ForumFormatSection />
-                    <KeyInformationSection />
-                    <PressCoverageSection />
-                </div>
-            </section>
-        </div> {/* End Container */}
-      </div> {/* End Main Div */}
+                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                     {/* Proven Leaders */}
+                     <div className="p-6 bg-slate-50 rounded-xl border-2 border-slate-200 h-full flex flex-col">
+                        <h4 className="font-bold text-lg text-blue-800 mb-4 text-center">
+                            Proven Leaders for West Windsor
+                        </h4>
+                        <div className="grid grid-cols-2 gap-3 text-sm mb-6 text-center">
+                            <div><div className="text-xs text-slate-500">Raised</div><div className="font-bold text-lg">$28,953.71</div></div>
+                            <div><div className="text-xs text-slate-500">Spent</div><div className="font-bold text-lg">$13,764.07</div></div>
+                            <div className="col-span-2"><div className="text-xs text-slate-500">Cash on Hand</div><div className="font-bold text-2xl text-green-700">$21,554.38</div></div>
+                        </div>
+                        <div className="space-y-8 flex-grow flex flex-col">
+                            <div className="relative">
+                                <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10"><span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700 border border-orange-200"><span className="w-1.5 h-1.5 bg-orange-500 rounded-full mr-1.5 animate-pulse"></span>Only includes donations &gt; $200</span></div>
+                                <div className="bg-white border-2 border-slate-400 rounded-lg p-4 pt-6 space-y-8">
+                                    <div><div className="text-center mb-1"><h5 className="font-semibold text-slate-700 text-sm">Funding Sources¹</h5></div><div className="text-center mb-1 text-sm font-medium text-slate-700"><span>100% from Individuals</span></div><div className="w-full bg-slate-200 rounded-full h-2.5"><div className="bg-sky-500 h-2.5 rounded-full" style={{width: "100%"}}></div></div></div>
+                                    <div><div className="text-center mb-1"><h5 className="font-semibold text-slate-700 text-sm">Donation Origin (by $ Amount)²</h5></div><div className="text-center mb-1 text-sm font-medium text-slate-700"><span>29.4% from In-Town</span></div><div className="w-full bg-slate-200 rounded-full h-2.5"><div className="bg-sky-500 h-2.5 rounded-full" style={{width: "29.4%"}}></div></div></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div className="text-center mb-1"><h5 className="font-semibold text-slate-700 text-sm">Donation Size (% of Total Raised)</h5></div>
+                                <div className="flex justify-between mb-1 text-sm font-medium text-slate-700 px-1"><span>17.3% donations of $200 or less</span><span>82.7% donations of over $200</span></div>
+                                <div className="w-full bg-slate-200 rounded-full h-2.5 flex"><div className="bg-sky-500 h-2.5 rounded-l-full" style={{width: "17.3%"}}></div><div className="bg-slate-400 h-2.5 rounded-r-full" style={{width: "82.7%"}}></div></div>
+                            </div>
+                        </div>
+                        <Button size="sm" type="secondary" className="w-full mt-10" href="/3892476.pdf" icon={<IconExternalLink />}>View Full ELEC Report</Button>
+                     </div>
+                     {/* WW Together */}
+                     <div className="p-6 bg-slate-50 rounded-xl border-2 border-slate-200 h-full flex flex-col">
+                        <h4 className="font-bold text-lg text-green-800 mb-4 text-center">West Windsor Together</h4>
+                        <div className="grid grid-cols-2 gap-3 text-sm mb-6 text-center">
+                            <div><div className="text-xs text-slate-500">Raised</div><div className="font-bold text-lg">$37,731.31</div></div>
+                            <div><div className="text-xs text-slate-500">Spent</div><div className="font-bold text-lg">$14,787.36</div></div>
+                            <div className="col-span-2"><div className="text-xs text-slate-500">Cash on Hand</div><div className="font-bold text-2xl text-green-700">$22,943.95</div></div>
+                        </div>
+                        <div className="space-y-8 flex-grow flex flex-col">
+                            <div className="relative">
+                                <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10"><span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700 border border-orange-200"><span className="w-1.5 h-1.5 bg-orange-500 rounded-full mr-1.5 animate-pulse"></span>Only includes donations &gt; $200</span></div>
+                                <div className="bg-white border-2 border-slate-400 rounded-lg p-4 pt-6 space-y-8">
+                                    <div><div className="text-center mb-1"><h5 className="font-semibold text-slate-700 text-sm">Funding Sources¹</h5></div><div className="flex justify-between mb-1 text-sm font-medium text-slate-700 px-1"><span>96.9% Individuals</span><span>3.1% Committees</span></div><div className="w-full bg-slate-200 rounded-full h-2.5 flex"><div className="bg-sky-500 h-2.5 rounded-l-full" style={{width: "96.9%"}}></div><div className="bg-slate-400 h-2.5 rounded-r-full" style={{width: "3.1%"}}></div></div></div>
+                                    <div><div className="text-center mb-1"><h5 className="font-semibold text-slate-700 text-sm">Donation Origin (by $ Amount)²</h5></div><div className="text-center mb-1 text-sm font-medium text-slate-700"><span>33.6% from In-Town</span></div><div className="w-full bg-slate-200 rounded-full h-2.5"><div className="bg-sky-500 h-2.5 rounded-full" style={{width: "33.6%"}}></div></div></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div className="text-center mb-1"><h5 className="font-semibold text-slate-700 text-sm">Donation Size (% of Total Raised)</h5></div>
+                                <div className="flex justify-between mb-1 text-sm font-medium text-slate-700 px-1"><span>6.2% donations of $200 or less</span><span>93.8% donations of over $200</span></div>
+                                <div className="w-full bg-slate-200 rounded-full h-2.5 flex"><div className="bg-sky-500 h-2.5 rounded-l-full" style={{width: "6.2%"}}></div><div className="bg-slate-400 h-2.5 rounded-r-full" style={{width: "93.8%"}}></div></div>
+                            </div>
+                        </div>
+                        <Button size="sm" type="secondary" className="w-full mt-10" href="/3892561.pdf" icon={<IconExternalLink />}>View Full ELEC Report</Button>
+                     </div>
+                 </div>
+
+                <div className="mt-6 text-xs text-slate-600 space-y-2">
+                  <p><strong>¹ About 'Funding Sources'</strong><br />The breakdown of funding sources only includes itemized contributions (typically those over $200) as reported on Schedule A of the ELEC R-1 filing. It categorizes these contributions based on the type of donor (Individual, Committee, Corporation, etc.).</p>
+                  <p><strong>² About 'Donation Origin' (In-Town Percentage)</strong><br />The "In-Town" percentage is calculated based on the dollar amount of itemized contributions (typically those over $200) where the donor's address listed on the ELEC R-1 filing is within West Windsor (Zip Code 08550). This calculation does not include smaller, non-itemized donations as address information is not typically reported for those.</p>
+                </div>
+              </div>
+            </Card>
+          </section>
+
+          {/* --- Voter Information Hub --- */}
+          <section id="voter-tools" className="scroll-mt-24">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 mb-6 text-center">
+              Voter Toolkit
+            </h2>
+             <Card noHoverEffect className="p-0">
+               <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-8">
+                 <div><div className="flex items-center mb-3"><IconCalendar className="h-6 w-6 text-sky-600 mr-2" /><h3 className="text-lg font-semibold text-slate-800">Key Dates</h3></div><ul className="space-y-2">{keyDates.map((item) => (<li key={item.event} className="text-sm"><strong className="text-sky-700">{item.date}:</strong> {item.event}</li>))}</ul></div>
+                 <div><div className="flex items-center mb-3"><IconUserCheck className="h-6 w-6 text-sky-600 mr-2" /><h3 className="text-lg font-semibold text-slate-800">Voter Tools</h3></div><div className="space-y-3"><Button type="secondary" href="https://voter.svrs.nj.gov/registration-check" icon={<IconExternalLink />} className="w-full justify-center">Check Status</Button><Button type="primary" href="https://voter.svrs.nj.gov/register" icon={<IconUserCheck />} className="w-full justify-center">Register Online</Button><Button type="secondary" href="https://voter.svrs.nj.gov/polling-place-search" icon={<IconMapMarker className="h-4 w-4" />} className="w-full justify-center">Find Polling Place</Button></div></div>
+                 <div><div className="flex items-center mb-3"><IconBallotBox className="h-6 w-6 text-sky-600 mr-2" /><h3 className="text-lg font-semibold text-slate-800">Three Ways to Vote</h3></div><div className="flex border-b border-gray-200"><button onClick={() => setActiveTab("mail")} className={`flex-1 py-2 text-sm font-medium ${ activeTab === "mail" ? "border-b-2 border-sky-600 text-sky-600" : "text-gray-500 hover:text-gray-700" } transition-colors`}>By Mail</button><button onClick={() => setActiveTab("early")} className={`flex-1 py-2 text-sm font-medium ${ activeTab === "early" ? "border-b-2 border-sky-600 text-sky-600" : "text-gray-500 hover:text-gray-700" } transition-colors`}>Early</button><button onClick={() => setActiveTab("electionDay")} className={`flex-1 py-2 text-sm font-medium ${ activeTab === "electionDay" ? "border-b-2 border-sky-600 text-sky-600" : "text-gray-500 hover:text-gray-700" } transition-colors`}>Election Day</button></div><div className="mt-3 text-sm animate-fadeIn">{activeTab === "mail" && ( <div> <p> Apply for your mail-in ballot by Oct. 28. Return it via USPS or a secure ballot drop box. </p> <Button size="sm" type="secondary" href="https://www.nj.gov/state/elections/vote-by-mail.shtml" icon={<IconExternalLink />} className="mt-2">Learn More</Button></div>)}{activeTab === "early" && ( <div> <p> From Oct. 25 to Nov. 2, vote at any designated early voting location in Mercer County. </p> <Button size="sm" type="secondary" href="https://www.nj.gov/state/elections/vote-early-voting.shtml" icon={<IconExternalLink />} className="mt-2">Find Locations</Button></div>)}{activeTab === "electionDay" && ( <div> <p> Go to your assigned polling place on Tuesday, Nov. 4, between 6:00 AM and 8:00 PM. </p> <Button size="sm" type="secondary" href="https://voter.svrs.nj.gov/polling-place-search" icon={<IconExternalLink />} className="mt-2">Find Polling Place</Button></div>)}</div></div>
+               </div>
+             </Card>
+          </section>
+
+          {/* --- Section Divider --- */}
+          <div className="py-10 my-6">
+            <div className="relative">
+              <div
+                className="absolute inset-0 flex items-center"
+                aria-hidden="true"
+              >
+                <div className="w-full h-1.5 bg-gradient-to-r from-sky-400 via-indigo-500 to-pink-500" />
+              </div>
+              <div className="relative flex justify-center">
+                <span className="bg-slate-100 px-6 text-lg font-bold text-slate-700">
+                  Forum Initiative Archive
+                </span>
+              </div>
+            </div>
+          </div>
+          {/* --- Forum Archive --- */}
+          <section>
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 mb-6 text-center">
+              2025 Candidate Forum Initiative (Cancelled)
+            </h2>
+            <p className="text-center text-slate-600 max-w-3xl mx-auto mb-8">
+              The following sections contain archival information regarding the
+              planning and unfortunate cancellation of the 2025 candidate forum.
+              This is preserved for transparency.
+            </p>
+            <div className="space-y-8">
+              <PanelistSection />
+              <DocumentComparisonSection />
+              <StatementsSection />
+              <ForumFormatSection />
+              <KeyInformationSection />
+              <PressCoverageSection />
+            </div>
+          </section>
+        </div>
+      </div>
     </>
   );
 };
