@@ -3344,21 +3344,51 @@ const ElectionPage: FC<PageProps> = ({ setActivePage }) => {
     };
   }, [selectedTopic]); // Dependency on selectedTopic is crucial
 
-  // --- Helper Function for Jump Buttons (remains the same) ---
-  const handleJumpTo = useCallback((id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-        // Use filterBarRef for offset calculation here too for consistency
-        const offset = filterBarRef.current?.offsetHeight ?? 60;
-        const elementPosition = element.getBoundingClientRect().top;
-        const offsetPosition = elementPosition + window.pageYOffset - offset - 20; // Added extra 20px padding
+// --- Helper Function for Jump Buttons ---
+  const handleJumpTo = useCallback((id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, []);
 
-        window.scrollTo({
-            top: offsetPosition,
-            behavior: "smooth"
-        });
-    }
-  }, []);
+  // ADD THIS NEW USEEFFECT HERE:
+  useEffect(() => {
+    const handleScrollAndExpansion = () => {
+      const hash = window.location.hash.substring(1);
+      if (!hash) return;
+
+      setTimeout(() => {
+        const element = document.getElementById(hash);
+        if (!element) return;
+
+        const topicSection = element.closest('[data-topic-section-id]');
+        const topicId = topicSection?.getAttribute('data-topic-section-id');
+
+        if (topicId) {
+          if (topicId !== selectedTopic) {
+            setSelectedTopic(topicId);
+            return;
+          }
+        }
+
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 300);
+      }, 100);
+    };
+
+    handleScrollAndExpansion();
+    window.addEventListener('hashchange', handleScrollAndExpansion);
+
+    return () => {
+      window.removeEventListener('hashchange', handleScrollAndExpansion);
+    };
+  }, [selectedTopic]);
+
+  return (
+    <>
+      <Modal
 
 
   return (
