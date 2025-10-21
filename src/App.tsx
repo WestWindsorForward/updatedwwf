@@ -2724,16 +2724,20 @@ const ElectionPage: FC<PageProps> = ({ setActivePage }) => {
   const headerRef = useRef<HTMLElement>(null); // Ref for the sticky header/filter bar
 
   const handleCopyLink = useCallback((questionId: string) => {
-    // Construct the full URL with the hash
-    const url = `${window.location.origin}${window.location.pathname}#${questionId}`;
-    navigator.clipboard.writeText(url).then(() => {
-      // Set this question's copied state to true
-      setCopiedLinks(prev => ({ ...prev, [questionId]: true }));
-      // Reset the button text after 2 seconds
-      setTimeout(() => {
-        setCopiedLinks(prev => ({ ...prev, [questionId]: false }));
-      }, 2000);
-    });
+    // Guard against environments where clipboard API is not available
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        const url = `${window.location.origin}${window.location.pathname}#${questionId}`;
+        navigator.clipboard.writeText(url).then(() => {
+            setCopiedLinks(prev => ({ ...prev, [questionId]: true }));
+            setTimeout(() => {
+                setCopiedLinks(prev => ({ ...prev, [questionId]: false }));
+            }, 2000);
+        }).catch(err => {
+            console.error("Failed to copy link: ", err);
+        });
+    } else {
+        console.error("Clipboard API not supported in this environment.");
+    }
   }, []);
 
   const [activeOffice, setActiveOffice] = useState<OfficeType | null>(null); // Use OfficeType
@@ -3352,44 +3356,97 @@ Co-Executive Directors @ West Windsor Forward`;
     (p) => p.id === "micah-rasmussen"
   )?.bio;
 
+  const convertTimeToSeconds = (time: string | undefined): number => {
+    if (!time) return 0;
+    const parts = time.split(":").map(Number);
+    if (parts.length === 2) return parts[0] * 60 + parts[1];
+    if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+    return 0;
+  };
+
+  const doesQuestionApply = (
+    question: ElectionQuestion,
+    office: OfficeType
+  ): boolean => {
+    return Array.isArray(question.office)
+      ? question.office.includes(office)
+      : question.office === office;
+  };
+
+  const filteredIssues = useMemo(() => {
+    return electionData.issues
+      .map((issue) => {
+        const matchingQuestions = issue.questions.filter((question) => {
+          const officeMatch =
+            !activeOffice ||
+            (Array.isArray(question.office)
+              ? question.office.includes(activeOffice)
+              : question.office === activeOffice);
+          const searchMatch =
+            !searchQuery ||
+            question.text.toLowerCase().includes(searchQuery.toLowerCase());
+          return officeMatch && searchMatch;
+        });
+        return { ...issue, questions: matchingQuestions };
+      })
+      .filter((issue) => issue.questions.length > 0);
+  }, [activeOffice, searchQuery]);
+
+  const handleTopicToggle = (issueId: string, questionCount: number) => {
+    const isCurrentlySelected = selectedTopic === issueId;
+    setSelectedTopic(isCurrentlySelected ? null : issueId);
+
+    if (isCurrentlySelected && questionCount > 3) {
+        const topicButton = document.querySelector(`button[data-topic-id="${issueId}"]`);
+        if (topicButton) {
+            setTimeout(() => {
+                topicButton.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
+        } else if (filterBarRef.current) {
+             filterBarRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+  };
+
+
   // --- EFFECT FOR HANDLING HASH SCROLLING ---
   useEffect(() => {
-    const handleHashChange = () => {
-      const hash = window.location.hash.substring(1); // Remove the '#'
+    const handleScrollAndExpansion = () => {
+      const hash = window.location.hash.substring(1);
       if (!hash) return;
 
       const element = document.getElementById(hash);
-      if (element) {
-        // Find the parent topic section if it's a question link
-        const topicElement = element.closest('[data-topic-section-id]');
-        if (topicElement) {
-          const topicId = topicElement.getAttribute('data-topic-section-id');
-          // Expand the topic if it's not already expanded
-          if (topicId && selectedTopic !== topicId) {
-            setSelectedTopic(topicId);
-            // Use setTimeout to allow state update and rendering before scrolling
-            setTimeout(() => {
-              element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 100); // Adjust delay if needed
-            return; // Exit after setting state and scheduling scroll
-          }
-        }
-        // If it's a section link or topic already expanded, scroll immediately
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (!element) return;
+
+      const topicSection = element.closest('[data-topic-section-id]');
+      const topicId = topicSection?.getAttribute('data-topic-section-id');
+
+      // If the correct topic is not open, open it. The effect will re-run.
+      if (topicId && topicId !== selectedTopic) {
+        setSelectedTopic(topicId);
+        return; // Stop, let re-render and subsequent effect handle the scroll.
       }
+      
+      // If topic is already open or it's not a question, scroll.
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
 
-    // Handle initial load
-    handleHashChange();
+    // This handles scrolling after a topic has been expanded via state update.
+    if(selectedTopic && window.location.hash){
+        // Use a timeout to ensure the DOM is ready after expansion.
+        const timeoutId = setTimeout(handleScrollAndExpansion, 150);
+        return () => clearTimeout(timeoutId);
+    }
 
-    // Listen for hash changes
-    window.addEventListener('hashchange', handleHashChange, false);
+    // This handles initial page load with a hash.
+    handleScrollAndExpansion();
 
-    // Cleanup listener
+    // This handles user clicking on another hash link while on the page.
+    window.addEventListener('hashchange', handleScrollAndExpansion);
     return () => {
-      window.removeEventListener('hashchange', handleHashChange, false);
+      window.removeEventListener('hashchange', handleScrollAndExpansion);
     };
-  }, [selectedTopic]); // Re-run if selectedTopic changes to handle expansion correctly
+}, [selectedTopic]); // Dependency is key for the expand-then-scroll logic.
 
 
   return (
@@ -4167,8 +4224,8 @@ Co-Executive Directors @ West Windsor Forward`;
                  </div>
 
                 <div className="mt-6 text-xs text-slate-600 space-y-2">
-                  <p><strong>¹ About 'Funding Sources'</strong><br />The breakdown of funding sources (e.g., from Individuals vs. Committees) is based on the detailed, itemized records in the election filings... (rest of text)</p>
-                  <p><strong>² About 'Donation Origin' (In-Town Percentage)</strong><br />The "In-Town" percentage is calculated using only the itemized contributions... (rest of text)</p>
+                  <p><strong>¹ About 'Funding Sources'</strong><br />The breakdown of funding sources... (rest of text)</p>
+                  <p><strong>² About 'Donation Origin' (In-Town Percentage)</strong><br />The "In-Town" percentage is calculated... (rest of text)</p>
                 </div>
               </div>
             </Card>
