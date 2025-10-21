@@ -4710,9 +4710,6 @@ Co-Executive Directors @ West Windsor Forward`;
   );
 };
 
-export default ElectionPage;
-
-
 const ContactPage: FC = () => {
   const initialFormData = { name: "", email: "", message: "" };
   const [formData, setFormData] = useState(initialFormData);
