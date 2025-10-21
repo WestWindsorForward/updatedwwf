@@ -2716,6 +2716,7 @@ const BioCard: FC<{
 
 const ElectionPage: FC<PageProps> = ({ setActivePage }) => {
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null); // Start with all collapsed
+  const selectedTopicRef = useRef<string | null>(null); // Add this line
   const [activeTab, setActiveTab] = useState("mail");
   const [isStatementModalOpen, setIsStatementModalOpen] = useState(false);
   const [isRasmussenBioOpen, setIsRasmussenBioOpen] = useState(false);
@@ -3414,68 +3415,78 @@ Co-Executive Directors @ West Windsor Forward`;
 
 
 // --- EFFECT FOR HANDLING HASH SCROLLING (REPLACEMENT) ---
-// --- EFFECT FOR HANDLING HASH SCROLLING (CORRECTED) ---
   useEffect(() => {
-    // Define the function that handles hash checking and scrolling
-    const processHash = () => {
-      // Small delay allows component to render/re-render before searching for the element
-      const timeoutId = setTimeout(() => {
+    const handleScrollAndExpansion = () => {
+      // Small delay to ensure initial render/state updates might settle
+      const initialTimeoutId = setTimeout(() => {
         const hash = window.location.hash.substring(1);
         if (!hash) return; // No hash, do nothing
 
         const element = document.getElementById(hash);
         if (!element) {
-          console.warn(`Element with ID "${hash}" not found after delay.`);
+          console.warn(`Element with ID "${hash}" not found.`);
           return; // Element not found
         }
 
         const topicSection = element.closest('[data-topic-section-id]');
         const topicId = topicSection?.getAttribute('data-topic-section-id');
 
-        // Function to scroll smoothly after another brief delay
-        const smoothScroll = () => {
-           setTimeout(() => {
-              element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-           }, 100); // Delay allows UI to update after state change
+        // Function to perform the scroll
+        const performScroll = () => {
+          // Use a timeout to ensure the DOM is updated after potential expansion
+          const scrollTimeoutId = setTimeout(() => {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 150); // Delay allows for render/animation
+          return () => clearTimeout(scrollTimeoutId); // Return cleanup for scroll timeout
         };
 
+        let cleanupScroll: (() => void) | null = null;
+
         if (topicId) {
-          // If the topic is not currently selected, select it.
-          // The scroll will happen on the *next* render cycle triggered by this state change
-          // because 'selectedTopic' is in the dependency array below.
+          // If the topic isn't open, open it first.
           if (topicId !== selectedTopic) {
-            console.log(`Hash target needs topic "${topicId}" opened. Setting state.`);
-            setSelectedTopic(topicId); // Trigger re-render and effect re-run
+             // Check if already selected to prevent infinite loops
+             if (topicId !== selectedTopicRef.current) {
+                selectedTopicRef.current = topicId; // Track intended topic
+                setSelectedTopic(topicId);
+                // Don't scroll immediately, let the re-render handle it
+             }
           } else {
-            // Topic is already selected, scroll now.
-            console.log(`Hash target is in already open topic "${topicId}". Scrolling.`);
-            smoothScroll();
+            // Topic is already open, safe to scroll.
+            cleanupScroll = performScroll();
           }
         } else {
-          // Element is not inside a topic section, scroll directly.
-          console.log(`Hash target is outside topic sections. Scrolling directly.`);
-          smoothScroll();
+          // Element is not inside an expandable topic, scroll directly.
+          cleanupScroll = performScroll();
         }
-      }, 150); // Initial delay to ensure DOM elements exist
 
-      // Return a cleanup function *for the setTimeout* itself
-      return () => clearTimeout(timeoutId);
+        // Return cleanup for the initial timeout and potentially the scroll timeout
+        return () => {
+          clearTimeout(initialTimeoutId);
+          if (cleanupScroll) cleanupScroll();
+        };
+
+      }, 50); // Initial short delay
+      return () => clearTimeout(initialTimeoutId); // Cleanup for initial timeout
     };
 
-    // Run the hash processing logic on mount and when selectedTopic changes
-    const cleanupTimeout = processHash();
 
-    // Add listener for future hash changes while on the page
-    // Note: processHash is now correctly in scope here
-    window.addEventListener('hashchange', processHash);
+    // Ref to prevent triggering setSelectedTopic multiple times for the same hash
+    const selectedTopicRef = useRef<string | null>(null);
 
-    // Cleanup function when component unmounts or effect re-runs
+    // Run on initial mount and when selectedTopic state changes
+    const cleanup = handleScrollAndExpansion();
+
+    // Add listener for hash changes while on the page
+    window.addEventListener('hashchange', handleScrollAndExpansion);
+
+    // Cleanup function for the effect
     return () => {
-      window.removeEventListener('hashchange', processHash); // Correctly removes the listener
-      if (cleanupTimeout) cleanupTimeout(); // Clear any pending initial timeout
+      window.removeEventListener('hashchange', handleScrollAndExpansion);
+      if (cleanup) cleanup(); // Clean up any pending timeouts
+      selectedTopicRef.current = null; // Reset ref on cleanup
     };
-  // Re-run this effect *only* when selectedTopic changes.
-  // This ensures scrolling happens *after* the state update causes a re-render.
+  // IMPORTANT: Depend only on selectedTopic to re-run scroll logic AFTER expansion
   }, [selectedTopic]);
 
   return (
