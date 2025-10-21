@@ -3508,7 +3508,6 @@ Co-Executive Directors @ West Windsor Forward`;
               </div>
 
             </div> {/* This is the closing tag of the z-10 container */}
-          </div>
         </header>
         <div className="container mx-auto px-4 py-8 sm:py-12 space-y-12">
           <Card
