@@ -3417,65 +3417,74 @@ Co-Executive Directors @ West Windsor Forward`;
 // --- EFFECT FOR HANDLING HASH SCROLLING (CORRECTED) ---
   useEffect(() => {
     // Define the function that handles hash checking and scrolling
+    // --- EFFECT FOR HANDLING HASH SCROLLING (v3 - Focus on State First) ---
+  useEffect(() => {
+    // This flag helps differentiate initial load/hash change vs. re-run after state update
+    let isInitialCheck = true;
+
     const processHash = () => {
-      // Small delay allows component to render/re-render before searching for the element
+      // Use a slightly longer delay on the *very first* run (mount)
+      // Subsequent runs (state change or hash change) can be faster.
+      const delay = isInitialCheck ? 250 : 100;
+      isInitialCheck = false; // Mark that initial check is done
+
       const timeoutId = setTimeout(() => {
         const hash = window.location.hash.substring(1);
-        if (!hash) return; // No hash, do nothing
+        if (!hash) return;
 
         const element = document.getElementById(hash);
         if (!element) {
-          console.warn(`Element with ID "${hash}" not found after delay.`);
-          return; // Element not found
+          console.warn(`Element with ID "${hash}" not found.`);
+          return;
         }
 
         const topicSection = element.closest('[data-topic-section-id]');
         const topicId = topicSection?.getAttribute('data-topic-section-id');
 
-        // Function to scroll smoothly after another brief delay
-        const smoothScroll = () => {
-           setTimeout(() => {
-              element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-           }, 100); // Delay allows UI to update after state change
+        const smoothScrollToElement = () => {
+          console.log(`Attempting to scroll to #${hash}`);
+          // Short delay before scrolling to ensure element is definitely ready
+          setTimeout(() => {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 50);
         };
 
         if (topicId) {
-          // If the topic is not currently selected, select it.
-          // The scroll will happen on the *next* render cycle triggered by this state change
-          // because 'selectedTopic' is in the dependency array below.
+          // Element is inside a topic section
           if (topicId !== selectedTopic) {
+            // Topic needs to be opened. Set state and let the effect re-run.
             console.log(`Hash target needs topic "${topicId}" opened. Setting state.`);
-            setSelectedTopic(topicId); // Trigger re-render and effect re-run
+            setSelectedTopic(topicId);
+            // *** SCROLL WILL HAPPEN ON THE NEXT EFFECT RUN (due to dependency) ***
           } else {
-            // Topic is already selected, scroll now.
-            console.log(`Hash target is in already open topic "${topicId}". Scrolling.`);
-            smoothScroll();
+            // Topic is already open. Scroll now.
+            console.log(`Topic "${topicId}" is already open. Scrolling to #${hash}.`);
+            smoothScrollToElement();
           }
         } else {
-          // Element is not inside a topic section, scroll directly.
-          console.log(`Hash target is outside topic sections. Scrolling directly.`);
-          smoothScroll();
+          // Element is not inside a topic section. Scroll directly.
+          console.log(`Hash target #${hash} is outside topic sections. Scrolling directly.`);
+          smoothScrollToElement();
         }
-      }, 150); // Initial delay to ensure DOM elements exist
+      }, delay); // Apply the calculated delay
 
-      // Return a cleanup function *for the setTimeout* itself
-      return () => clearTimeout(timeoutId);
+      return () => clearTimeout(timeoutId); // Cleanup for the setTimeout
     };
 
-    // Run the hash processing logic on mount and when selectedTopic changes
+    // --- Listener Setup ---
+    // Run the logic
     const cleanupTimeout = processHash();
 
-    // Add listener for future hash changes while on the page
-    // Note: processHash is now correctly in scope here
+    // Add listener for future hash changes
+    // We re-use processHash; 'isInitialCheck' will be false for these calls
     window.addEventListener('hashchange', processHash);
 
-    // Cleanup function when component unmounts or effect re-runs
+    // Cleanup on unmount or before next run
     return () => {
-      window.removeEventListener('hashchange', processHash); // Correctly removes the listener
-      if (cleanupTimeout) cleanupTimeout(); // Clear any pending initial timeout
+      window.removeEventListener('hashchange', processHash);
+      if (cleanupTimeout) cleanupTimeout();
     };
-  // Re-run this effect *only* when selectedTopic changes.
-  // This ensures scrolling happens *after* the state update causes a re-render.
+  // Re-run whenever selectedTopic changes, enabling the scroll *after* state update
   }, [selectedTopic]);
 
   return (
