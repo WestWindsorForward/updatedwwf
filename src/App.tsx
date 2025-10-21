@@ -4304,7 +4304,6 @@ Co-Executive Directors @ West Windsor Forward`;
       </div>
     </>
   );
-};
 
 const ContactPage: FC = () => {
   const initialFormData = { name: "", email: "", message: "" };
