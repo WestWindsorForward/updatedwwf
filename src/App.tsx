@@ -3492,23 +3492,27 @@ Co-Executive Directors @ West Windsor Forward`;
                 </p>
               </div>
             </div>
-          </div>
-        </header>
-{/* --- JUMP LINKS (NEW) --- */}
-              <div className="mt-8 flex flex-col sm:flex-row justify-center gap-3 px-4">
+             {/* Jump links were previously inside this div, now moved outside header */}
+          </div> {/* This is the closing tag of the z-10 container */}
+        </header> {/* <-- Header closes here */}
+
+        {/* --- JUMP LINKS (MOVED HERE) --- */}
+        <div className="container mx-auto px-4">
+            <div className="mt-8 mb-4 flex flex-col sm:flex-row justify-center gap-3">
                 <Button href="#interviews" type="secondary" size="md" icon={<IconMicrophone />}>
-                  Jump to Interviews
+                Jump to Interviews
                 </Button>
                 <Button href="#finance" type="secondary" size="md" icon={<IconDocument />}>
-                  Jump to Campaign Finance
+                Jump to Campaign Finance
                 </Button>
                 <Button href="#voter-tools" type="secondary" size="md" icon={<IconBallotBox />}>
-                  Jump to Voter Tools
+                Jump to Voter Tools
                 </Button>
-              </div>
-            </div> {/* This is the closing tag of the z-10 container */}
-        </header>
-        <div className="container mx-auto px-4 py-8 sm:py-12 space-y-12">
+            </div>
+        </div>
+        {/* --- END JUMP LINKS --- */}
+
+        <div className="container mx-auto px-4 py-8 sm:py-12 space-y-12"> {/* <-- Main page content container */}
           <Card
             noHoverEffect
             className="p-0 -mb-6 border-amber-300 bg-amber-50"
@@ -4005,98 +4009,97 @@ Co-Executive Directors @ West Windsor Forward`;
                             };
 
                             return (
-                              return (
-  // This is the new "box" for each question
-  <div
-    key={question.id}
-    id={question.id} // This is the ID for the unique link
-    className="relative bg-white shadow-lg rounded-xl border border-gray-200 p-4 sm:p-6 scroll-mt-32" // Added styles and scroll-margin
-  >
-    <div className="text-center mb-6"> {/* Increased bottom margin */}
-                                  <div className="mb-2">
-                                    {Array.isArray(question.office) ? (
-                                      question.office.map((off) => (
+                                // This is the new "box" for each question
+                                <div
+                                key={question.id}
+                                id={question.id} // This is the ID for the unique link
+                                className="relative bg-white shadow-lg rounded-xl border border-gray-200 p-4 sm:p-6 scroll-mt-32" // Added styles and scroll-margin
+                                >
+                                <div className="text-center mb-6"> {/* Increased bottom margin */}
+                                    <div className="mb-2">
+                                        {Array.isArray(question.office) ? (
+                                        question.office.map((off) => (
+                                            <span
+                                            key={off}
+                                            className={`inline-block text-xs font-semibold mr-2 px-2.5 py-1 rounded-full ${
+                                                officeStyles[off] ||
+                                                "bg-gray-100 text-gray-800"
+                                            }`}
+                                            >
+                                            {off} Question
+                                            </span>
+                                        ))
+                                        ) : question.office ? (
                                         <span
-                                          key={off}
-                                          className={`inline-block text-xs font-semibold mr-2 px-2.5 py-1 rounded-full ${
-                                            officeStyles[off] ||
+                                            className={`inline-block text-xs font-semibold mr-2 px-2.5 py-1 rounded-full ${
+                                            officeStyles[question.office] ||
                                             "bg-gray-100 text-gray-800"
-                                          }`}
+                                            }`}
                                         >
-                                          {off} Question
+                                            {question.office} Question
                                         </span>
-                                      ))
-                                    ) : question.office ? (
-                                      <span
-                                        className={`inline-block text-xs font-semibold mr-2 px-2.5 py-1 rounded-full ${
-                                          officeStyles[question.office] ||
-                                          "bg-gray-100 text-gray-800"
-                                        }`}
-                                      >
-                                        {question.office} Question
-                                      </span>
-                                    ) : (
-                                      <span className="inline-block text-xs font-semibold mr-2 px-2.5 py-1 rounded-full bg-gray-100 text-gray-800">
-                                        General Question
-                                      </span>
-                                    )}
-                                  </div>
-                                  <p className="font-semibold text-slate-700 italic max-w-2xl mx-auto">
-                  "{question.text}"
-                </p>
-                {/* --- NEW COPY BUTTON --- */}
-                <Button
-                  size="sm"
-                  // Use "success" type when link is copied
-                  type={copiedLinks[question.id] ? "success" : "secondary"} 
-                  onClick={() => handleCopyLink(question.id)}
-                  className="mt-4"
-                  // Show a checkmark icon when copied
-                  icon={copiedLinks[question.id] ? <IconCheckCircle /> : <IconClipboard />}
-                >
-                  {copiedLinks[question.id] ? "Link Copied!" : "Copy Link to Question"}
-                </Button>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                                  {/* Conditionally render based on filter AND question applicability */}
-                                  {showMayor &&
-                                    questionIsMayor &&
-                                    renderResponseBlock(
-                                      "Mayoral Candidate: Hemant Marathe",
-                                      "text-blue-700",
-                                      maratheResponse,
-                                      mayorMaratheVideoId,
-                                      question.id
-                                    )}
-                                  {showMayor &&
-                                    questionIsMayor &&
-                                    renderResponseBlock(
-                                      "Mayoral Candidate: Sujit Singh",
-                                      "text-green-700",
-                                      singhResponse,
-                                      mayorSinghVideoId,
-                                      question.id
-                                    )}
-                                  {showCouncil &&
-                                    questionIsCouncil &&
-                                    renderResponseBlock(
-                                      "Council Candidates: Geevers & Charles",
-                                      "text-blue-700",
-                                      geeversCharlesResponse,
-                                      councilGeeversCharlesVideoId,
-                                      question.id
-                                    )}
-                                  {showCouncil &&
-                                    questionIsCouncil &&
-                                    renderResponseBlock(
-                                      "Council Candidates: Tomar & Winters",
-                                      "text-green-700",
-                                      tomarWintersResponse,
-                                      councilTomarWintersVideoId,
-                                      question.id
-                                    )}
+                                        ) : (
+                                        <span className="inline-block text-xs font-semibold mr-2 px-2.5 py-1 rounded-full bg-gray-100 text-gray-800">
+                                            General Question
+                                        </span>
+                                        )}
+                                    </div>
+                                    <p className="font-semibold text-slate-700 italic max-w-2xl mx-auto">
+                                        "{question.text}"
+                                    </p>
+                                    {/* --- NEW COPY BUTTON --- */}
+                                    <Button
+                                    size="sm"
+                                    // Use "success" type when link is copied
+                                    type={copiedLinks[question.id] ? "success" : "secondary"}
+                                    onClick={() => handleCopyLink(question.id)}
+                                    className="mt-4"
+                                    // Show a checkmark icon when copied
+                                    icon={copiedLinks[question.id] ? <IconCheckCircle /> : <IconClipboard />}
+                                    >
+                                    {copiedLinks[question.id] ? "Link Copied!" : "Copy Link to Question"}
+                                    </Button>
                                 </div>
-                              </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                                    {/* Conditionally render based on filter AND question applicability */}
+                                    {showMayor &&
+                                        questionIsMayor &&
+                                        renderResponseBlock(
+                                        "Mayoral Candidate: Hemant Marathe",
+                                        "text-blue-700",
+                                        maratheResponse,
+                                        mayorMaratheVideoId,
+                                        question.id
+                                        )}
+                                    {showMayor &&
+                                        questionIsMayor &&
+                                        renderResponseBlock(
+                                        "Mayoral Candidate: Sujit Singh",
+                                        "text-green-700",
+                                        singhResponse,
+                                        mayorSinghVideoId,
+                                        question.id
+                                        )}
+                                    {showCouncil &&
+                                        questionIsCouncil &&
+                                        renderResponseBlock(
+                                        "Council Candidates: Geevers & Charles",
+                                        "text-blue-700",
+                                        geeversCharlesResponse,
+                                        councilGeeversCharlesVideoId,
+                                        question.id
+                                        )}
+                                    {showCouncil &&
+                                        questionIsCouncil &&
+                                        renderResponseBlock(
+                                        "Council Candidates: Tomar & Winters",
+                                        "text-green-700",
+                                        tomarWintersResponse,
+                                        councilTomarWintersVideoId,
+                                        question.id
+                                        )}
+                                </div>
+                                </div>
                             );
                           })}
                         </div>
@@ -4597,7 +4600,7 @@ Co-Executive Directors @ West Windsor Forward`;
               <PressCoverageSection />
             </div>
           </section>
-        </div>
+        </div> {/* <-- End main page content container */}
       </div>
     </>
   );
