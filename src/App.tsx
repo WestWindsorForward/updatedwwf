@@ -2714,6 +2714,8 @@ const BioCard: FC<{
   );
 };
 
+// --- REPLACE YOUR ENTIRE ElectionPage COMPONENT WITH THIS ---
+
 const ElectionPage: FC<PageProps> = ({ setActivePage }) => {
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null); // Start with all collapsed
   const [activeTab, setActiveTab] = useState("mail");
@@ -3925,6 +3927,7 @@ Co-Executive Directors @ West Windsor Forward`;
                         }
                         className="w-full flex items-center justify-between p-4 text-left bg-slate-50 hover:bg-slate-100 transition-colors border-b border-gray-200" // Added border-b
                       >
+                        {/* --- FIX: Kept text-left --- */}
                         <span className="text-lg font-bold text-slate-800 text-left flex-1">
                           {issue.title}
                         </span>
@@ -4117,7 +4120,7 @@ Co-Executive Directors @ West Windsor Forward`;
                                 {/* --- FIX FOR CHIP SPACING & CENTERING --- */}
                                 <div className="text-center mb-6">
                                   {/* This div now controls spacing with flex and gap */}
-                                  <div className="mb-3 flex flex-wrap justify-center gap-2">
+                                  <div className="mb-3 flex flex-wrap justify-center gap-x-2 gap-y-3">
                                     {Array.isArray(question.office) ? (
                                       question.office.map((off) => (
                                         <span
@@ -4147,8 +4150,8 @@ Co-Executive Directors @ West Windsor Forward`;
                                       </span>
                                     )}
                                   </div>
-                                  {/* FIX: Added text-center sm:text-left */}
-                                  <p className="font-semibold text-slate-700 italic max-w-2xl mx-auto pr-8 sm:pr-0 text-center sm:text-left">
+                                  {/* FIX: Use px-8 sm:px-0 to center with padding on both sides on mobile */}
+                                  <p className="font-semibold text-slate-700 italic max-w-2xl mx-auto px-8 sm:px-0 text-center">
                                     "{question.text}"
                                   </p>
                                 </div>
@@ -4260,7 +4263,7 @@ Co-Executive Directors @ West Windsor Forward`;
                             Only includes donations &gt; $200
                           </span>
                         </div>
-                        <div className="bg-white border-2 border-slate-400 rounded-lg p-4 pt-8 space-y-8">
+                        <div className="bg-white border-2 border-slate-400 rounded-lg p-4 pt-10 space-y-8">
                         {/* END FIX */}
                           <div>
                             <div className="text-center mb-2"><h5 className="font-semibold text-slate-700 text-sm">Funding Sources¹</h5></div>
@@ -4284,8 +4287,8 @@ Co-Executive Directors @ West Windsor Forward`;
                       </div>
                       <div>
                         <div className="text-center mb-2"><h5 className="font-semibold text-slate-700 text-sm">Donation Size (% of Total Raised)</h5></div>
-                        {/* FIX: Labels to Chips (Stacked on mobile) */}
-                        <div className="flex flex-col items-center sm:flex-row sm:justify-between gap-1 mb-2 text-sm font-medium text-slate-700 px-1">
+                        {/* FIX: Labels to Chips (Center on mobile) */}
+                        <div className="flex flex-wrap justify-center gap-2 mb-2 text-center">
                           <span className="text-xs font-medium bg-sky-100 text-sky-800 px-2.5 py-0.5 rounded-full">17.3% $200 or less</span>
                           <span className="text-xs font-medium bg-slate-200 text-slate-700 px-2.5 py-0.5 rounded-full">82.7% over $200</span>
                         </div>
@@ -4316,12 +4319,12 @@ Co-Executive Directors @ West Windsor Forward`;
                             Only includes donations &gt; $200
                           </span>
                         </div>
-                        <div className="bg-white border-2 border-slate-400 rounded-lg p-4 pt-8 space-y-8">
+                        <div className="bg-white border-2 border-slate-400 rounded-lg p-4 pt-10 space-y-8">
                         {/* END FIX */}
                           <div>
                             <div className="text-center mb-2"><h5 className="font-semibold text-slate-700 text-sm">Funding Sources¹</h5></div>
-                             {/* FIX: Labels to Chips (Stacked on mobile) */}
-                            <div className="flex flex-col items-center sm:flex-row sm:justify-between gap-1 mb-2 text-sm font-medium text-slate-700 px-1">
+                             {/* FIX: Labels to Chips (Center on mobile) */}
+                            <div className="flex flex-wrap justify-center gap-2 mb-2 text-center">
                               <span className="text-xs font-medium bg-sky-100 text-sky-800 px-2.5 py-0.5 rounded-full">96.9% Individuals</span>
                               <span className="text-xs font-medium bg-slate-200 text-slate-700 px-2.5 py-0.5 rounded-full">3.1% Committees</span>
                             </div>
@@ -4341,8 +4344,8 @@ Co-Executive Directors @ West Windsor Forward`;
                       </div>
                       <div>
                         <div className="text-center mb-2"><h5 className="font-semibold text-slate-700 text-sm">Donation Size (% of Total Raised)</h5></div>
-                        {/* FIX: Labels to Chips (Stacked on mobile) */}
-                        <div className="flex flex-col items-center sm:flex-row sm:justify-between gap-1 mb-2 text-sm font-medium text-slate-700 px-1">
+                        {/* FIX: Labels to Chips (Center on mobile) */}
+                        <div className="flex flex-wrap justify-center gap-2 mb-2 text-center">
                           <span className="text-xs font-medium bg-sky-100 text-sky-800 px-2.5 py-0.5 rounded-full">6.2% $200 or less</span>
                           <span className="text-xs font-medium bg-slate-200 text-slate-700 px-2.5 py-0.5 rounded-full">93.8% over $200</span>
                         </div>
