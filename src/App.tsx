@@ -2714,10 +2714,6 @@ const BioCard: FC<{
   );
 };
 
-// --- REPLACE YOUR ENTIRE ElectionPage COMPONENT WITH THIS ---
-
-// --- REPLACE YOUR ENTIRE BROKEN ElectionPage COMPONENT WITH THIS CORRECTED ONE ---
-
 const ElectionPage: FC<PageProps> = ({ setActivePage }) => {
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null); // Start with all collapsed
   const [activeTab, setActiveTab] = useState("mail");
@@ -2731,24 +2727,26 @@ const ElectionPage: FC<PageProps> = ({ setActivePage }) => {
 
   const handleCopyLink = useCallback((questionId: string) => {
     // Guard against environments where clipboard API is not available
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      // Construct URL with hash
+    // Use execCommand as a fallback for iframe environments
+    try {
       const url = `${window.location.origin}${window.location.pathname}#${questionId}`;
-      navigator.clipboard
-        .writeText(url)
-        .then(() => {
-          setCopiedLinks((prev) => ({ ...prev, [questionId]: true }));
-          setTimeout(() => {
-            setCopiedLinks((prev) => ({ ...prev, [questionId]: false }));
-          }, 2000);
-        })
-        .catch((err) => {
-          console.error("Failed to copy link: ", err);
-        });
-    } else {
-      console.error("Clipboard API not supported in this environment.");
+      const textArea = document.createElement("textarea");
+      textArea.value = url;
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+
+      setCopiedLinks((prev) => ({ ...prev, [questionId]: true }));
+      setTimeout(() => {
+        setCopiedLinks((prev) => ({ ...prev, [questionId]: false }));
+      }, 2000);
+    } catch (err) {
+      console.error("Failed to copy link: ", err);
     }
   }, []);
+
 
   const handleJumpTo = useCallback(
     (targetId: string) => {
@@ -3430,8 +3428,6 @@ Co-Executive Directors @ West Windsor Forward`;
       .filter((issue) => issue.questions.length > 0);
   }, [activeOffice, searchQuery]);
 
-  // --- THIS IS THE FIX ---
-  // I have corrected the nested function definition
   const handleTopicToggle = (issueId: string, questionCount: number) => {
     // If there's a hash in the URL, remove it.
     // This "clears" the hash and gives control back to the user.
@@ -3456,7 +3452,6 @@ Co-Executive Directors @ West Windsor Forward`;
       }
     }
   };
-  // --- END OF FIX ---
 
 
   // --- EFFECT FOR HANDLING HASH SCROLLING & EXPANSION ---
@@ -3554,13 +3549,13 @@ Co-Executive Directors @ West Windsor Forward`;
           Thank you Micah Rasmussen for developing the questions for this
           interview series!
         </h2>
-        <div className="flex items-center mb-4">
+        <div className="flex flex-col sm:flex-row items-center mb-4">
           <img
             src="/micah.png"
             alt="Micah Rasmussen"
-            className="w-24 h-24 rounded-full mr-4"
+            className="w-24 h-24 rounded-full mr-0 sm:mr-4 mb-4 sm:mb-0"
           />
-          <div>
+          <div className="text-center sm:text-left">
             <h3 className="text-xl font-bold">Micah Rasmussen</h3>
             <p className="text-slate-600">
               Director, Rebovich Institute for NJ Politics
@@ -3583,7 +3578,7 @@ Co-Executive Directors @ West Windsor Forward`;
               Your non-partisan hub for the upcoming election, featuring
               candidate interviews, financial data, and key voter information.
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto bg-black bg-opacity-20 backdrop-blur-sm p-6 rounded-xl">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto bg-black bg-opacity-20 backdrop-blur-sm p-4 sm:p-6 rounded-xl">
               <div className="text-center">
                 <Countdown
                   targetDate="2025-11-04T20:00:00"
@@ -3745,7 +3740,7 @@ Co-Executive Directors @ West Windsor Forward`;
               West Windsor Forward Interview Series
             </h2>
             <Card noHoverEffect className="p-0">
-              <div className="p-6">
+              <div className="p-4 sm:p-6">
                 <p className="text-center text-slate-600 max-w-3xl mx-auto mb-8">
                   To help voters make an informed choice, we conducted a series
                   of non-partisan interviews (on October 12th and 19th). We
@@ -3930,13 +3925,13 @@ Co-Executive Directors @ West Windsor Forward`;
                         }
                         className="w-full flex items-center justify-between p-4 text-left bg-slate-50 hover:bg-slate-100 transition-colors border-b border-gray-200" // Added border-b
                       >
-                        <span className="text-lg font-bold text-slate-800">
+                        <span className="text-lg font-bold text-slate-800 text-center sm:text-left flex-1">
                           {issue.title}
                         </span>
                         {selectedTopic === issue.id ? (
-                          <IconChevronUp className="text-gray-500" />
+                          <IconChevronUp className="text-gray-500 ml-2" />
                         ) : (
-                          <IconChevronDown className="text-gray-500" />
+                          <IconChevronDown className="text-gray-500 ml-2" />
                         )}
                       </button>
                       {selectedTopic === issue.id && (
@@ -4043,8 +4038,9 @@ Co-Executive Directors @ West Windsor Forward`;
 
                               return (
                                 <div className="mb-4">
+                                  {/* --- FIX: Centered Candidate Name --- */}
                                   <h5
-                                    className={`font-bold ${slateColorClass} mb-2`}
+                                    className={`font-bold ${slateColorClass} mb-2 text-center`}
                                   >
                                     {slateName}
                                   </h5>
@@ -4090,7 +4086,7 @@ Co-Executive Directors @ West Windsor Forward`;
                                       <div className="aspect-video bg-slate-200 rounded-lg mb-2 flex items-center justify-center shadow-inner">
                                         <IconVideoCamera className="text-slate-400 h-8 w-8" />
                                       </div>
-                                      <p className="text-xs text-slate-500 italic">
+                                      <p className="text-xs text-slate-500 italic text-center">
                                         Response pending or clip unavailable.
                                       </p>
                                     </>
@@ -4118,17 +4114,18 @@ Co-Executive Directors @ West Windsor Forward`;
                                   {copiedLinks[question.id] ? <IconCheckCircle className="h-4 w-4 sm:h-5 sm:w-5" /> : <IconClipboard className="h-4 w-4 sm:h-5 sm:w-5" />}
                                 </button>
 
-                                {/* --- FIX: QUESTION CHIPS & CENTERING --- */}
+                                {/* --- FIX FOR CHIP SPACING & CENTERING --- */}
                                 <div className="text-center mb-6">
                                   {/* This div now controls spacing with flex and gap */}
-                                  <div className="mb-2 flex flex-wrap justify-center gap-2">
+                                  <div className="mb-3 flex flex-wrap justify-center gap-2">
                                     {Array.isArray(question.office) ? (
                                       question.office.map((off) => (
                                         <span
                                           key={off}
                                           // Note: mr-2 is REMOVED
-                                          className={`inline-block text-xs font-semibold px-2.5 py-1 rounded-full ${officeStyles[off] || "bg-gray-100 text-gray-800"
-                                            }`}
+                                          className={`inline-block text-xs font-semibold px-2.5 py-1 rounded-full ${
+                                            officeStyles[off] || "bg-gray-100 text-gray-800"
+                                          }`}
                                         >
                                           {off} Question
                                         </span>
@@ -4136,26 +4133,26 @@ Co-Executive Directors @ West Windsor Forward`;
                                     ) : question.office ? (
                                       <span
                                         // Note: mr-2 is REMOVED
-                                        className={`inline-block text-xs font-semibold px-2.5 py-1 rounded-full ${officeStyles[question.office] || "bg-gray-100 text-gray-800"
-                                          }`}
+                                        className={`inline-block text-xs font-semibold px-2.5 py-1 rounded-full ${
+                                          officeStyles[question.office] || "bg-gray-100 text-gray-800"
+                                        }`}
                                       >
                                         {question.office} Question
                                       </span>
                                     ) : (
-                                      <span
+                                      <span 
                                         // Note: mr-2 is REMOVED
                                         className="inline-block text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-100 text-gray-800">
                                         General Question
                                       </span>
                                     )}
                                   </div>
-                                  {/* This <p> tag has responsive padding */}
+                                  {/* FIX: Added padding-right for mobile, removed on sm+ */}
                                   <p className="font-semibold text-slate-700 italic max-w-2xl mx-auto pr-8 sm:pr-0">
                                     "{question.text}"
                                   </p>
                                 </div>
-                                {/* --- END OF FIX --- */}
-
+                                {/* --- END FIX --- */}
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                                   {showMayor &&
@@ -4220,7 +4217,7 @@ Co-Executive Directors @ West Windsor Forward`;
               Campaign Finance & Transparency
             </h2>
             <Card noHoverEffect className="p-0">
-              <div className="p-6">
+              <div className="p-4 sm:p-6">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center mb-6 bg-amber-50 border border-amber-200 rounded-lg p-4">
                   <IconInfo className="text-amber-600 mr-3 flex-shrink-0 mt-1 sm:mt-0" />
                   <div>
@@ -4240,78 +4237,117 @@ Co-Executive Directors @ West Windsor Forward`;
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {/* Proven Leaders */}
-                  <div className="p-6 bg-slate-50 rounded-xl border-2 border-slate-200 h-full flex flex-col">
-                    <h4 className="font-bold text-lg text-blue-800 mb-4 text-center">
+                  
+                  {/* --- PROVEN LEADERS (FIXED) --- */}
+                  <div className="p-4 sm:p-6 bg-slate-50 rounded-xl border-2 border-slate-200 h-full flex flex-col">
+                    <h4 className="font-bold text-xl text-blue-800 mb-4 text-center">
                       Proven Leaders for West Windsor
                     </h4>
-                    {/* --- FIX: "Raised/Spent" Grid --- */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm mb-6 text-center">
-                      <div><div className="text-xs text-slate-500">Raised</div><div className="font-bold text-lg">$28,953.71</div></div>
-                      <div><div className="text-xs text-slate-500">Spent</div><div className="font-bold text-lg">$13,764.07</div></div>
-                      <div className="col-span-1 sm:col-span-2"><div className="text-xs text-slate-500">Cash on Hand</div><div className="font-bold text-2xl text-green-700">$21,554.38</div></div>
+                    {/* FIX: grid-cols-1 sm:grid-cols-2 */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm mb-6 text-center">
+                      <div><div className="text-xs text-slate-500">Raised</div><div className="font-bold text-2xl sm:text-lg">$28,953.71</div></div>
+                      <div><div className="text-xs text-slate-500">Spent</div><div className="font-bold text-2xl sm:text-lg">$13,764.07</div></div>
+                      {/* FIX: col-span-1 sm:col-span-2 */}
+                      <div className="col-span-1 sm:col-span-2 mt-2"><div className="text-xs text-slate-500">Cash on Hand</div><div className="font-bold text-2xl text-green-700">$21,554.38</div></div>
                     </div>
 
                     <div className="space-y-8 flex-grow flex flex-col">
-                      {/* --- FIX: Added mb-6 for spacing --- */}
-                      <div className="relative mb-6">
-                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10"><span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700 border border-orange-200"><span className="w-1.5 h-1.5 bg-orange-500 rounded-full mr-1.5 animate-pulse"></span>Only includes donations &gt; $200</span></div>
-                        <div className="bg-white border-2 border-slate-400 rounded-lg p-4 pt-6 space-y-8">
-                          <div><div className="text-center mb-1"><h5 className="font-semibold text-slate-700 text-sm">Funding Sources¹</h5></div><div className="text-center mb-1 text-sm font-medium text-slate-700"><span>100% from Individuals</span></div><div className="w-full bg-slate-300 rounded-full h-2.5 overflow-hidden"><div className="bg-sky-500 h-2.5" style={{ width: "100%" }}></div></div></div>
-                          <div><div className="text-center mb-1"><h5 className="font-semibold text-slate-700 text-sm">Donation Origin (by $ Amount)²</h5></div><div className="text-center mb-1 text-sm font-medium text-slate-700"><span>29.4% from In-Town</span></div><div className="w-full bg-slate-300 rounded-full h-2.5 overflow-hidden"><div className="bg-sky-500 h-2.5" style={{ width: "29.4%" }}></div></div></div>
+                      <div className="relative">
+                        {/* FIX: Centered chip and added padding-top to box */}
+                        <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10 w-full flex justify-center">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700 border border-orange-200">
+                            <span className="w-1.5 h-1.5 bg-orange-500 rounded-full mr-1.5 animate-pulse"></span>
+                            Only includes donations &gt; $200
+                          </span>
+                        </div>
+                        <div className="bg-white border-2 border-slate-400 rounded-lg p-4 pt-8 space-y-8">
+                        {/* END FIX */}
+                          <div>
+                            <div className="text-center mb-2"><h5 className="font-semibold text-slate-700 text-sm">Funding Sources¹</h5></div>
+                            {/* FIX: Labels to Chips */}
+                            <div className="flex flex-wrap justify-center gap-2 mb-2">
+                              <span className="text-xs font-medium bg-sky-100 text-sky-800 px-2.5 py-0.5 rounded-full">100% from Individuals</span>
+                            </div>
+                            {/* END FIX */}
+                            <div className="w-full bg-slate-200 rounded-full h-2.5"><div className="bg-sky-500 h-2.5 rounded-full" style={{ width: "100%" }}></div></div>
+                          </div>
+                          <div>
+                            <div className="text-center mb-2"><h5 className="font-semibold text-slate-700 text-sm">Donation Origin (by $ Amount)²</h5></div>
+                            {/* FIX: Labels to Chips */}
+                            <div className="flex flex-wrap justify-center gap-2 mb-2">
+                              <span className="text-xs font-medium bg-sky-100 text-sky-800 px-2.5 py-0.5 rounded-full">29.4% from In-Town</span>
+                            </div>
+                            {/* END FIX */}
+                            <div className="w-full bg-slate-200 rounded-full h-2.5"><div className="bg-sky-500 h-2.5 rounded-full" style={{ width: "29.4%" }}></div></div>
+                          </div>
                         </div>
                       </div>
                       <div>
-                        <div className="text-center mb-1"><h5 className="font-semibold text-slate-700 text-sm">Donation Size (% of Total Raised)</h5></div>
-                        {/* --- FIX: "Donation Size" Chips --- */}
-                        <div className="flex flex-wrap justify-center gap-2 mb-1 text-xs font-medium text-slate-700 px-1">
-                          <span className="bg-sky-100 text-sky-800 px-2 py-0.5 rounded-full border border-sky-200">17.3% donations of $200 or less</span>
-                          <span className="bg-slate-200 text-slate-800 px-2 py-0.5 rounded-full border border-slate-300">82.7% donations of over $200</span>
+                        <div className="text-center mb-2"><h5 className="font-semibold text-slate-700 text-sm">Donation Size (% of Total Raised)</h5></div>
+                        {/* FIX: Labels to Chips (Stacked on mobile) */}
+                        <div className="flex flex-col items-center sm:flex-row sm:justify-between gap-1 mb-2 text-sm font-medium text-slate-700 px-1">
+                          <span className="text-xs font-medium bg-sky-100 text-sky-800 px-2.5 py-0.5 rounded-full">17.3% $200 or less</span>
+                          <span className="text-xs font-medium bg-slate-200 text-slate-700 px-2.5 py-0.5 rounded-full">82.7% over $200</span>
                         </div>
-                        {/* --- FIX: Corrected graph bar (removed typo and simplified) --- */}
-                        <div className="w-full bg-slate-300 rounded-full h-2.5 overflow-hidden">
-                          <div className="bg-sky-500 h-2.5" style={{ width: "17.3%" }}></div>
-                        </div>
+                        {/* END FIX */}
+                        <div className="w-full bg-slate-200 rounded-full h-2.5 flex"><div className="bg-sky-500 h-2.5 rounded-l-full" style={{ width: "17.3%" }}></div><div className="bg-slate-400 h-2.5 rounded-r-full" style={{ width: "82.7%" }}></div></div>
                       </div>
                     </div>
                     <Button size="sm" type="secondary" className="w-full mt-10" href="/3892476.pdf" icon={<IconExternalLink />}>View Full ELEC Report</Button>
                   </div>
-
-                  {/* WW Together */}
-                  <div className="p-6 bg-slate-50 rounded-xl border-2 border-slate-200 h-full flex flex-col">
-                    <h4 className="font-bold text-lg text-green-800 mb-4 text-center">West Windsor Together</h4>
-                    {/* --- FIX: "Raised/Spent" Grid --- */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm mb-6 text-center">
-                      <div><div className="text-xs text-slate-500">Raised</div><div className="font-bold text-lg">$37,731.31</div></div>
-                      <div><div className="text-xs text-slate-500">Spent</div><div className="font-bold text-lg">$14,787.36</div></div>
-                      <div className="col-span-1 sm:col-span-2"><div className="text-xs text-slate-500">Cash on Hand</div><div className="font-bold text-2xl text-green-700">$22,943.95</div></div>
+                  
+                  {/* --- WW TOGETHER (FIXED) --- */}
+                  <div className="p-4 sm:p-6 bg-slate-50 rounded-xl border-2 border-slate-200 h-full flex flex-col">
+                    <h4 className="font-bold text-xl text-green-800 mb-4 text-center">West Windsor Together</h4>
+                    {/* FIX: grid-cols-1 sm:grid-cols-2 */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm mb-6 text-center">
+                      <div><div className="text-xs text-slate-500">Raised</div><div className="font-bold text-2xl sm:text-lg">$37,731.31</div></div>
+                      <div><div className="text-xs text-slate-500">Spent</div><div className="font-bold text-2xl sm:text-lg">$14,787.36</div></div>
+                      {/* FIX: col-span-1 sm:col-span-2 */}
+                      <div className="col-span-1 sm:col-span-2 mt-2"><div className="text-xs text-slate-500">Cash on Hand</div><div className="font-bold text-2xl text-green-700">$22,943.95</div></div>
                     </div>
 
                     <div className="space-y-8 flex-grow flex flex-col">
-                      {/* --- FIX: Added mb-6 for spacing --- */}
-                      <div className="relative mb-6">
-                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10"><span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700 border border-orange-200"><span className="w-1.5 h-1.5 bg-orange-500 rounded-full mr-1.5 animate-pulse"></span>Only includes donations &gt; $200</span></div>
-                        <div className="bg-white border-2 border-slate-400 rounded-lg p-4 pt-6 space-y-8">
+                      <div className="relative">
+                        {/* FIX: Centered chip and added padding-top to box */}
+                        <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10 w-full flex justify-center">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700 border border-orange-200">
+                            <span className="w-1.5 h-1.5 bg-orange-500 rounded-full mr-1.5 animate-pulse"></span>
+                            Only includes donations &gt; $200
+                          </span>
+                        </div>
+                        <div className="bg-white border-2 border-slate-400 rounded-lg p-4 pt-8 space-y-8">
+                        {/* END FIX */}
                           <div>
-                            <div className="text-center mb-1"><h5 className="font-semibold text-slate-700 text-sm">Funding Sources¹</h5></div>
-                            {/* --- FIX: "Funding Sources" labels --- */}
-                            <div className="flex flex-col text-center sm:flex-row sm:justify-between mb-1 text-sm font-medium text-slate-700 px-1"><span>96.9% Individuals</span><span>3.1% Committees</span></div>
-                            <div className="w-full bg-slate-300 rounded-full h-2.5 flex overflow-hidden"><div className="bg-sky-500 h-2.5" style={{ width: "96.9%" }}></div></div>
+                            <div className="text-center mb-2"><h5 className="font-semibold text-slate-700 text-sm">Funding Sources¹</h5></div>
+                             {/* FIX: Labels to Chips (Stacked on mobile) */}
+                            <div className="flex flex-col items-center sm:flex-row sm:justify-between gap-1 mb-2 text-sm font-medium text-slate-700 px-1">
+                              <span className="text-xs font-medium bg-sky-100 text-sky-800 px-2.5 py-0.5 rounded-full">96.9% Individuals</span>
+                              <span className="text-xs font-medium bg-slate-200 text-slate-700 px-2.5 py-0.5 rounded-full">3.1% Committees</span>
+                            </div>
+                            {/* END FIX */}
+                            <div className="w-full bg-slate-200 rounded-full h-2.5 flex"><div className="bg-sky-500 h-2.5 rounded-l-full" style={{ width: "96.9%" }}></div><div className="bg-slate-400 h-2.5 rounded-r-full" style={{ width: "3.1%" }}></div></div>
                           </div>
-                          <div><div className="text-center mb-1"><h5 className="font-semibold text-slate-700 text-sm">Donation Origin (by $ Amount)²</h5></div><div className="text-center mb-1 text-sm font-medium text-slate-700"><span>33.6% from In-Town</span></div><div className="w-full bg-slate-300 rounded-full h-2.5 overflow-hidden"><div className="bg-sky-500 h-2.5" style={{ width: "33.6%" }}></div></div></div>
+                          <div>
+                            <div className="text-center mb-2"><h5 className="font-semibold text-slate-700 text-sm">Donation Origin (by $ Amount)²</h5></div>
+                            {/* FIX: Labels to Chips */}
+                            <div className="flex flex-wrap justify-center gap-2 mb-2">
+                              <span className="text-xs font-medium bg-sky-100 text-sky-800 px-2.5 py-0.5 rounded-full">33.6% from In-Town</span>
+                            </div>
+                            {/* END FIX */}
+                            <div className="w-full bg-slate-200 rounded-full h-2.5"><div className="bg-sky-500 h-2.5 rounded-full" style={{ width: "33.6%" }}></div></div>
+                          </div>
                         </div>
                       </div>
                       <div>
-                        <div className="text-center mb-1"><h5 className="font-semibold text-slate-700 text-sm">Donation Size (% of Total Raised)</h5></div>
-                        {/* --- FIX: "Donation Size" Chips --- */}
-                        <div className="flex flex-wrap justify-center gap-2 mb-1 text-xs font-medium text-slate-700 px-1">
-                          <span className="bg-sky-100 text-sky-800 px-2 py-0.5 rounded-full border border-sky-200">6.2% donations of $200 or less</span>
-                          <span className="bg-slate-200 text-slate-800 px-2 py-0.5 rounded-full border border-slate-300">93.8% donations of over $200</span>
+                        <div className="text-center mb-2"><h5 className="font-semibold text-slate-700 text-sm">Donation Size (% of Total Raised)</h5></div>
+                        {/* FIX: Labels to Chips (Stacked on mobile) */}
+                        <div className="flex flex-col items-center sm:flex-row sm:justify-between gap-1 mb-2 text-sm font-medium text-slate-700 px-1">
+                          <span className="text-xs font-medium bg-sky-100 text-sky-800 px-2.5 py-0.5 rounded-full">6.2% $200 or less</span>
+                          <span className="text-xs font-medium bg-slate-200 text-slate-700 px-2.5 py-0.5 rounded-full">93.8% over $200</span>
                         </div>
-                        {/* --- FIX: Corrected graph bar (simplified) --- */}
-                        <div className="w-full bg-slate-300 rounded-full h-2.5 overflow-hidden">
-                          <div className="bg-sky-500 h-2.5" style={{ width: "6.2%" }}></div>
-                        </div>
+                        {/* END FIX */}
+                        <div className="w-full bg-slate-200 rounded-full h-2.5 flex"><div className="bg-sky-500 h-2.5 rounded-l-full" style={{ width: "6.2%" }}></div><div className="bg-slate-400 h-2.5 rounded-r-full" style={{ width: "93.8%" }}></div></div>
                       </div>
                     </div>
                     <Button size="sm" type="secondary" className="w-full mt-10" href="/3892561.pdf" icon={<IconExternalLink />}>View Full ELEC Report</Button>
@@ -4332,7 +4368,7 @@ Co-Executive Directors @ West Windsor Forward`;
               Voter Toolkit
             </h2>
             <Card noHoverEffect className="p-0">
-              <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="p-4 sm:p-6 grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div><div className="flex items-center mb-3"><IconCalendar className="h-6 w-6 text-sky-600 mr-2" /><h3 className="text-lg font-semibold text-slate-800">Key Dates</h3></div><ul className="space-y-2">{keyDates.map((item) => (<li key={item.event} className="text-sm"><strong className="text-sky-700">{item.date}:</strong> {item.event}</li>))}</ul></div>
                 <div><div className="flex items-center mb-3"><IconUserCheck className="h-6 w-6 text-sky-600 mr-2" /><h3 className="text-lg font-semibold text-slate-800">Voter Tools</h3></div><div className="space-y-3"><Button type="secondary" href="https://voter.svrs.nj.gov/registration-check" icon={<IconExternalLink />} className="w-full justify-center">Check Status</Button><Button type="primary" href="https://voter.svrs.nj.gov/register" icon={<IconUserCheck />} className="w-full justify-center">Register Online</Button><Button type="secondary" href="https://voter.svrs.nj.gov/polling-place-search" icon={<IconMapMarker className="h-4 w-4" />} className="w-full justify-center">Find Polling Place</Button></div></div>
                 <div><div className="flex items-center mb-3"><IconBallotBox className="h-6 w-6 text-sky-600 mr-2" /><h3 className="text-lg font-semibold text-slate-800">Three Ways to Vote</h3></div><div className="flex border-b border-gray-200"><button onClick={() => setActiveTab("mail")} className={`flex-1 py-2 text-sm font-medium ${activeTab === "mail" ? "border-b-2 border-sky-600 text-sky-600" : "text-gray-500 hover:text-gray-700"} transition-colors`}>By Mail</button><button onClick={() => setActiveTab("early")} className={`flex-1 py-2 text-sm font-medium ${activeTab === "early" ? "border-b-2 border-sky-600 text-sky-600" : "text-gray-500 hover:text-gray-700"} transition-colors`}>Early</button><button onClick={() => setActiveTab("electionDay")} className={`flex-1 py-2 text-sm font-medium ${activeTab === "electionDay" ? "border-b-2 border-sky-600 text-sky-600" : "text-gray-500 hover:text-gray-700"} transition-colors`}>Election Day</button></div><div className="mt-3 text-sm animate-fadeIn">{activeTab === "mail" && (<div> <p> Apply for your mail-in ballot by Oct. 28. Return it via USPS or a secure ballot drop box. </p> <Button size="sm" type="secondary" href="https://www.nj.gov/state/elections/vote-by-mail.shtml" icon={<IconExternalLink />} className="mt-2">Learn More</Button></div>)}{activeTab === "early" && (<div> <p> From Oct. 25 to Nov. 2, vote at any designated early voting location in Mercer County. </p> <Button size="sm" type="secondary" href="https://www.nj.gov/state/elections/vote-early-voting.shtml" icon={<IconExternalLink />} className="mt-2">Find Locations</Button></div>)}{activeTab === "electionDay" && (<div> <p> Go to your assigned polling place on Tuesday, Nov. 4, between 6:00 AM and 8:00 PM. </p> <Button size="sm" type="secondary" href="https://voter.svrs.nj.gov/polling-place-search" icon={<IconExternalLink />} className="mt-2">Find Polling Place</Button></div>)}</div></div>
