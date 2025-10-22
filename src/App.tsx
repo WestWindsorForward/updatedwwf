@@ -4112,7 +4112,7 @@ Co-Executive Directors @ West Windsor Forward`;
                                   {copiedLinks[question.id] ? <IconCheckCircle className="h-4 w-4 sm:h-5 sm:w-5" /> : <IconClipboard className="h-4 w-4 sm:h-5 sm:w-5" />}
                                 </button>
 
-                                <div className="text-center mb-6 pr-8">
+                                <div className="text-center mb-6">
                                   <div className="mb-2">
                                     {Array.isArray(question.office) ? (
                                       question.office.map((off) => (
@@ -4137,7 +4137,7 @@ Co-Executive Directors @ West Windsor Forward`;
                                       </span>
                                     )}
                                   </div>
-                                  <p className="font-semibold text-slate-700 italic max-w-2xl mx-auto">
+                                  <p className="font-semibold text-slate-700 italic max-w-2xl mx-auto pr-8 sm:pr-0">
                                     "{question.text}"
                                   </p>
                                 </div>
@@ -4229,7 +4229,7 @@ Co-Executive Directors @ West Windsor Forward`;
                     <h4 className="font-bold text-lg text-blue-800 mb-4 text-center">
                       Proven Leaders for West Windsor
                     </h4>
-                    <div className="grid grid-cols-2 gap-3 text-sm mb-6 text-center">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm mb-6 text-center">
                       <div><div className="text-xs text-slate-500">Raised</div><div className="font-bold text-lg">$28,953.71</div></div>
                       <div><div className="text-xs text-slate-500">Spent</div><div className="font-bold text-lg">$13,764.07</div></div>
                       <div className="col-span-2"><div className="text-xs text-slate-500">Cash on Hand</div><div className="font-bold text-2xl text-green-700">$21,554.38</div></div>
@@ -4244,7 +4244,7 @@ Co-Executive Directors @ West Windsor Forward`;
                       </div>
                       <div>
                         <div className="text-center mb-1"><h5 className="font-semibold text-slate-700 text-sm">Donation Size (% of Total Raised)</h5></div>
-                        <div className="flex justify-between mb-1 text-sm font-medium text-slate-700 px-1"><span>17.3% donations of $200 or less</span><span>82.7% donations of over $200</span></div>
+                        <div className="flex flex-col sm:flex-row sm:justify-between mb-1 text-sm font-medium text-slate-700 px-1"><span>17.3% donations of $200 or less</span><span>82.7% donations of over $200</span></div>
                         <div className="w-full bg-slate-200 rounded-full h-2.5 flex"><div className="bg-sky-500 h-2.5 rounded-l-full" style={{ width: "1D7.3%" }}></div><div className="bg-slate-400 h-2.5 rounded-r-full" style={{ width: "82.7%" }}></div></div>
                       </div>
                     </div>
@@ -4253,7 +4253,7 @@ Co-Executive Directors @ West Windsor Forward`;
                   {/* WW Together */}
                   <div className="p-6 bg-slate-50 rounded-xl border-2 border-slate-200 h-full flex flex-col">
                     <h4 className="font-bold text-lg text-green-800 mb-4 text-center">West Windsor Together</h4>
-                    <div className="grid grid-cols-2 gap-3 text-sm mb-6 text-center">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm mb-6 text-center">
                       <div><div className="text-xs text-slate-500">Raised</div><div className="font-bold text-lg">$37,731.31</div></div>
                       <div><div className="text-xs text-slate-500">Spent</div><div className="font-bold text-lg">$14,787.36</div></div>
                       <div className="col-span-2"><div className="text-xs text-slate-500">Cash on Hand</div><div className="font-bold text-2xl text-green-700">$22,943.95</div></div>
@@ -4262,13 +4262,13 @@ Co-Executive Directors @ West Windsor Forward`;
                       <div className="relative">
                         <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10"><span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700 border border-orange-200"><span className="w-1.5 h-1.5 bg-orange-500 rounded-full mr-1.5 animate-pulse"></span>Only includes donations &gt; $200</span></div>
                         <div className="bg-white border-2 border-slate-400 rounded-lg p-4 pt-6 space-y-8">
-                          <div><div className="text-center mb-1"><h5 className="font-semibold text-slate-700 text-sm">Funding Sources¹</h5></div><div className="flex justify-between mb-1 text-sm font-medium text-slate-700 px-1"><span>96.9% Individuals</span><span>3.1% Committees</span></div><div className="w-full bg-slate-200 rounded-full h-2.5 flex"><div className="bg-sky-500 h-2.5 rounded-l-full" style={{ width: "96.9%" }}></div><div className="bg-slate-400 h-2.5 rounded-r-full" style={{ width: "3.1%" }}></div></div></div>
+                          <div><div className="text-center mb-1"><h5 className="font-semibold text-slate-700 text-sm">Funding Sources¹</h5></div><div className="flex flex-col sm:flex-row sm:justify-between mb-1 text-sm font-medium text-slate-700 px-1"><span>96.9% Individuals</span><span>3.1% Committees</span></div><div className="w-full bg-slate-200 rounded-full h-2.5 flex"><div className="bg-sky-500 h-2.5 rounded-l-full" style={{ width: "96.9%" }}></div><div className="bg-slate-400 h-2.5 rounded-r-full" style={{ width: "3.1%" }}></div></div></div>
                           <div><div className="text-center mb-1"><h5 className="font-semibold text-slate-700 text-sm">Donation Origin (by $ Amount)²</h5></div><div className="text-center mb-1 text-sm font-medium text-slate-700"><span>33.6% from In-Town</span></div><div className="w-full bg-slate-200 rounded-full h-2.5"><div className="bg-sky-500 h-2.5 rounded-full" style={{ width: "33.6%" }}></div></div></div>
                         </div>
                       </div>
                       <div>
                         <div className="text-center mb-1"><h5 className="font-semibold text-slate-700 text-sm">Donation Size (% of Total Raised)</h5></div>
-                        <div className="flex justify-between mb-1 text-sm font-medium text-slate-700 px-1"><span>6.2% donations of $200 or less</span><span>93.8% donations of over $200</span></div>
+                        <div className="flex flex-col sm:flex-row sm:justify-between mb-1 text-sm font-medium text-slate-700 px-1"><span>6.2% donations of $200 or less</span><span>93.8% donations of over $200</span></div>
                         <div className="w-full bg-slate-200 rounded-full h-2.5 flex"><div className="bg-sky-500 h-2.5 rounded-l-full" style={{ width: "6.2%" }}></div><div className="bg-slate-400 h-2.5 rounded-r-full" style={{ width: "93.8%" }}></div></div>
                       </div>
                     </div>
@@ -4775,24 +4775,30 @@ function App() {
       if (parts[0] === "about") {
         setActivePage("About");
         setSelectedProject(null);
+        document.title = "About Us - West Windsor Forward"; // <-- ADD THIS
       } else if (parts[0] === "projects") {
         if (parts[1]) {
           const project = projectsData.find((p) => p.slug === parts[1]);
           setActivePage("ProjectDetails");
           setSelectedProject(project || null);
+          document.title = `${project?.title || 'Project'} - West Windsor Forward`; // <-- ADD THIS
         } else {
           setActivePage("Projects");
           setSelectedProject(null);
+          document.title = "Our Initiatives - West Windsor Forward"; // <-- ADD THIS
         }
       } else if (parts[0] === "election") {
         setActivePage("Election");
         setSelectedProject(null);
+        document.title = "2025 Election Hub - West Windsor Forward"; // <-- ADD THIS
       } else if (parts[0] === "contact") {
         setActivePage("Contact");
         setSelectedProject(null);
+        document.title = "Contact Us - West Windsor Forward"; // <-- ADD THIS
       } else {
         setActivePage("Home");
         setSelectedProject(null);
+        document.title = "West Windsor Forward"; // <-- ADD THIS
       }
     };
 
