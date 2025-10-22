@@ -2716,6 +2716,8 @@ const BioCard: FC<{
 
 // --- REPLACE YOUR ENTIRE ElectionPage COMPONENT WITH THIS ---
 
+// --- REPLACE YOUR ENTIRE BROKEN ElectionPage COMPONENT WITH THIS CORRECTED ONE ---
+
 const ElectionPage: FC<PageProps> = ({ setActivePage }) => {
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null); // Start with all collapsed
   const [activeTab, setActiveTab] = useState("mail");
@@ -2732,12 +2734,15 @@ const ElectionPage: FC<PageProps> = ({ setActivePage }) => {
     if (navigator.clipboard && navigator.clipboard.writeText) {
       // Construct URL with hash
       const url = `${window.location.origin}${window.location.pathname}#${questionId}`;
-      navigator.clipboard.writeText(url).then(() => {
-          setCopiedLinks(prev => ({ ...prev, [questionId]: true }));
+      navigator.clipboard
+        .writeText(url)
+        .then(() => {
+          setCopiedLinks((prev) => ({ ...prev, [questionId]: true }));
           setTimeout(() => {
-            setCopiedLinks(prev => ({ ...prev, [questionId]: false }));
+            setCopiedLinks((prev) => ({ ...prev, [questionId]: false }));
           }, 2000);
-        }).catch(err => {
+        })
+        .catch((err) => {
           console.error("Failed to copy link: ", err);
         });
     } else {
@@ -2745,26 +2750,30 @@ const ElectionPage: FC<PageProps> = ({ setActivePage }) => {
     }
   }, []);
 
-  const handleJumpTo = useCallback((targetId: string) => {
-    const element = document.getElementById(targetId);
-    if (element) {
-      // Calculate offset if you have a sticky header/filter bar
-      const headerHeight = headerRef.current?.offsetHeight || 0;
-      const filterBarHeight = filterBarRef.current?.offsetHeight || 0;
-      // Adjust offset based on which element is sticky at the time of jump
-      const offset = Math.max(headerHeight, filterBarHeight) + 20; // Add 20px padding
+  const handleJumpTo = useCallback(
+    (targetId: string) => {
+      const element = document.getElementById(targetId);
+      if (element) {
+        // Calculate offset if you have a sticky header/filter bar
+        const headerHeight = headerRef.current?.offsetHeight || 0;
+        const filterBarHeight = filterBarRef.current?.offsetHeight || 0;
+        // Adjust offset based on which element is sticky at the time of jump
+        const offset = Math.max(headerHeight, filterBarHeight) + 20; // Add 20px padding
 
-      const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
-      const offsetPosition = elementPosition - offset;
+        const elementPosition =
+          element.getBoundingClientRect().top + window.pageYOffset;
+        const offsetPosition = elementPosition - offset;
 
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth"
-      });
-    } else {
-      console.warn(`Element with ID "${targetId}" not found for jump link.`);
-    }
-  }, [headerRef, filterBarRef]); // Add refs to dependency array
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: "smooth",
+        });
+      } else {
+        console.warn(`Element with ID "${targetId}" not found for jump link.`);
+      }
+    },
+    [headerRef, filterBarRef]
+  ); // Add refs to dependency array
 
   const officeStyles: { [key: string]: string } = {
     Mayor: "bg-blue-100 text-blue-800",
@@ -3150,7 +3159,7 @@ const ElectionPage: FC<PageProps> = ({ setActivePage }) => {
           "Both candidates agree that the library is a county responsibility and that collaborating with the county is the best approach. Councilwoman Geevers is hopeful the new county executive will finally fund needed physical repairs, while Mr. Charles adds that building a separate town library would likely not be financially sensible.",
       },
       "q1-closing": {
-        time: "45:18",
+        time: "4GET-YOUR-VOTE-COUNTED-WW-FORWARD",
         summary:
           "Councilwoman Geevers would ask her opponents why they decided to run, given that they have not previously participated in any township boards or committees. Mr. Charles would ask what their actual plan is, why they don't offer alternatives when they criticize, and why they block residents who ask questions on social media.",
       },
@@ -3268,7 +3277,7 @@ const ElectionPage: FC<PageProps> = ({ setActivePage }) => {
           "Mr. Tomar wants to focus on development that serves young residents (like cafes) and seniors, ensuring infrastructure can support it. Mr. Winters adds that the council should act as 'chief marketing officers' to proactively attract desirable businesses, such as a winery, to town.",
       },
       "q5-gov": {
-        time: "45:08",
+        time: "4WE-NEED-YOUR-VOTE-WW-FORWARD",
         summary:
           "Both candidates agree a vibrant town center is 'absolutely needed' but express concerns about whether the train station area can still support it after recent high-density development. They state that any plan must be 'very thoughtful' and first confirm that the infrastructure can handle it.",
       },
@@ -3415,31 +3424,33 @@ Co-Executive Directors @ West Windsor Forward`;
       .filter((issue) => issue.questions.length > 0);
   }, [activeOffice, searchQuery]);
 
+  // --- THIS IS THE FIX ---
+  // I have corrected the nested function definition
   const handleTopicToggle = (issueId: string, questionCount: number) => {
-    const handleTopicToggle = (issueId: string, questionCount: number) => {
-  // --- ADD THIS BLOCK ---
-  // If there's a hash in the URL, remove it.
-  // This "clears" the hash and gives control back to the user.
-  if (window.location.hash) {
-    // Use replaceState to remove the hash without reloading or adding to history
-    window.history.replaceState(null, '', window.location.pathname + window.location.search);
-  }
-    const isCurrentlySelected = selectedTopic === issueId;
-    setSelectedTopic(isCurrentlySelected ? null : issueId);
-
-    // Scroll logic when collapsing a large topic
-    if (isCurrentlySelected && questionCount > 3) {
-      const topicButton = document.querySelector(`button[data-topic-id="${issueId}"]`);
-      if (topicButton) {
-        setTimeout(() => {
-          topicButton.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }, 100); // Small delay to allow collapse animation
-      } else if (filterBarRef.current) {
-        // Fallback: Scroll to filter bar if button not found
-        filterBarRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // If there's a hash in the URL, remove it.
+      // This "clears" the hash and gives control back to the user.
+      if (window.location.hash) {
+        // Use replaceState to remove the hash without reloading or adding to history
+        window.history.replaceState(null, '', window.location.pathname + window.location.search);
       }
-    }
+      
+      const isCurrentlySelected = selectedTopic === issueId;
+      setSelectedTopic(isCurrentlySelected ? null : issueId);
+
+      // Scroll logic when collapsing a large topic
+      if (isCurrentlySelected && questionCount > 3) {
+        const topicButton = document.querySelector(`button[data-topic-id="${issueId}"]`);
+        if (topicButton) {
+          setTimeout(() => {
+            topicButton.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }, 100); // Small delay to allow collapse animation
+        } else if (filterBarRef.current) {
+          // Fallback: Scroll to filter bar if button not found
+          filterBarRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
   };
+  // --- END OF FIX ---
 
 
   // --- EFFECT FOR HANDLING HASH SCROLLING & EXPANSION ---
@@ -3491,11 +3502,11 @@ Co-Executive Directors @ West Windsor Forward`;
           // --- Optional: Briefly highlight the element ---
           // Only highlight if it's a question, not a main section
           if (targetTopicId) {
-             elementToScrollTo.style.transition = 'outline 0.1s ease-in-out';
-             elementToScrollTo.style.outline = '3px solid #38bdf8'; // sky-400
-             setTimeout(() => {
-                elementToScrollTo.style.outline = 'none';
-             }, 1500); // Remove highlight after 1.5 seconds
+            elementToScrollTo.style.transition = 'outline 0.1s ease-in-out';
+            elementToScrollTo.style.outline = '3px solid #38bdf8'; // sky-400
+            setTimeout(() => {
+              elementToScrollTo.style.outline = 'none';
+            }, 1500); // Remove highlight after 1.5 seconds
           }
 
         } else if (targetTopicId && targetTopicId === selectedTopic) {
@@ -4225,7 +4236,7 @@ Co-Executive Directors @ West Windsor Forward`;
                     </div>
                     <div className="space-y-8 flex-grow flex flex-col">
                       <div className="relative">
-                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10"><span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700 border border-orange-200"><span className="w-1.5 h-1.5 bg-orange-500 rounded-full mr-1.5 animate-pulse"></span>Only includes donations &gt; $200</span></div>
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10"><span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700 border border-orange-200"><span className="w-1.s.h-1.5 bg-orange-500 rounded-full mr-1.5 animate-pulse"></span>Only includes donations &gt; $200</span></div>
                         <div className="bg-white border-2 border-slate-400 rounded-lg p-4 pt-6 space-y-8">
                           <div><div className="text-center mb-1"><h5 className="font-semibold text-slate-700 text-sm">Funding Sources¹</h5></div><div className="text-center mb-1 text-sm font-medium text-slate-700"><span>100% from Individuals</span></div><div className="w-full bg-slate-200 rounded-full h-2.5"><div className="bg-sky-500 h-2.5 rounded-full" style={{ width: "100%" }}></div></div></div>
                           <div><div className="text-center mb-1"><h5 className="font-semibold text-slate-700 text-sm">Donation Origin (by $ Amount)²</h5></div><div className="text-center mb-1 text-sm font-medium text-slate-700"><span>29.4% from In-Town</span></div><div className="w-full bg-slate-200 rounded-full h-2.5"><div className="bg-sky-500 h-2.5 rounded-full" style={{ width: "29.4%" }}></div></div></div>
@@ -4327,6 +4338,26 @@ Co-Executive Directors @ West Windsor Forward`;
     </>
   );
 };
+
+const ContactPage: FC = () => {
+  const initialFormData = { name: "", email: "", message: "" };
+  const [formData, setFormData] = useState(initialFormData);
+  const [result, setResult] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const web3FormsAccessKey = "ccb9ef54-31b7-4397-9eb8-ff8d3b587265";
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => setFormData({ ...formData, [e.target.name]: e.target.value });
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsSubmitting(true);
+    setResult("Sending....");
+    const formElement = event.target as HTMLFormElement;
+    const web3FormData = new FormData(formElement);
+    web3FormData.append("access_key", web3FormsAccessKey);
+...
 
 // --- LEAVE ALL OTHER COMPONENTS (ContactPage, App, etc.) AS THEY ARE ---
 
