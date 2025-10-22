@@ -2723,6 +2723,26 @@ const ElectionPage: FC<PageProps> = ({ setActivePage }) => {
   const filterBarRef = useRef<HTMLDivElement>(null); // Ref for the filter bar
   const headerRef = useRef<HTMLElement>(null); // Ref for the sticky header/filter bar
 
+  // --- Helper Function for Jump Buttons (Ensure IDs exist) ---
+ const handleJumpTo = useCallback((id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+        // Clear the hash first to prevent the hash effect from interfering
+        if(window.location.hash) {
+           // Use replaceState to avoid adding to browser history
+           history.replaceState(null, '', window.location.pathname + window.location.search);
+        }
+        // Use a small delay to ensure hash is cleared before scrolling
+        setTimeout(() => {
+           element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+           // Reset selectedTopic to close any open accordion when jumping
+           setSelectedTopic(null);
+        }, 50);
+    } else {
+        console.warn(`Jump target element with ID "${id}" not found.`);
+    }
+  }, []); // Empty dependency array as it doesn't depend on changing state/props
+
   const handleCopyLink = useCallback((questionId: string) => {
     // Guard against environments where clipboard API is not available
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -3413,67 +3433,108 @@ Co-Executive Directors @ West Windsor Forward`;
   };
 
 
-// --- EFFECT FOR HANDLING HASH SCROLLING & EXPANSION ---
-  useEffect(() => {
-    const processHash = () => {
-      const hash = window.location.hash.substring(1);
-      if (!hash) return; // No hash, do nothing
+// *** ADD THIS REF DECLARATION near your other useState/useRef hooks ***
+const processedHashRef = useRef<string | null>(null);
 
-      const element = document.getElementById(hash);
-      if (!element) {
-        // console.warn(`Element with ID "${hash}" not found on this render.`);
-        // Element might not be rendered yet if the section is closed, this is okay.
-        // We first need to ensure the correct section *is* open.
+// --- REPLACE the existing hash-handling useEffect with this ---
+useEffect(() => {
+    // Function to handle opening section and scrolling based on URL hash
+    const processHash = (isInitialLoad = false) => {
+      const currentHash = window.location.hash.substring(1);
+
+      // Exit if no hash
+      if (!currentHash) {
+        processedHashRef.current = null; // Clear processed hash if URL hash is removed
+        return;
       }
 
-      // Find the topic ID associated with the hash, even if the element isn't rendered yet
+      // Exit if this specific hash has already been processed in this cycle
+      // OR if it's not the initial load AND the hash hasn't changed from the last processed one
+      // This prevents re-opening when the user closes manually.
+      if (processedHashRef.current === currentHash) {
+         return;
+      }
+
       let targetTopicId: string | null = null;
+      // Find which topic the hash belongs to
       for (const issue of electionData.issues) {
-        if (issue.questions.some(q => q.id === hash)) {
+        if (issue.questions.some(q => q.id === currentHash)) {
           targetTopicId = issue.id;
           break;
         }
       }
 
-      // Step 1: Ensure the correct topic is open
+      // Mark this hash as processed *before* potential async state updates
+      processedHashRef.current = currentHash;
+
+      // Step 1: Open the correct topic if needed
       if (targetTopicId && targetTopicId !== selectedTopic) {
-        // If the target topic is found BUT it's not the currently open one,
-        // set the state to open it. The effect will re-run after the re-render.
         setSelectedTopic(targetTopicId);
-        // *** Crucially, stop processing here for this render cycle ***
-        return;
+        // Scroll attempt *after* state update and re-render
+         setTimeout(() => {
+            requestAnimationFrame(() => { // Wait for paint after render
+                const elementAfterUpdate = document.getElementById(currentHash);
+                if (elementAfterUpdate) {
+                    elementAfterUpdate.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+         }, 100); // Delay allows React time to re-render
       }
-
-      // Step 2: Scroll to the element (only if it exists and the correct topic is open)
-      // This part runs either if the target isn't in a topic,
-      // OR if the target is in a topic AND that topic is already the selectedTopic.
-      if (element) {
-         // Use requestAnimationFrame to wait for the browser to be ready to paint,
-         // ensuring the layout is stable after any potential state updates from the previous step.
-        requestAnimationFrame(() => {
-           element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        });
-      } else if (targetTopicId && targetTopicId === selectedTopic) {
-        // If the element *still* doesn't exist even though the topic *should* be open,
-        // log a warning. This might indicate an issue with IDs or conditional rendering.
-        // console.warn(`Element with ID "${hash}" not found even after its topic "${targetTopicId}" was selected.`);
+      // Step 2: Scroll if topic already open OR element not in a topic
+      else {
+          const element = document.getElementById(currentHash);
+          if (element) {
+             // Use rAF to ensure scroll happens after paint
+             requestAnimationFrame(() => {
+               element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+             });
+          }
       }
     };
 
-    // Run the logic after the component mounts or updates
-    // Using a setTimeout ensures this runs after the initial render potentially settles
-    const timerId = setTimeout(processHash, 50);
+    // Run on initial mount after a short delay
+    const initialTimerId = setTimeout(() => processHash(true), 150);
 
-    // Add listener for hash changes while on the page
-    window.addEventListener('hashchange', processHash);
+    // Listener for subsequent hash changes in the URL bar
+    const handleHashChange = () => {
+         // Resetting the ref allows reprocessing if the user navigates back/forth
+         processedHashRef.current = null;
+         processHash(false);
+    }
+    window.addEventListener('hashchange', handleHashChange);
 
-    // Cleanup function
+    // Cleanup function for timeouts and listeners
     return () => {
-      clearTimeout(timerId);
-      window.removeEventListener('hashchange', processHash);
+      clearTimeout(initialTimerId);
+      window.removeEventListener('hashchange', handleHashChange);
     };
-  // Depend on selectedTopic to re-run the check *after* a topic is programmatically opened
-  }, [selectedTopic]);
+  // Run ONLY ONCE on component mount
+  }, []); // Empty dependency array
+
+  // --- Ensure handleTopicToggle clears the ref ---
+  // Make sure your existing handleTopicToggle includes this line:
+  const handleTopicToggle = (issueId: string, questionCount: number) => {
+    const isCurrentlySelected = selectedTopic === issueId;
+    const newSelectedTopic = isCurrentlySelected ? null : issueId;
+    setSelectedTopic(newSelectedTopic);
+
+    // *** ADD/KEEP THIS LINE: Clear the processed hash ref when user manually toggles ***
+    processedHashRef.current = null;
+
+    // Existing scroll logic for collapsing large topics (keep this)
+    if (isCurrentlySelected && questionCount > 3) {
+        const topicButton = document.querySelector(`button[data-topic-id="${issueId}"]`);
+         if (topicButton) {
+           setTimeout(() => {
+             topicButton.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+           }, 100);
+         } else if (filterBarRef.current) {
+            setTimeout(() => {
+                filterBarRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+         }
+    }
+  };
 
   return (
     <>
