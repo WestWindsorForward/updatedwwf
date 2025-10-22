@@ -3413,60 +3413,67 @@ Co-Executive Directors @ West Windsor Forward`;
   };
 
 
-// --- EFFECT FOR HANDLING HASH SCROLLING ---
- useEffect(() => {
-    const handleScrollAndExpansion = () => {
+// --- EFFECT FOR HANDLING HASH SCROLLING & EXPANSION ---
+  useEffect(() => {
+    const processHash = () => {
       const hash = window.location.hash.substring(1);
       if (!hash) return; // No hash, do nothing
 
-      // Use requestAnimationFrame to wait for the next browser paint,
-      // ensuring the DOM is more likely ready.
-      requestAnimationFrame(() => {
-        const element = document.getElementById(hash);
-        if (!element) {
-          console.warn(`Element with ID "${hash}" not found.`);
-          return; // Element not found
+      const element = document.getElementById(hash);
+      if (!element) {
+        // console.warn(`Element with ID "${hash}" not found on this render.`);
+        // Element might not be rendered yet if the section is closed, this is okay.
+        // We first need to ensure the correct section *is* open.
+      }
+
+      // Find the topic ID associated with the hash, even if the element isn't rendered yet
+      let targetTopicId: string | null = null;
+      for (const issue of electionData.issues) {
+        if (issue.questions.some(q => q.id === hash)) {
+          targetTopicId = issue.id;
+          break;
         }
+      }
 
-        const topicSection = element.closest('[data-topic-section-id]');
-        const topicId = topicSection?.getAttribute('data-topic-section-id');
+      // Step 1: Ensure the correct topic is open
+      if (targetTopicId && targetTopicId !== selectedTopic) {
+        // If the target topic is found BUT it's not the currently open one,
+        // set the state to open it. The effect will re-run after the re-render.
+        setSelectedTopic(targetTopicId);
+        // *** Crucially, stop processing here for this render cycle ***
+        return;
+      }
 
-        // Check if the element is inside a topic section
-        if (topicId) {
-          // If the correct topic is NOT already open
-          if (topicId !== selectedTopic) {
-            // Set the state to open the correct topic.
-            // The scrolling will happen in the *next* effect run triggered by this state change.
-            setSelectedTopic(topicId);
-            // *** Important: Return here to wait for the state update and re-render ***
-            return;
-          }
-          // If the topic IS already open (either initially or after the state update)
-          // Use another requestAnimationFrame to ensure the expanded content is painted
-          requestAnimationFrame(() => {
-            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          });
-
-        } else {
-          // If the element is not inside a collapsible topic (e.g., 'interviews', 'finance'), scroll directly
-           requestAnimationFrame(() => { // Still use rAF for consistency
-              element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            });
-        }
-      });
+      // Step 2: Scroll to the element (only if it exists and the correct topic is open)
+      // This part runs either if the target isn't in a topic,
+      // OR if the target is in a topic AND that topic is already the selectedTopic.
+      if (element) {
+         // Use requestAnimationFrame to wait for the browser to be ready to paint,
+         // ensuring the layout is stable after any potential state updates from the previous step.
+        requestAnimationFrame(() => {
+           element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      } else if (targetTopicId && targetTopicId === selectedTopic) {
+        // If the element *still* doesn't exist even though the topic *should* be open,
+        // log a warning. This might indicate an issue with IDs or conditional rendering.
+        // console.warn(`Element with ID "${hash}" not found even after its topic "${targetTopicId}" was selected.`);
+      }
     };
 
-    // Run the handler function on mount and when selectedTopic changes
-    handleScrollAndExpansion();
+    // Run the logic after the component mounts or updates
+    // Using a setTimeout ensures this runs after the initial render potentially settles
+    const timerId = setTimeout(processHash, 50);
 
     // Add listener for hash changes while on the page
-    window.addEventListener('hashchange', handleScrollAndExpansion);
+    window.addEventListener('hashchange', processHash);
 
-    // Cleanup function for event listener
+    // Cleanup function
     return () => {
-      window.removeEventListener('hashchange', handleScrollAndExpansion);
+      clearTimeout(timerId);
+      window.removeEventListener('hashchange', processHash);
     };
- }, [selectedTopic]); // Re-run effect when selectedTopic changes OR when hash changes initially handled
+  // Depend on selectedTopic to re-run the check *after* a topic is programmatically opened
+  }, [selectedTopic]);
 
   return (
     <>
