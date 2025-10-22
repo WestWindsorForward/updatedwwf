@@ -2734,8 +2734,18 @@ const ElectionPage: FC<PageProps> = ({ setActivePage }) => {
       const url = `${window.location.origin}${window.location.pathname}#${questionId}`;
       const textArea = document.createElement("textarea");
       textArea.value = url;
+      // Style it to be invisible
+      textArea.style.position = 'absolute';
+      textArea.style.left = '-9999px';
+      textArea.style.top = '0';
+      
       document.body.appendChild(textArea);
-      textArea.focus();
+      
+      // --- THIS IS THE FIX ---
+      // Calling focus() can scroll the page. preventScroll stops this.
+      textArea.focus({ preventScroll: true }); 
+      // --- END OF FIX ---
+      
       textArea.select();
       document.execCommand('copy');
       document.body.removeChild(textArea);
