@@ -3925,7 +3925,7 @@ Co-Executive Directors @ West Windsor Forward`;
                         }
                         className="w-full flex items-center justify-between p-4 text-left bg-slate-50 hover:bg-slate-100 transition-colors border-b border-gray-200" // Added border-b
                       >
-                        <span className="text-lg font-bold text-slate-800 text-center sm:text-left flex-1">
+                        <span className="text-lg font-bold text-slate-800 text-left flex-1">
                           {issue.title}
                         </span>
                         {selectedTopic === issue.id ? (
@@ -4147,8 +4147,8 @@ Co-Executive Directors @ West Windsor Forward`;
                                       </span>
                                     )}
                                   </div>
-                                  {/* FIX: Added padding-right for mobile, removed on sm+ */}
-                                  <p className="font-semibold text-slate-700 italic max-w-2xl mx-auto pr-8 sm:pr-0">
+                                  {/* FIX: Added text-center sm:text-left */}
+                                  <p className="font-semibold text-slate-700 italic max-w-2xl mx-auto pr-8 sm:pr-0 text-center sm:text-left">
                                     "{question.text}"
                                   </p>
                                 </div>
