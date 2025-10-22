@@ -4339,26 +4339,6 @@ Co-Executive Directors @ West Windsor Forward`;
   );
 };
 
-const ContactPage: FC = () => {
-  const initialFormData = { name: "", email: "", message: "" };
-  const [formData, setFormData] = useState(initialFormData);
-  const [result, setResult] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const web3FormsAccessKey = "ccb9ef54-31b7-4397-9eb8-ff8d3b587265";
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => setFormData({ ...formData, [e.target.name]: e.target.value });
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setIsSubmitting(true);
-    setResult("Sending....");
-    const formElement = event.target as HTMLFormElement;
-    const web3FormData = new FormData(formElement);
-    web3FormData.append("access_key", web3FormsAccessKey);
-...
-
 // --- LEAVE ALL OTHER COMPONENTS (ContactPage, App, etc.) AS THEY ARE ---
 
 const ContactPage: FC = () => {
