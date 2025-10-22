@@ -3159,7 +3159,7 @@ const ElectionPage: FC<PageProps> = ({ setActivePage }) => {
           "Both candidates agree that the library is a county responsibility and that collaborating with the county is the best approach. Councilwoman Geevers is hopeful the new county executive will finally fund needed physical repairs, while Mr. Charles adds that building a separate town library would likely not be financially sensible.",
       },
       "q1-closing": {
-        time: "4GET-YOUR-VOTE-COUNTED-WW-FORWARD",
+        time: "45:18",
         summary:
           "Councilwoman Geevers would ask her opponents why they decided to run, given that they have not previously participated in any township boards or committees. Mr. Charles would ask what their actual plan is, why they don't offer alternatives when they criticize, and why they block residents who ask questions on social media.",
       },
@@ -3277,7 +3277,7 @@ const ElectionPage: FC<PageProps> = ({ setActivePage }) => {
           "Mr. Tomar wants to focus on development that serves young residents (like cafes) and seniors, ensuring infrastructure can support it. Mr. Winters adds that the council should act as 'chief marketing officers' to proactively attract desirable businesses, such as a winery, to town.",
       },
       "q5-gov": {
-        time: "4WE-NEED-YOUR-VOTE-WW-FORWARD",
+        time: "45:08",
         summary:
           "Both candidates agree a vibrant town center is 'absolutely needed' but express concerns about whether the train station area can still support it after recent high-density development. They state that any plan must be 'very thoughtful' and first confirm that the infrastructure can handle it.",
       },
@@ -3390,11 +3390,17 @@ Co-Executive Directors @ West Windsor Forward`;
 
   const convertTimeToSeconds = (time: string | undefined): number => {
     if (!time) return 0;
+    // --- FIX for invalid time strings ---
+    if (typeof time !== 'string' || !time.match(/^[\d:]+$/)) {
+      console.warn(`Invalid time format received: ${time}`);
+      return 0; // Return 0 for invalid formats
+    }
     const parts = time.split(":").map(Number);
     if (parts.length === 2) return parts[0] * 60 + parts[1];
     if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
     return 0;
   };
+
 
   const doesQuestionApply = (
     question: ElectionQuestion,
@@ -3427,28 +3433,28 @@ Co-Executive Directors @ West Windsor Forward`;
   // --- THIS IS THE FIX ---
   // I have corrected the nested function definition
   const handleTopicToggle = (issueId: string, questionCount: number) => {
-      // If there's a hash in the URL, remove it.
-      // This "clears" the hash and gives control back to the user.
-      if (window.location.hash) {
-        // Use replaceState to remove the hash without reloading or adding to history
-        window.history.replaceState(null, '', window.location.pathname + window.location.search);
-      }
-      
-      const isCurrentlySelected = selectedTopic === issueId;
-      setSelectedTopic(isCurrentlySelected ? null : issueId);
+    // If there's a hash in the URL, remove it.
+    // This "clears" the hash and gives control back to the user.
+    if (window.location.hash) {
+      // Use replaceState to remove the hash without reloading or adding to history
+      window.history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
 
-      // Scroll logic when collapsing a large topic
-      if (isCurrentlySelected && questionCount > 3) {
-        const topicButton = document.querySelector(`button[data-topic-id="${issueId}"]`);
-        if (topicButton) {
-          setTimeout(() => {
-            topicButton.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-          }, 100); // Small delay to allow collapse animation
-        } else if (filterBarRef.current) {
-          // Fallback: Scroll to filter bar if button not found
-          filterBarRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
+    const isCurrentlySelected = selectedTopic === issueId;
+    setSelectedTopic(isCurrentlySelected ? null : issueId);
+
+    // Scroll logic when collapsing a large topic
+    if (isCurrentlySelected && questionCount > 3) {
+      const topicButton = document.querySelector(`button[data-topic-id="${issueId}"]`);
+      if (topicButton) {
+        setTimeout(() => {
+          topicButton.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100); // Small delay to allow collapse animation
+      } else if (filterBarRef.current) {
+        // Fallback: Scroll to filter bar if button not found
+        filterBarRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
+    }
   };
   // --- END OF FIX ---
 
@@ -4112,13 +4118,16 @@ Co-Executive Directors @ West Windsor Forward`;
                                   {copiedLinks[question.id] ? <IconCheckCircle className="h-4 w-4 sm:h-5 sm:w-5" /> : <IconClipboard className="h-4 w-4 sm:h-5 sm:w-5" />}
                                 </button>
 
+                                {/* --- FIX: QUESTION CHIPS & CENTERING --- */}
                                 <div className="text-center mb-6">
-                                  <div className="mb-2">
+                                  {/* This div now controls spacing with flex and gap */}
+                                  <div className="mb-2 flex flex-wrap justify-center gap-2">
                                     {Array.isArray(question.office) ? (
                                       question.office.map((off) => (
                                         <span
                                           key={off}
-                                          className={`inline-block text-xs font-semibold mr-2 px-2.5 py-1 rounded-full ${officeStyles[off] || "bg-gray-100 text-gray-800"
+                                          // Note: mr-2 is REMOVED
+                                          className={`inline-block text-xs font-semibold px-2.5 py-1 rounded-full ${officeStyles[off] || "bg-gray-100 text-gray-800"
                                             }`}
                                         >
                                           {off} Question
@@ -4126,21 +4135,28 @@ Co-Executive Directors @ West Windsor Forward`;
                                       ))
                                     ) : question.office ? (
                                       <span
-                                        className={`inline-block text-xs font-semibold mr-2 px-2.5 py-1 rounded-full ${officeStyles[question.office] || "bg-gray-100 text-gray-800"
+                                        // Note: mr-2 is REMOVED
+                                        className={`inline-block text-xs font-semibold px-2.5 py-1 rounded-full ${officeStyles[question.office] || "bg-gray-100 text-gray-800"
                                           }`}
                                       >
                                         {question.office} Question
                                       </span>
                                     ) : (
-                                      <span className="inline-block text-xs font-semibold mr-2 px-2.5 py-1 rounded-full bg-gray-100 text-gray-800">
+                                      <span
+                                        // Note: mr-2 is REMOVED
+                                        className="inline-block text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-100 text-gray-800">
                                         General Question
                                       </span>
                                     )}
                                   </div>
+                                  {/* This <p> tag has responsive padding */}
                                   <p className="font-semibold text-slate-700 italic max-w-2xl mx-auto pr-8 sm:pr-0">
                                     "{question.text}"
                                   </p>
                                 </div>
+                                {/* --- END OF FIX --- */}
+
+
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                                   {showMayor &&
                                     questionIsMayor &&
@@ -4229,47 +4245,73 @@ Co-Executive Directors @ West Windsor Forward`;
                     <h4 className="font-bold text-lg text-blue-800 mb-4 text-center">
                       Proven Leaders for West Windsor
                     </h4>
+                    {/* --- FIX: "Raised/Spent" Grid --- */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm mb-6 text-center">
                       <div><div className="text-xs text-slate-500">Raised</div><div className="font-bold text-lg">$28,953.71</div></div>
                       <div><div className="text-xs text-slate-500">Spent</div><div className="font-bold text-lg">$13,764.07</div></div>
-                      <div className="col-span-2"><div className="text-xs text-slate-500">Cash on Hand</div><div className="font-bold text-2xl text-green-700">$21,554.38</div></div>
+                      <div className="col-span-1 sm:col-span-2"><div className="text-xs text-slate-500">Cash on Hand</div><div className="font-bold text-2xl text-green-700">$21,554.38</div></div>
                     </div>
+
                     <div className="space-y-8 flex-grow flex flex-col">
-                      <div className="relative">
-                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10"><span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700 border border-orange-200"><span className="w-1.s.h-1.5 bg-orange-500 rounded-full mr-1.5 animate-pulse"></span>Only includes donations &gt; $200</span></div>
+                      {/* --- FIX: Added mb-6 for spacing --- */}
+                      <div className="relative mb-6">
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10"><span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700 border border-orange-200"><span className="w-1.5 h-1.5 bg-orange-500 rounded-full mr-1.5 animate-pulse"></span>Only includes donations &gt; $200</span></div>
                         <div className="bg-white border-2 border-slate-400 rounded-lg p-4 pt-6 space-y-8">
-                          <div><div className="text-center mb-1"><h5 className="font-semibold text-slate-700 text-sm">Funding Sources¹</h5></div><div className="text-center mb-1 text-sm font-medium text-slate-700"><span>100% from Individuals</span></div><div className="w-full bg-slate-200 rounded-full h-2.5"><div className="bg-sky-500 h-2.5 rounded-full" style={{ width: "100%" }}></div></div></div>
-                          <div><div className="text-center mb-1"><h5 className="font-semibold text-slate-700 text-sm">Donation Origin (by $ Amount)²</h5></div><div className="text-center mb-1 text-sm font-medium text-slate-700"><span>29.4% from In-Town</span></div><div className="w-full bg-slate-200 rounded-full h-2.5"><div className="bg-sky-500 h-2.5 rounded-full" style={{ width: "29.4%" }}></div></div></div>
+                          <div><div className="text-center mb-1"><h5 className="font-semibold text-slate-700 text-sm">Funding Sources¹</h5></div><div className="text-center mb-1 text-sm font-medium text-slate-700"><span>100% from Individuals</span></div><div className="w-full bg-slate-300 rounded-full h-2.5 overflow-hidden"><div className="bg-sky-500 h-2.5" style={{ width: "100%" }}></div></div></div>
+                          <div><div className="text-center mb-1"><h5 className="font-semibold text-slate-700 text-sm">Donation Origin (by $ Amount)²</h5></div><div className="text-center mb-1 text-sm font-medium text-slate-700"><span>29.4% from In-Town</span></div><div className="w-full bg-slate-300 rounded-full h-2.5 overflow-hidden"><div className="bg-sky-500 h-2.5" style={{ width: "29.4%" }}></div></div></div>
                         </div>
                       </div>
                       <div>
                         <div className="text-center mb-1"><h5 className="font-semibold text-slate-700 text-sm">Donation Size (% of Total Raised)</h5></div>
-                        <div className="flex flex-col sm:flex-row sm:justify-between mb-1 text-sm font-medium text-slate-700 px-1"><span>17.3% donations of $200 or less</span><span>82.7% donations of over $200</span></div>
-                        <div className="w-full bg-slate-200 rounded-full h-2.5 flex"><div className="bg-sky-500 h-2.5 rounded-l-full" style={{ width: "1D7.3%" }}></div><div className="bg-slate-400 h-2.5 rounded-r-full" style={{ width: "82.7%" }}></div></div>
+                        {/* --- FIX: "Donation Size" Chips --- */}
+                        <div className="flex flex-wrap justify-center gap-2 mb-1 text-xs font-medium text-slate-700 px-1">
+                          <span className="bg-sky-100 text-sky-800 px-2 py-0.5 rounded-full border border-sky-200">17.3% donations of $200 or less</span>
+                          <span className="bg-slate-200 text-slate-800 px-2 py-0.5 rounded-full border border-slate-300">82.7% donations of over $200</span>
+                        </div>
+                        {/* --- FIX: Corrected graph bar (removed typo and simplified) --- */}
+                        <div className="w-full bg-slate-300 rounded-full h-2.5 overflow-hidden">
+                          <div className="bg-sky-500 h-2.5" style={{ width: "17.3%" }}></div>
+                        </div>
                       </div>
                     </div>
                     <Button size="sm" type="secondary" className="w-full mt-10" href="/3892476.pdf" icon={<IconExternalLink />}>View Full ELEC Report</Button>
                   </div>
+
                   {/* WW Together */}
                   <div className="p-6 bg-slate-50 rounded-xl border-2 border-slate-200 h-full flex flex-col">
                     <h4 className="font-bold text-lg text-green-800 mb-4 text-center">West Windsor Together</h4>
+                    {/* --- FIX: "Raised/Spent" Grid --- */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm mb-6 text-center">
                       <div><div className="text-xs text-slate-500">Raised</div><div className="font-bold text-lg">$37,731.31</div></div>
                       <div><div className="text-xs text-slate-500">Spent</div><div className="font-bold text-lg">$14,787.36</div></div>
-                      <div className="col-span-2"><div className="text-xs text-slate-500">Cash on Hand</div><div className="font-bold text-2xl text-green-700">$22,943.95</div></div>
+                      <div className="col-span-1 sm:col-span-2"><div className="text-xs text-slate-500">Cash on Hand</div><div className="font-bold text-2xl text-green-700">$22,943.95</div></div>
                     </div>
+
                     <div className="space-y-8 flex-grow flex flex-col">
-                      <div className="relative">
+                      {/* --- FIX: Added mb-6 for spacing --- */}
+                      <div className="relative mb-6">
                         <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10"><span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700 border border-orange-200"><span className="w-1.5 h-1.5 bg-orange-500 rounded-full mr-1.5 animate-pulse"></span>Only includes donations &gt; $200</span></div>
                         <div className="bg-white border-2 border-slate-400 rounded-lg p-4 pt-6 space-y-8">
-                          <div><div className="text-center mb-1"><h5 className="font-semibold text-slate-700 text-sm">Funding Sources¹</h5></div><div className="flex flex-col sm:flex-row sm:justify-between mb-1 text-sm font-medium text-slate-700 px-1"><span>96.9% Individuals</span><span>3.1% Committees</span></div><div className="w-full bg-slate-200 rounded-full h-2.5 flex"><div className="bg-sky-500 h-2.5 rounded-l-full" style={{ width: "96.9%" }}></div><div className="bg-slate-400 h-2.5 rounded-r-full" style={{ width: "3.1%" }}></div></div></div>
-                          <div><div className="text-center mb-1"><h5 className="font-semibold text-slate-700 text-sm">Donation Origin (by $ Amount)²</h5></div><div className="text-center mb-1 text-sm font-medium text-slate-700"><span>33.6% from In-Town</span></div><div className="w-full bg-slate-200 rounded-full h-2.5"><div className="bg-sky-500 h-2.5 rounded-full" style={{ width: "33.6%" }}></div></div></div>
+                          <div>
+                            <div className="text-center mb-1"><h5 className="font-semibold text-slate-700 text-sm">Funding Sources¹</h5></div>
+                            {/* --- FIX: "Funding Sources" labels --- */}
+                            <div className="flex flex-col text-center sm:flex-row sm:justify-between mb-1 text-sm font-medium text-slate-700 px-1"><span>96.9% Individuals</span><span>3.1% Committees</span></div>
+                            <div className="w-full bg-slate-300 rounded-full h-2.5 flex overflow-hidden"><div className="bg-sky-500 h-2.5" style={{ width: "96.9%" }}></div></div>
+                          </div>
+                          <div><div className="text-center mb-1"><h5 className="font-semibold text-slate-700 text-sm">Donation Origin (by $ Amount)²</h5></div><div className="text-center mb-1 text-sm font-medium text-slate-700"><span>33.6% from In-Town</span></div><div className="w-full bg-slate-300 rounded-full h-2.5 overflow-hidden"><div className="bg-sky-500 h-2.5" style={{ width: "33.6%" }}></div></div></div>
                         </div>
                       </div>
                       <div>
                         <div className="text-center mb-1"><h5 className="font-semibold text-slate-700 text-sm">Donation Size (% of Total Raised)</h5></div>
-                        <div className="flex flex-col sm:flex-row sm:justify-between mb-1 text-sm font-medium text-slate-700 px-1"><span>6.2% donations of $200 or less</span><span>93.8% donations of over $200</span></div>
-                        <div className="w-full bg-slate-200 rounded-full h-2.5 flex"><div className="bg-sky-500 h-2.5 rounded-l-full" style={{ width: "6.2%" }}></div><div className="bg-slate-400 h-2.5 rounded-r-full" style={{ width: "93.8%" }}></div></div>
+                        {/* --- FIX: "Donation Size" Chips --- */}
+                        <div className="flex flex-wrap justify-center gap-2 mb-1 text-xs font-medium text-slate-700 px-1">
+                          <span className="bg-sky-100 text-sky-800 px-2 py-0.5 rounded-full border border-sky-200">6.2% donations of $200 or less</span>
+                          <span className="bg-slate-200 text-slate-800 px-2 py-0.5 rounded-full border border-slate-300">93.8% donations of over $200</span>
+                        </div>
+                        {/* --- FIX: Corrected graph bar (simplified) --- */}
+                        <div className="w-full bg-slate-300 rounded-full h-2.5 overflow-hidden">
+                          <div className="bg-sky-500 h-2.5" style={{ width: "6.2%" }}></div>
+                        </div>
                       </div>
                     </div>
                     <Button size="sm" type="secondary" className="w-full mt-10" href="/3892561.pdf" icon={<IconExternalLink />}>View Full ELEC Report</Button>
