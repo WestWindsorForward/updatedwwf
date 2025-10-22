@@ -2716,6 +2716,8 @@ const BioCard: FC<{
 
 // --- REPLACE YOUR ENTIRE ElectionPage COMPONENT WITH THIS ---
 
+// --- REPLACE YOUR ENTIRE ElectionPage COMPONENT WITH THIS ---
+
 const ElectionPage: FC<PageProps> = ({ setActivePage }) => {
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null); // Start with all collapsed
   const [activeTab, setActiveTab] = useState("mail");
@@ -2768,7 +2770,8 @@ const ElectionPage: FC<PageProps> = ({ setActivePage }) => {
         const headerHeight = headerRef.current?.offsetHeight || 0;
         const filterBarHeight = filterBarRef.current?.offsetHeight || 0;
         // Adjust offset based on which element is sticky at the time of jump
-        const offset = Math.max(headerHeight, filterBarHeight) + 20; // Add 20px padding
+        // --- INCREASED OFFSET FROM 20 TO 30 ---
+        const offset = Math.max(headerHeight, filterBarHeight) + 30; // Add 30px padding
 
         const elementPosition =
           element.getBoundingClientRect().top + window.pageYOffset;
@@ -3502,7 +3505,8 @@ Co-Executive Directors @ West Windsor Forward`;
         if (elementToScrollTo) {
           const headerHeight = headerRef.current?.offsetHeight || 0;
           const filterBarHeight = filterBarRef.current?.offsetHeight || 0;
-          const offset = Math.max(headerHeight, filterBarHeight) + 20; // Use same offset as jump links
+          // --- INCREASED OFFSET FROM 20 TO 30 ---
+          const offset = Math.max(headerHeight, filterBarHeight) + 30; // Use same offset as jump links
 
           const elementPosition = elementToScrollTo.getBoundingClientRect().top + window.pageYOffset;
           const offsetPosition = elementPosition - offset;
