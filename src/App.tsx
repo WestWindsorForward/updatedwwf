@@ -2723,26 +2723,6 @@ const ElectionPage: FC<PageProps> = ({ setActivePage }) => {
   const filterBarRef = useRef<HTMLDivElement>(null); // Ref for the filter bar
   const headerRef = useRef<HTMLElement>(null); // Ref for the sticky header/filter bar
 
-  // --- Helper Function for Jump Buttons (Ensure IDs exist) ---
- const handleJumpTo = useCallback((id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-        // Clear the hash first to prevent the hash effect from interfering
-        if(window.location.hash) {
-           // Use replaceState to avoid adding to browser history
-           history.replaceState(null, '', window.location.pathname + window.location.search);
-        }
-        // Use a small delay to ensure hash is cleared before scrolling
-        setTimeout(() => {
-           element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-           // Reset selectedTopic to close any open accordion when jumping
-           setSelectedTopic(null);
-        }, 50);
-    } else {
-        console.warn(`Jump target element with ID "${id}" not found.`);
-    }
-  }, []); // Empty dependency array as it doesn't depend on changing state/props
-
   const handleCopyLink = useCallback((questionId: string) => {
     // Guard against environments where clipboard API is not available
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -2760,6 +2740,57 @@ const ElectionPage: FC<PageProps> = ({ setActivePage }) => {
       console.error("Clipboard API not supported in this environment.");
     }
   }, []);
+
+  const handleJumpTo = useCallback((targetId: string) => {
+    const element = document.getElementById(targetId);
+    if (element) {
+      // Calculate offset if you have a sticky header/filter bar
+      const headerHeight = headerRef.current?.offsetHeight || 0;
+      const filterBarHeight = filterBarRef.current?.offsetHeight || 0;
+      // Adjust offset based on which element is sticky at the time of jump
+      // This might need tweaking based on your sticky logic and breakpoints
+      const offset = Math.max(headerHeight, filterBarHeight) + 20; // Add some padding
+
+      const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+      const offsetPosition = elementPosition - offset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth"
+      });
+    } else {
+      console.warn(`Element with ID "${targetId}" not found for jump link.`);
+    }
+  }, []); // Dependencies might include refs if their height changes dynamically
+
+  // ... (keep existing useEffect hooks, state, etc.)
+
+  return (
+    <>
+      {/* ... (keep Modals) ... */}
+
+      <div className="min-h-screen bg-slate-100 font-body text-slate-700 animate-fadeIn">
+         {/* ... (keep Header) ... */}
+
+        <div className="container mx-auto px-4">
+            {/* --- MODIFY THESE BUTTONS --- */}
+            <div className="mt-8 mb-4 flex flex-col sm:flex-row justify-center gap-3">
+              <Button onClick={() => handleJumpTo('interviews')} type="secondary" size="md" icon={<IconMicrophone />}>
+                Jump to Interviews
+              </Button>
+              <Button onClick={() => handleJumpTo('finance')} type="secondary" size="md" icon={<IconDocument />}>
+                Jump to Campaign Finance
+              </Button>
+              <Button onClick={() => handleJumpTo('voter-tools')} type="secondary" size="md" icon={<IconBallotBox />}>
+                Jump to Voter Tools
+              </Button>
+            </div>
+        </div>
+        {/* ... (Rest of the ElectionPage content) ... */}
+      </div>
+    </>
+  );
+};
 
 
   const [activeOffice, setActiveOffice] = useState<OfficeType | null>(null); // Use OfficeType
@@ -3433,108 +3464,87 @@ Co-Executive Directors @ West Windsor Forward`;
   };
 
 
-// *** ADD THIS REF DECLARATION near your other useState/useRef hooks ***
-const processedHashRef = useRef<string | null>(null);
-
-// --- REPLACE the existing hash-handling useEffect with this ---
+// --- EFFECT FOR HANDLING HASH SCROLLING & EXPANSION ---
+  // --- REPLACE THE EXISTING HASH useEffect IN ElectionPage WITH THIS ---
 useEffect(() => {
-    // Function to handle opening section and scrolling based on URL hash
-    const processHash = (isInitialLoad = false) => {
-      const currentHash = window.location.hash.substring(1);
+  const processHash = () => {
+    const hash = window.location.hash.substring(1);
+    if (!hash) return; // No hash, do nothing
 
-      // Exit if no hash
-      if (!currentHash) {
-        processedHashRef.current = null; // Clear processed hash if URL hash is removed
-        return;
+    // Find the topic ID associated with the question hash
+    let targetTopicId: string | null = null;
+    let targetElement: HTMLElement | null = null; // Store element ref
+
+    for (const issue of electionData.issues) {
+      if (issue.questions.some(q => q.id === hash)) {
+        targetTopicId = issue.id;
+        break; // Found the topic
       }
+    }
 
-      // Exit if this specific hash has already been processed in this cycle
-      // OR if it's not the initial load AND the hash hasn't changed from the last processed one
-      // This prevents re-opening when the user closes manually.
-      if (processedHashRef.current === currentHash) {
-         return;
-      }
+    // Attempt to find the element immediately (might exist if topic is open)
+    targetElement = document.getElementById(hash);
 
-      let targetTopicId: string | null = null;
-      // Find which topic the hash belongs to
-      for (const issue of electionData.issues) {
-        if (issue.questions.some(q => q.id === currentHash)) {
-          targetTopicId = issue.id;
-          break;
-        }
-      }
+    // --- Core Logic Change ---
+    // Only set the topic state IF the hash points to a question within a topic
+    // AND that topic is NOT already the currently selected one.
+    if (targetTopicId && targetTopicId !== selectedTopic) {
+      // console.log(`Hash detected for topic "${targetTopicId}", setting state.`);
+      setSelectedTopic(targetTopicId);
+      // State is set, exit function. The effect will re-run after render.
+      // Scrolling will happen in the subsequent run when selectedTopic matches.
+      return;
+    }
 
-      // Mark this hash as processed *before* potential async state updates
-      processedHashRef.current = currentHash;
+    // --- Scrolling Logic ---
+    // This part runs ONLY IF:
+    // 1. The hash doesn't correspond to a question within a topic OR
+    // 2. The hash corresponds to a topic that IS ALREADY OPEN (selectedTopic === targetTopicId)
+    // We attempt scrolling *after* ensuring the necessary topic *should* be open.
+    // Use requestAnimationFrame to wait for the DOM to potentially update after state change.
+    requestAnimationFrame(() => {
+        // Re-check for the element *inside* rAF, as it might have just rendered
+        const elementToScrollTo = document.getElementById(hash);
+        if (elementToScrollTo) {
+             // console.log(`Scrolling to element "${hash}".`);
+             const headerHeight = headerRef.current?.offsetHeight || 0;
+             const filterBarHeight = filterBarRef.current?.offsetHeight || 0;
+             const offset = Math.max(headerHeight, filterBarHeight) + 20; // Use same offset as jump links
 
-      // Step 1: Open the correct topic if needed
-      if (targetTopicId && targetTopicId !== selectedTopic) {
-        setSelectedTopic(targetTopicId);
-        // Scroll attempt *after* state update and re-render
-         setTimeout(() => {
-            requestAnimationFrame(() => { // Wait for paint after render
-                const elementAfterUpdate = document.getElementById(currentHash);
-                if (elementAfterUpdate) {
-                    elementAfterUpdate.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
+             const elementPosition = elementToScrollTo.getBoundingClientRect().top + window.pageYOffset;
+             const offsetPosition = elementPosition - offset;
+
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: "smooth" // Use smooth scroll on initial load/hash change too
             });
-         }, 100); // Delay allows React time to re-render
-      }
-      // Step 2: Scroll if topic already open OR element not in a topic
-      else {
-          const element = document.getElementById(currentHash);
-          if (element) {
-             // Use rAF to ensure scroll happens after paint
-             requestAnimationFrame(() => {
-               element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-             });
-          }
-      }
-    };
 
-    // Run on initial mount after a short delay
-    const initialTimerId = setTimeout(() => processHash(true), 150);
+             // --- Optional: Briefly highlight the element ---
+             elementToScrollTo.style.transition = 'outline 0.1s ease-in-out';
+             elementToScrollTo.style.outline = '3px solid #38bdf8'; // sky-400
+             setTimeout(() => {
+                elementToScrollTo.style.outline = 'none';
+             }, 1500); // Remove highlight after 1.5 seconds
 
-    // Listener for subsequent hash changes in the URL bar
-    const handleHashChange = () => {
-         // Resetting the ref allows reprocessing if the user navigates back/forth
-         processedHashRef.current = null;
-         processHash(false);
-    }
-    window.addEventListener('hashchange', handleHashChange);
-
-    // Cleanup function for timeouts and listeners
-    return () => {
-      clearTimeout(initialTimerId);
-      window.removeEventListener('hashchange', handleHashChange);
-    };
-  // Run ONLY ONCE on component mount
-  }, []); // Empty dependency array
-
-  // --- Ensure handleTopicToggle clears the ref ---
-  // Make sure your existing handleTopicToggle includes this line:
-  const handleTopicToggle = (issueId: string, questionCount: number) => {
-    const isCurrentlySelected = selectedTopic === issueId;
-    const newSelectedTopic = isCurrentlySelected ? null : issueId;
-    setSelectedTopic(newSelectedTopic);
-
-    // *** ADD/KEEP THIS LINE: Clear the processed hash ref when user manually toggles ***
-    processedHashRef.current = null;
-
-    // Existing scroll logic for collapsing large topics (keep this)
-    if (isCurrentlySelected && questionCount > 3) {
-        const topicButton = document.querySelector(`button[data-topic-id="${issueId}"]`);
-         if (topicButton) {
-           setTimeout(() => {
-             topicButton.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-           }, 100);
-         } else if (filterBarRef.current) {
-            setTimeout(() => {
-                filterBarRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 100);
-         }
-    }
+        } else if(targetTopicId && targetTopicId === selectedTopic) {
+            // If the element *still* isn't found even though the topic should be open, log it.
+             // console.warn(`Element "${hash}" not found for scrolling even though topic "${targetTopicId}" is selected.`);
+        } else if (!targetTopicId) {
+             // console.warn(`Element "${hash}" not found, and it doesn't belong to a known topic.`);
+        }
+    });
   };
+
+  // Run on mount and when hash changes
+  processHash(); // Initial check
+  window.addEventListener('hashchange', processHash);
+
+  // Cleanup
+  return () => {
+    window.removeEventListener('hashchange', processHash);
+  };
+// Add selectedTopic to dependencies: crucial for re-running scroll logic *after* state update
+}, [selectedTopic, headerRef, filterBarRef]); // Add refs to dependencies if using their height
 
   return (
     <>
