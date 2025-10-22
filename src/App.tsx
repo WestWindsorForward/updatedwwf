@@ -3416,6 +3416,14 @@ Co-Executive Directors @ West Windsor Forward`;
   }, [activeOffice, searchQuery]);
 
   const handleTopicToggle = (issueId: string, questionCount: number) => {
+    const handleTopicToggle = (issueId: string, questionCount: number) => {
+  // --- ADD THIS BLOCK ---
+  // If there's a hash in the URL, remove it.
+  // This "clears" the hash and gives control back to the user.
+  if (window.location.hash) {
+    // Use replaceState to remove the hash without reloading or adding to history
+    window.history.replaceState(null, '', window.location.pathname + window.location.search);
+  }
     const isCurrentlySelected = selectedTopic === issueId;
     setSelectedTopic(isCurrentlySelected ? null : issueId);
 
