@@ -3414,51 +3414,62 @@ Co-Executive Directors @ West Windsor Forward`;
 
 
   // --- EFFECT FOR HANDLING HASH SCROLLING ---
-  useEffect(() => {
-    const handleScrollAndExpansion = () => {
-      const hash = window.location.hash.substring(1);
-      if (!hash) return; // No hash, do nothing
+  // --- EFFECT FOR HANDLING HASH SCROLLING ---
+useEffect(() => {
+    const handleScrollAndExpansion = () => {
+      const hash = window.location.hash.substring(1);
+      if (!hash) return; // No hash, do nothing
 
-      const element = document.getElementById(hash);
-      if (!element) return; // Element not found
+      // Use a small timeout to allow the initial render/state updates to potentially complete
+      const initialRenderTimeout = setTimeout(() => {
+        const element = document.getElementById(hash);
+        if (!element) {
+          console.warn(`Element with ID "${hash}" not found.`);
+          return; // Element not found
+        }
 
-      const topicSection = element.closest('[data-topic-section-id]');
-      const topicId = topicSection?.getAttribute('data-topic-section-id');
+        const topicSection = element.closest('[data-topic-section-id]');
+        const topicId = topicSection?.getAttribute('data-topic-section-id');
 
-      // If the target element is inside a topic section...
-      if (topicId) {
-        // ...and that topic is not currently open...
-        if (topicId !== selectedTopic) {
-          // ...open the topic. The effect will re-run after state update.
-          setSelectedTopic(topicId);
-          return; // Stop processing, let the re-render handle the scroll.
-        }
-      }
+        // Check if the element is inside a topic section
+        if (topicId) {
+          // If the correct topic is NOT already open
+          if (topicId !== selectedTopic) {
+            // Set the state to open the correct topic.
+            // The scrolling will happen in the *next* effect run triggered by this state change.
+            setSelectedTopic(topicId);
+          } else {
+            // If the topic IS already open, scroll after a short delay
+            // This ensures any rendering updates are complete
+            const scrollTimeout = setTimeout(() => {
+              element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 150); // Delay allows for smoother transition after potential re-renders
+            return () => clearTimeout(scrollTimeout); // Cleanup scroll timeout
+          }
+        } else {
+          // If the element is not inside a collapsible topic (e.g., 'interviews', 'finance'), scroll immediately
+           const scrollTimeout = setTimeout(() => {
+              element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 50); // Shorter delay might suffice here
+           return () => clearTimeout(scrollTimeout); // Cleanup scroll timeout
+        }
+      }, 50); // Initial small delay for render
 
-      // If the topic is already open, or the element is not inside a topic section,
-      // or if this is the re-run after opening the topic, scroll smoothly.
-      // Use a timeout to ensure the DOM is fully rendered after expansion.
-      const timeoutId = setTimeout(() => {
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 150); // Adjust delay if needed
+      return () => clearTimeout(initialRenderTimeout); // Cleanup initial timeout
+    };
 
-      // Clean up timeout if component unmounts or effect re-runs
-      return () => clearTimeout(timeoutId);
-    };
+    // Run the handler function
+    const cleanup = handleScrollAndExpansion();
 
-    // Run on initial load or when selectedTopic changes (to handle the scroll *after* expansion)
-    const cleanupTimeout = handleScrollAndExpansion();
+    // Add listener for hash changes while on the page
+    window.addEventListener('hashchange', handleScrollAndExpansion);
 
-    // Add listener for hash changes while on the page
-    window.addEventListener('hashchange', handleScrollAndExpansion);
-
-    // Cleanup function
-    return () => {
-      window.removeEventListener('hashchange', handleScrollAndExpansion);
-      if (cleanupTimeout) cleanupTimeout(); // Clear any pending timeout
-    };
- }, [selectedTopic]); // Re-run effect when selectedTopic changes
-
+    // Cleanup function for effect and event listener
+    return () => {
+      if (cleanup) cleanup(); // Call the cleanup function returned by the handler if it exists
+      window.removeEventListener('hashchange', handleScrollAndExpansion);
+    };
+ }, [selectedTopic]); // Re-run effect when selectedTopic changes (crucial for scrolling *after* expansion)
 
   // --- Helper Function for Jump Buttons ---
   const handleJumpTo = useCallback((id: string) => {
