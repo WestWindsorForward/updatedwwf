@@ -2714,8 +2714,6 @@ const BioCard: FC<{
   );
 };
 
-// --- REPLACE YOUR ENTIRE ElectionPage COMPONENT WITH THIS ---
-
 const ElectionPage: FC<PageProps> = ({ setActivePage }) => {
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null); // Start with all collapsed
   const [activeTab, setActiveTab] = useState("mail");
@@ -3543,6 +3541,30 @@ Co-Executive Directors @ West Windsor Forward`;
     };
   }, [selectedTopic, headerRef, filterBarRef]); // Add refs to dependency array
 
+  // **** UPDATE FINANCE FIGURES HERE ****
+  const financeData = {
+    provenLeaders: {
+      raised: 30380.19, // Cumulative Receipts (3897753.pdf, Table I, Line 10, Col B)
+      spent: 29008.10,  // Cumulative Expenditures (3897753.pdf, Table II, Line 6, Col B)
+      cashOnHand: 7736.83, // Closing Balance (3897753.pdf, Receipts & Expenditures Summary)
+      percentUnder200: 20.12, // Calculated: (6032.03 / (6032.03 + 23948.16)) * 100
+      percentOver200: 79.88, // Calculated: (23948.16 / (6032.03 + 23948.16)) * 100
+      reportLink: "/3897753.pdf", // 11-Day Report
+      reportDate: "October 24, 2025"
+    },
+    wwTogether: {
+      raised: 43959.31, // Cumulative Receipts (3897543.pdf, Table I, Line 10, Col B)
+      spent: 24059.66, // Cumulative Expenditures (3897543.pdf, Table II, Line 6, Col B)
+      cashOnHand: 19899.65, // Closing Balance (3897543.pdf, Receipts & Expenditures Summary)
+      percentUnder200: 11.71, // Calculated: (4459.00 / (4459.00 + 33605.00)) * 100
+      percentOver200: 88.29, // Calculated: (33605.00 / (4459.00 + 33605.00)) * 100
+      reportLink: "/3897543.pdf", // 11-Day Report
+      reportDate: "October 24, 2025"
+    }
+  };
+  // **** END FINANCE UPDATE ****
+
+
   return (
     <>
       <Modal
@@ -4232,6 +4254,7 @@ Co-Executive Directors @ West Windsor Forward`;
             </h2>
             <Card noHoverEffect className="p-0">
               <div className="p-4 sm:p-6">
+                {/* **** UPDATED DISCLAIMER **** */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center mb-6 bg-amber-50 border border-amber-200 rounded-lg p-4">
                   <IconInfo className="text-amber-600 mr-3 flex-shrink-0 mt-1 sm:mt-0" />
                   <div>
@@ -4240,34 +4263,31 @@ Co-Executive Directors @ West Windsor Forward`;
                     </h3>
                     <p className="text-sm text-amber-700">
                       The financial data presented below is sourced from the
-                      29-Day Pre-Election R-1 reports filed with NJ ELEC on
-                      October 6, 2025. This is a snapshot in time and may not
+                      11-Day Pre-Election R-1 reports filed with NJ ELEC on
+                      October 24, 2025. This is a snapshot in time and may not
                       reflect the most current fundraising or expenditure
-                      totals. NJ ELEC will be releasing the 11-day Pre-Election
-                      report on October 24th, 2025 and this tool will be updated
-                      shortly thereafter.
+                      totals. Final figures will be available in the post-election
+                      reports.
                     </p>
                   </div>
                 </div>
+                {/* **** END DISCLAIMER UPDATE **** */}
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-                  {/* --- PROVEN LEADERS (FIXED) --- */}
+                  {/* --- PROVEN LEADERS (UPDATED) --- */}
                   <div className="p-4 sm:p-6 bg-slate-50 rounded-xl border-2 border-slate-200 h-full flex flex-col">
                     <h4 className="font-bold text-xl text-blue-800 mb-4 text-center">
                       Proven Leaders for West Windsor
                     </h4>
-                    {/* FIX: grid-cols-1 sm:grid-cols-2 */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm mb-6 text-center">
-                      <div><div className="text-xs text-slate-500">Raised</div><div className="font-bold text-2xl sm:text-lg">$28,953.71</div></div>
-                      <div><div className="text-xs text-slate-500">Spent</div><div className="font-bold text-2xl sm:text-lg">$13,764.07</div></div>
-                      {/* FIX: col-span-1 sm:col-span-2 */}
-                      <div className="col-span-1 sm:col-span-2 mt-2"><div className="text-xs text-slate-500">Cash on Hand</div><div className="font-bold text-2xl text-green-700">$21,554.38</div></div>
+                      <div><div className="text-xs text-slate-500">Total Raised</div><div className="font-bold text-2xl sm:text-lg">${financeData.provenLeaders.raised.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div></div>
+                      <div><div className="text-xs text-slate-500">Total Spent</div><div className="font-bold text-2xl sm:text-lg">${financeData.provenLeaders.spent.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div></div>
+                      <div className="col-span-1 sm:col-span-2 mt-2"><div className="text-xs text-slate-500">Cash on Hand</div><div className="font-bold text-2xl text-green-700">${financeData.provenLeaders.cashOnHand.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div></div>
                     </div>
 
                     <div className="space-y-8 flex-grow flex flex-col">
                       <div className="relative">
-                        {/* FIX: Centered chip and added padding-top to box */}
                         <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10 w-full flex justify-center">
                           <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700 border border-orange-200">
                             <span className="w-1.5 h-1.5 bg-orange-500 rounded-full mr-1.5 animate-pulse"></span>
@@ -4275,55 +4295,47 @@ Co-Executive Directors @ West Windsor Forward`;
                           </span>
                         </div>
                         <div className="bg-white border-2 border-slate-400 rounded-lg p-4 pt-10 space-y-8">
-                          {/* END FIX */}
                           <div>
                             <div className="text-center mb-2"><h5 className="font-semibold text-slate-700 text-sm">Funding Sources¹</h5></div>
-                            {/* FIX: Labels to Chips */}
                             <div className="flex flex-wrap justify-center gap-2 mb-2">
+                              {/* NOTE: Data from 11-day report doesn't change this breakdown */}
                               <span className="text-xs font-medium bg-sky-100 text-sky-800 px-2.5 py-0.5 rounded-full">100% from Individuals</span>
                             </div>
-                            {/* END FIX */}
                             <div className="w-full bg-slate-200 rounded-full h-2.5"><div className="bg-sky-500 h-2.5 rounded-full" style={{ width: "100%" }}></div></div>
                           </div>
                           <div>
                             <div className="text-center mb-2"><h5 className="font-semibold text-slate-700 text-sm">Donation Origin (by $ Amount)²</h5></div>
-                            {/* FIX: Labels to Chips */}
                             <div className="flex flex-wrap justify-center gap-2 mb-2">
+                              {/* NOTE: Data from 11-day report doesn't change this breakdown */}
                               <span className="text-xs font-medium bg-sky-100 text-sky-800 px-2.5 py-0.5 rounded-full">29.4% from In-Town</span>
                             </div>
-                            {/* END FIX */}
                             <div className="w-full bg-slate-200 rounded-full h-2.5"><div className="bg-sky-500 h-2.5 rounded-full" style={{ width: "29.4%" }}></div></div>
                           </div>
                         </div>
                       </div>
                       <div>
-                        <div className="text-center mb-2"><h5 className="font-semibold text-slate-700 text-sm">Donation Size (% of Total Raised)</h5></div>
-                        {/* FIX: Labels to Chips (Center on mobile) */}
+                        <div className="text-center mb-2"><h5 className="font-semibold text-slate-700 text-sm">Donation Size (% of Total Monetary Raised)</h5></div>
                         <div className="flex flex-wrap justify-center gap-2 mb-2 text-center">
-                          <span className="text-xs font-medium bg-sky-100 text-sky-800 px-2.5 py-0.5 rounded-full">17.3% $200 or less</span>
-                          <span className="text-xs font-medium bg-slate-200 text-slate-700 px-2.5 py-0.5 rounded-full">82.7% over $200</span>
+                          <span className="text-xs font-medium bg-sky-100 text-sky-800 px-2.5 py-0.5 rounded-full">{financeData.provenLeaders.percentUnder200.toFixed(1)}% $200 or less</span>
+                          <span className="text-xs font-medium bg-slate-200 text-slate-700 px-2.5 py-0.5 rounded-full">{financeData.provenLeaders.percentOver200.toFixed(1)}% over $200</span>
                         </div>
-                        {/* END FIX */}
-                        <div className="w-full bg-slate-200 rounded-full h-2.5 flex"><div className="bg-sky-500 h-2.5 rounded-l-full" style={{ width: "17.3%" }}></div><div className="bg-slate-400 h-2.5 rounded-r-full" style={{ width: "82.7%" }}></div></div>
+                        <div className="w-full bg-slate-200 rounded-full h-2.5 flex"><div className="bg-sky-500 h-2.5 rounded-l-full" style={{ width: `${financeData.provenLeaders.percentUnder200}%` }}></div><div className="bg-slate-400 h-2.5 rounded-r-full" style={{ width: `${financeData.provenLeaders.percentOver200}%` }}></div></div>
                       </div>
                     </div>
-                    <Button size="sm" type="secondary" className="w-full mt-10" href="/3892476.pdf" icon={<IconExternalLink />}>View Full ELEC Report</Button>
+                    <Button size="sm" type="secondary" className="w-full mt-10" href={financeData.provenLeaders.reportLink} icon={<IconExternalLink />}>View 11-Day ELEC Report</Button>
                   </div>
 
-                  {/* --- WW TOGETHER (FIXED) --- */}
+                  {/* --- WW TOGETHER (UPDATED) --- */}
                   <div className="p-4 sm:p-6 bg-slate-50 rounded-xl border-2 border-slate-200 h-full flex flex-col">
                     <h4 className="font-bold text-xl text-green-800 mb-4 text-center">West Windsor Together</h4>
-                    {/* FIX: grid-cols-1 sm:grid-cols-2 */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm mb-6 text-center">
-                      <div><div className="text-xs text-slate-500">Raised</div><div className="font-bold text-2xl sm:text-lg">$37,731.31</div></div>
-                      <div><div className="text-xs text-slate-500">Spent</div><div className="font-bold text-2xl sm:text-lg">$14,787.36</div></div>
-                      {/* FIX: col-span-1 sm:col-span-2 */}
-                      <div className="col-span-1 sm:col-span-2 mt-2"><div className="text-xs text-slate-500">Cash on Hand</div><div className="font-bold text-2xl text-green-700">$22,943.95</div></div>
+                      <div><div className="text-xs text-slate-500">Total Raised</div><div className="font-bold text-2xl sm:text-lg">${financeData.wwTogether.raised.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div></div>
+                      <div><div className="text-xs text-slate-500">Total Spent</div><div className="font-bold text-2xl sm:text-lg">${financeData.wwTogether.spent.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div></div>
+                      <div className="col-span-1 sm:col-span-2 mt-2"><div className="text-xs text-slate-500">Cash on Hand</div><div className="font-bold text-2xl text-green-700">${financeData.wwTogether.cashOnHand.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div></div>
                     </div>
 
                     <div className="space-y-8 flex-grow flex flex-col">
                       <div className="relative">
-                        {/* FIX: Centered chip and added padding-top to box */}
                         <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10 w-full flex justify-center">
                           <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700 border border-orange-200">
                             <span className="w-1.5 h-1.5 bg-orange-500 rounded-full mr-1.5 animate-pulse"></span>
@@ -4331,46 +4343,41 @@ Co-Executive Directors @ West Windsor Forward`;
                           </span>
                         </div>
                         <div className="bg-white border-2 border-slate-400 rounded-lg p-4 pt-10 space-y-8">
-                          {/* END FIX */}
                           <div>
                             <div className="text-center mb-2"><h5 className="font-semibold text-slate-700 text-sm">Funding Sources¹</h5></div>
-                            {/* FIX: Labels to Chips (Center on mobile) */}
-                            <div className="flex flex-wrap justify-center gap-2 mb-2 text-center">
-                              <span className="text-xs font-medium bg-sky-100 text-sky-800 px-2.5 py-0.5 rounded-full">96.9% Individuals</span>
-                              <span className="text-xs font-medium bg-slate-200 text-slate-700 px-2.5 py-0.5 rounded-full">3.1% Committees</span>
-                            </div>
-                            {/* END FIX */}
+                             <div className="flex flex-wrap justify-center gap-2 mb-2 text-center">
+                               {/* NOTE: Data from 11-day report doesn't change this breakdown */}
+                               <span className="text-xs font-medium bg-sky-100 text-sky-800 px-2.5 py-0.5 rounded-full">96.9% Individuals</span>
+                               <span className="text-xs font-medium bg-slate-200 text-slate-700 px-2.5 py-0.5 rounded-full">3.1% Committees</span>
+                             </div>
                             <div className="w-full bg-slate-200 rounded-full h-2.5 flex"><div className="bg-sky-500 h-2.5 rounded-l-full" style={{ width: "96.9%" }}></div><div className="bg-slate-400 h-2.5 rounded-r-full" style={{ width: "3.1%" }}></div></div>
                           </div>
                           <div>
                             <div className="text-center mb-2"><h5 className="font-semibold text-slate-700 text-sm">Donation Origin (by $ Amount)²</h5></div>
-                            {/* FIX: Labels to Chips */}
                             <div className="flex flex-wrap justify-center gap-2 mb-2">
+                               {/* NOTE: Data from 11-day report doesn't change this breakdown */}
                               <span className="text-xs font-medium bg-sky-100 text-sky-800 px-2.5 py-0.5 rounded-full">33.6% from In-Town</span>
                             </div>
-                            {/* END FIX */}
                             <div className="w-full bg-slate-200 rounded-full h-2.5"><div className="bg-sky-500 h-2.5 rounded-full" style={{ width: "33.6%" }}></div></div>
                           </div>
                         </div>
                       </div>
                       <div>
-                        <div className="text-center mb-2"><h5 className="font-semibold text-slate-700 text-sm">Donation Size (% of Total Raised)</h5></div>
-                        {/* FIX: Labels to Chips (Center on mobile) */}
+                        <div className="text-center mb-2"><h5 className="font-semibold text-slate-700 text-sm">Donation Size (% of Total Monetary Raised)</h5></div>
                         <div className="flex flex-wrap justify-center gap-2 mb-2 text-center">
-                          <span className="text-xs font-medium bg-sky-100 text-sky-800 px-2.5 py-0.5 rounded-full">6.2% $200 or less</span>
-                          <span className="text-xs font-medium bg-slate-200 text-slate-700 px-2.5 py-0.5 rounded-full">93.8% over $200</span>
+                          <span className="text-xs font-medium bg-sky-100 text-sky-800 px-2.5 py-0.5 rounded-full">{financeData.wwTogether.percentUnder200.toFixed(1)}% $200 or less</span>
+                          <span className="text-xs font-medium bg-slate-200 text-slate-700 px-2.5 py-0.5 rounded-full">{financeData.wwTogether.percentOver200.toFixed(1)}% over $200</span>
                         </div>
-                        {/* END FIX */}
-                        <div className="w-full bg-slate-200 rounded-full h-2.5 flex"><div className="bg-sky-500 h-2.5 rounded-l-full" style={{ width: "6.2%" }}></div><div className="bg-slate-400 h-2.5 rounded-r-full" style={{ width: "93.8%" }}></div></div>
+                        <div className="w-full bg-slate-200 rounded-full h-2.5 flex"><div className="bg-sky-500 h-2.5 rounded-l-full" style={{ width: `${financeData.wwTogether.percentUnder200}%` }}></div><div className="bg-slate-400 h-2.5 rounded-r-full" style={{ width: `${financeData.wwTogether.percentOver200}%` }}></div></div>
                       </div>
                     </div>
-                    <Button size="sm" type="secondary" className="w-full mt-10" href="/3892561.pdf" icon={<IconExternalLink />}>View Full ELEC Report</Button>
+                    <Button size="sm" type="secondary" className="w-full mt-10" href={financeData.wwTogether.reportLink} icon={<IconExternalLink />}>View 11-Day ELEC Report</Button>
                   </div>
                 </div>
 
                 <div className="mt-6 text-xs text-slate-600 space-y-2">
-                  <p><strong>¹ About 'Funding Sources'</strong><br />The breakdown of funding sources only includes itemized contributions (typically those over $200) as reported on Schedule A of the ELEC R-1 filing. It categorizes these contributions based on the type of donor (Individual, Committee, Corporation, etc.).</p>
-                  <p><strong>² About 'Donation Origin' (In-Town Percentage)</strong><br />The "In-Town" percentage is calculated based on the dollar amount of itemized contributions (typically those over $200) where the donor's address listed on the ELEC R-1 filing is within West Windsor (Zip Code 08550). This calculation does not include smaller, non-itemized donations as address information is not typically reported for those.</p>
+                  <p><strong>¹ About 'Funding Sources'</strong><br />The breakdown of funding sources only includes itemized monetary contributions (typically those over $200) as reported on Schedule 1 of the ELEC R-1 filing. It categorizes these contributions based on the type of donor (Individual, Committee, Corporation, etc.). It excludes loans and in-kind contributions.</p>
+                  <p><strong>² About 'Donation Origin' (In-Town Percentage)</strong><br />The "In-Town" percentage is calculated based on the dollar amount of itemized monetary contributions (typically those over $200) where the donor's address listed on the ELEC R-1 filing is within West Windsor (Zip Code 08550). This calculation does not include smaller, non-itemized donations, loans, or in-kind contributions as address information is not typically reported for those.</p>
                 </div>
               </div>
             </Card>
