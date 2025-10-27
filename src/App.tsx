@@ -2738,14 +2738,14 @@ const ElectionPage: FC<PageProps> = ({ setActivePage }) => {
       textArea.style.position = 'absolute';
       textArea.style.left = '-9999px';
       textArea.style.top = '0';
-      
+
       document.body.appendChild(textArea);
-      
+
       // --- THIS IS THE FIX ---
       // Calling focus() can scroll the page. preventScroll stops this.
-      textArea.focus({ preventScroll: true }); 
+      textArea.focus({ preventScroll: true });
       // --- END OF FIX ---
-      
+
       textArea.select();
       document.execCommand('copy');
       document.body.removeChild(textArea);
@@ -4139,9 +4139,8 @@ Co-Executive Directors @ West Windsor Forward`;
                                         <span
                                           key={off}
                                           // Note: mr-2 is REMOVED
-                                          className={`inline-block text-xs font-semibold px-2.5 py-1 rounded-full ${
-                                            officeStyles[off] || "bg-gray-100 text-gray-800"
-                                          }`}
+                                          className={`inline-block text-xs font-semibold px-2.5 py-1 rounded-full ${officeStyles[off] || "bg-gray-100 text-gray-800"
+                                            }`}
                                         >
                                           {off} Question
                                         </span>
@@ -4149,14 +4148,13 @@ Co-Executive Directors @ West Windsor Forward`;
                                     ) : question.office ? (
                                       <span
                                         // Note: mr-2 is REMOVED
-                                        className={`inline-block text-xs font-semibold px-2.5 py-1 rounded-full ${
-                                          officeStyles[question.office] || "bg-gray-100 text-gray-800"
-                                        }`}
+                                        className={`inline-block text-xs font-semibold px-2.5 py-1 rounded-full ${officeStyles[question.office] || "bg-gray-100 text-gray-800"
+                                          }`}
                                       >
                                         {question.office} Question
                                       </span>
                                     ) : (
-                                      <span 
+                                      <span
                                         // Note: mr-2 is REMOVED
                                         className="inline-block text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-100 text-gray-800">
                                         General Question
@@ -4253,7 +4251,7 @@ Co-Executive Directors @ West Windsor Forward`;
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  
+
                   {/* --- PROVEN LEADERS (FIXED) --- */}
                   <div className="p-4 sm:p-6 bg-slate-50 rounded-xl border-2 border-slate-200 h-full flex flex-col">
                     <h4 className="font-bold text-xl text-blue-800 mb-4 text-center">
@@ -4277,7 +4275,7 @@ Co-Executive Directors @ West Windsor Forward`;
                           </span>
                         </div>
                         <div className="bg-white border-2 border-slate-400 rounded-lg p-4 pt-10 space-y-8">
-                        {/* END FIX */}
+                          {/* END FIX */}
                           <div>
                             <div className="text-center mb-2"><h5 className="font-semibold text-slate-700 text-sm">Funding Sources¹</h5></div>
                             {/* FIX: Labels to Chips */}
@@ -4311,7 +4309,7 @@ Co-Executive Directors @ West Windsor Forward`;
                     </div>
                     <Button size="sm" type="secondary" className="w-full mt-10" href="/3892476.pdf" icon={<IconExternalLink />}>View Full ELEC Report</Button>
                   </div>
-                  
+
                   {/* --- WW TOGETHER (FIXED) --- */}
                   <div className="p-4 sm:p-6 bg-slate-50 rounded-xl border-2 border-slate-200 h-full flex flex-col">
                     <h4 className="font-bold text-xl text-green-800 mb-4 text-center">West Windsor Together</h4>
@@ -4333,10 +4331,10 @@ Co-Executive Directors @ West Windsor Forward`;
                           </span>
                         </div>
                         <div className="bg-white border-2 border-slate-400 rounded-lg p-4 pt-10 space-y-8">
-                        {/* END FIX */}
+                          {/* END FIX */}
                           <div>
                             <div className="text-center mb-2"><h5 className="font-semibold text-slate-700 text-sm">Funding Sources¹</h5></div>
-                             {/* FIX: Labels to Chips (Center on mobile) */}
+                            {/* FIX: Labels to Chips (Center on mobile) */}
                             <div className="flex flex-wrap justify-center gap-2 mb-2 text-center">
                               <span className="text-xs font-medium bg-sky-100 text-sky-800 px-2.5 py-0.5 rounded-full">96.9% Individuals</span>
                               <span className="text-xs font-medium bg-slate-200 text-slate-700 px-2.5 py-0.5 rounded-full">3.1% Committees</span>
