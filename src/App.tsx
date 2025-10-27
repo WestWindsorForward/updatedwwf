@@ -2767,9 +2767,8 @@ const ElectionPage: FC<PageProps> = ({ setActivePage }) => {
         // Calculate offset if you have a sticky header/filter bar
         const headerHeight = headerRef.current?.offsetHeight || 0;
         const filterBarHeight = filterBarRef.current?.offsetHeight || 0;
-        // Adjust offset based on which element is sticky at the time of jump
-        // --- INCREASED OFFSET FURTHER to screen height / 4 ---
-        const additionalOffset = typeof window !== 'undefined' ? window.innerHeight / 4 : 50; // Use 1/4 screen height or fallback
+        // --- INCREASED OFFSET FURTHER to screen height * 3 / 4 ---
+        const additionalOffset = typeof window !== 'undefined' ? (window.innerHeight * 3) / 4 : 75; // Use 3/4 screen height or fallback
         const offset = Math.max(headerHeight, filterBarHeight) + additionalOffset;
 
         const elementPosition =
@@ -3505,8 +3504,8 @@ Co-Executive Directors @ West Windsor Forward`;
         if (elementToScrollTo) {
           const headerHeight = headerRef.current?.offsetHeight || 0;
           const filterBarHeight = filterBarRef.current?.offsetHeight || 0;
-          // --- INCREASED OFFSET FURTHER to screen height / 4 ---
-          const additionalOffset = typeof window !== 'undefined' ? window.innerHeight / 4 : 50; // Use 1/4 screen height or fallback
+          // --- INCREASED OFFSET FURTHER to screen height * 3 / 4 ---
+          const additionalOffset = typeof window !== 'undefined' ? (window.innerHeight * 3) / 4 : 75; // Use 3/4 screen height or fallback
           const offset = Math.max(headerHeight, filterBarHeight) + additionalOffset;
 
           const elementPosition = elementToScrollTo.getBoundingClientRect().top + window.pageYOffset;
