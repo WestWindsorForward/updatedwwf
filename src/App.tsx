@@ -2768,8 +2768,9 @@ const ElectionPage: FC<PageProps> = ({ setActivePage }) => {
         const headerHeight = headerRef.current?.offsetHeight || 0;
         const filterBarHeight = filterBarRef.current?.offsetHeight || 0;
         // Adjust offset based on which element is sticky at the time of jump
-        // --- INCREASED OFFSET FROM 20 TO 30 ---
-        const offset = Math.max(headerHeight, filterBarHeight) + 30; // Add 30px padding
+        // --- INCREASED OFFSET FURTHER to screen height / 4 ---
+        const additionalOffset = typeof window !== 'undefined' ? window.innerHeight / 4 : 50; // Use 1/4 screen height or fallback
+        const offset = Math.max(headerHeight, filterBarHeight) + additionalOffset;
 
         const elementPosition =
           element.getBoundingClientRect().top + window.pageYOffset;
@@ -3504,8 +3505,9 @@ Co-Executive Directors @ West Windsor Forward`;
         if (elementToScrollTo) {
           const headerHeight = headerRef.current?.offsetHeight || 0;
           const filterBarHeight = filterBarRef.current?.offsetHeight || 0;
-          // --- INCREASED OFFSET FROM 20 TO 30 ---
-          const offset = Math.max(headerHeight, filterBarHeight) + 30; // Use same offset as jump links
+          // --- INCREASED OFFSET FURTHER to screen height / 4 ---
+          const additionalOffset = typeof window !== 'undefined' ? window.innerHeight / 4 : 50; // Use 1/4 screen height or fallback
+          const offset = Math.max(headerHeight, filterBarHeight) + additionalOffset;
 
           const elementPosition = elementToScrollTo.getBoundingClientRect().top + window.pageYOffset;
           const offsetPosition = elementPosition - offset;
