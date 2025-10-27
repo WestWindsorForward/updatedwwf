@@ -2716,8 +2716,6 @@ const BioCard: FC<{
 
 // --- REPLACE YOUR ENTIRE ElectionPage COMPONENT WITH THIS ---
 
-// --- REPLACE YOUR ENTIRE ElectionPage COMPONENT WITH THIS ---
-
 const ElectionPage: FC<PageProps> = ({ setActivePage }) => {
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null); // Start with all collapsed
   const [activeTab, setActiveTab] = useState("mail");
@@ -4164,7 +4162,7 @@ Co-Executive Directors @ West Windsor Forward`;
                                       </span>
                                     )}
                                   </div>
-                                  {/* FIX: Use px-8 sm:px-0 to center with padding on both sides on mobile */}
+                                  {/* FIX: Use px-8 sm:px-0 and text-center */}
                                   <p className="font-semibold text-slate-700 italic max-w-2xl mx-auto px-8 sm:px-0 text-center">
                                     "{question.text}"
                                   </p>
