@@ -4347,10 +4347,10 @@ Co-Executive Directors @ West Windsor Forward`;
                             <div className="text-center mb-2"><h5 className="font-semibold text-slate-700 text-sm">Funding Sources¹</h5></div>
                              <div className="flex flex-wrap justify-center gap-2 mb-2 text-center">
                                {/* NOTE: Data from 11-day report doesn't change this breakdown */}
-                               <span className="text-xs font-medium bg-sky-100 text-sky-800 px-2.5 py-0.5 rounded-full">96.9% Individuals</span>
-                               <span className="text-xs font-medium bg-slate-200 text-slate-700 px-2.5 py-0.5 rounded-full">3.1% Committees</span>
+                               <span className="text-xs font-medium bg-sky-100 text-sky-800 px-2.5 py-0.5 rounded-full">98% Individuals</span>
+                               <span className="text-xs font-medium bg-slate-200 text-slate-700 px-2.5 py-0.5 rounded-full">2% Committees</span>
                              </div>
-                            <div className="w-full bg-slate-200 rounded-full h-2.5 flex"><div className="bg-sky-500 h-2.5 rounded-l-full" style={{ width: "96.9%" }}></div><div className="bg-slate-400 h-2.5 rounded-r-full" style={{ width: "3.1%" }}></div></div>
+                            <div className="w-full bg-slate-200 rounded-full h-2.5 flex"><div className="bg-sky-500 h-2.5 rounded-l-full" style={{ width: "98%" }}></div><div className="bg-slate-400 h-2.5 rounded-r-full" style={{ width: "2%" }}></div></div>
                           </div>
                           <div>
                             <div className="text-center mb-2"><h5 className="font-semibold text-slate-700 text-sm">Donation Origin (by $ Amount)²</h5></div>
@@ -4376,7 +4376,7 @@ Co-Executive Directors @ West Windsor Forward`;
                 </div>
 
                 <div className="mt-6 text-xs text-slate-600 space-y-2">
-                  <p><strong>¹ About 'Funding Sources'</strong><br />The breakdown of funding sources only includes itemized monetary contributions (typically those over $200) as reported on Schedule 1 of the ELEC R-1 filing. It categorizes these contributions based on the type of donor (Individual, Committee, Corporation, etc.). It excludes loans and in-kind contributions.</p>
+                  <p><strong>¹ About 'Funding Sources'</strong><br />The breakdown of funding sources only includes itemized monetary contributions (typically those over $200) as reported on Schedule 1 of the ELEC R-1 filing and all loans recieved. It categorizes these contributions based on the type of donor (Individual, Committee, Corporation, etc.). It excludes loans and in-kind contributions.</p>
                   <p><strong>² About 'Donation Origin' (In-Town Percentage)</strong><br />The "In-Town" percentage is calculated based on the dollar amount of itemized monetary contributions (typically those over $200) where the donor's address listed on the ELEC R-1 filing is within West Windsor (Zip Code 08550 or Zip Code 08540 with a verified West Windsor Township Address). This calculation does not include smaller, non-itemized donations, loans, or in-kind contributions as address information is not typically reported for those.</p>
                 </div>
               </div>
