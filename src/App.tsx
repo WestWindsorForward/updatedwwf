@@ -2767,9 +2767,9 @@ const ElectionPage: FC<PageProps> = ({ setActivePage }) => {
         // Calculate offset if you have a sticky header/filter bar
         const headerHeight = headerRef.current?.offsetHeight || 0;
         const filterBarHeight = filterBarRef.current?.offsetHeight || 0;
-        // --- INCREASED OFFSET FURTHER to screen height * 3 / 4 ---
-        const additionalOffset = typeof window !== 'undefined' ? (window.innerHeight * 3) / 4 : 75; // Use 3/4 screen height or fallback
-        const offset = Math.max(headerHeight, filterBarHeight) + additionalOffset;
+        // Adjust offset based on which element is sticky at the time of jump
+        // --- INCREASED OFFSET FROM 20 TO 30 ---
+        const offset = Math.max(headerHeight, filterBarHeight) + 30; // Add 30px padding
 
         const elementPosition =
           element.getBoundingClientRect().top + window.pageYOffset;
@@ -3504,9 +3504,8 @@ Co-Executive Directors @ West Windsor Forward`;
         if (elementToScrollTo) {
           const headerHeight = headerRef.current?.offsetHeight || 0;
           const filterBarHeight = filterBarRef.current?.offsetHeight || 0;
-          // --- INCREASED OFFSET FURTHER to screen height * 3 / 4 ---
-          const additionalOffset = typeof window !== 'undefined' ? (window.innerHeight * 3) / 4 : 75; // Use 3/4 screen height or fallback
-          const offset = Math.max(headerHeight, filterBarHeight) + additionalOffset;
+          // --- INCREASED OFFSET FROM 20 TO 30 ---
+          const offset = Math.max(headerHeight, filterBarHeight) + 30; // Use same offset as jump links
 
           const elementPosition = elementToScrollTo.getBoundingClientRect().top + window.pageYOffset;
           const offsetPosition = elementPosition - offset;
