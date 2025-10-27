@@ -3470,7 +3470,8 @@ Co-Executive Directors @ West Windsor Forward`;
   // --- EFFECT FOR HANDLING HASH SCROLLING & EXPANSION ---
   useEffect(() => {
     const processHash = () => {
-      const hash = window.location.hash.substring(1);
+      // --- FIX: Strip trackers AND encoded junk from hash ---
+      const hash = window.location.hash.substring(1).split('?')[0].split('&')[0].split('%')[0];
       if (!hash) return; // No hash, do nothing
 
       // Find the topic ID associated with the question hash
