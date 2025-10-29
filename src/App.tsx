@@ -32,7 +32,7 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 // Example: import { Home, FileText, MapPin, User, LogIn, LogOut, Settings, Users, BarChart2, Send, AlertCircle, CheckCircle, Loader, UploadCloud, X, Search, Inbox, Clock, MessageSquare, Eye, Trash2, UserPlus, Shield, Edit, Star, Zap, Bot, Lock, ChevronLeft, ArrowRight, Image as ImageIcon } from 'react-feather';
 // For brevity, I'll keep the existing inline SVGs but recommend switching to a library.
 // --- (Keep existing SVG components here or replace with imports) ---
-const Icon = ({ size = 24, children, className = "", ...props }) => ( /* ... existing ... */ );
+const Icon = ({ size = 24, children, className = "", ...props }) => ( /* ... existing ... */ )
 const Home = ({ size, className }) => ( /* ... existing ... */ );
 const CheckCircle = ({ size, className }) => ( /* ... existing ... */ );
 const FileText = ({ size, className }) => ( /* ... existing ... */ );
