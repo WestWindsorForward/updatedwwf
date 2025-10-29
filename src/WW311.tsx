@@ -410,8 +410,10 @@ const callVertexAI = async (description, category) => {
     });
 
     if (!response.ok) {
-      const err = await response.json();
-      throw new Error(err.error || "AI Triage API failed");
+      // IMPROVED ERROR HANDLING: Read as text to prevent crash if response is non-JSON (e.g., Vercel error page)
+      const errorText = await response.text();
+      console.error("AI Triage API failed with status:", response.status, "body:", errorText);
+      throw new Error(`AI Triage API failed: ${response.statusText}`);
     }
 
     const analysis = await response.json();
@@ -419,12 +421,12 @@ const callVertexAI = async (description, category) => {
     return analysis;
   } catch (error) {
     console.error("Error calling AI Triage:", error);
-    // Return a default, non-blocking object
+    // Return a default, non-blocking object to allow submission to continue
     return {
       suggestedPriority: REQUEST_PRIORITIES.MEDIUM,
       suggestedDepartment: "Public Works",
       estimatedResponseTime: "3-5 business days",
-      reasoning: "AI analysis failed. Defaulting to Medium.",
+      reasoning: `AI analysis failed: ${error.message}. Defaulting to Medium.`, // Use error.message for context
     };
   }
 };
@@ -444,8 +446,10 @@ const callVertexAIPhoto = async (imageUrl) => {
     });
 
     if (!response.ok) {
-      const err = await response.json();
-      throw new Error(err.error || "AI Photo API failed");
+      // IMPROVED ERROR HANDLING
+      const errorText = await response.text();
+      console.error("AI Photo API failed with status:", response.status, "body:", errorText);
+      throw new Error(`AI Photo API failed: ${response.statusText}`);
     }
 
     const analysis = await response.json();
@@ -1380,6 +1384,13 @@ const updateLocation = (latLng, address) => {
     newMap.controls[window.google.maps.ControlPosition.TOP_LEFT].push(
       searchBoxRef.current
     );
+
+    // FIX: Set explicit bounds for better local search results (West Windsor area)
+    const bounds = new window.google.maps.LatLngBounds(
+      new window.google.maps.LatLng(40.2, -74.7), // SW corner (approx)
+      new window.google.maps.LatLng(40.4, -74.4)  // NE corner (approx)
+    );
+    searchBox.setBounds(bounds);
 
     searchBox.addListener("places_changed", () => {
       const places = searchBox.getPlaces();
