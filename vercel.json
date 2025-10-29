@@ -1,23 +1,5 @@
 {
-  "functions": {
-    "api/**/*.ts": {
-      "memory": 1024,
-      "includeFiles": "node_modules"
-    }
-  },
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
-  ],
-  "build": {
-    "env": {
-      "NODE_RUNTIME_TYPE": "CommonJS"
-    }
-  }
+  "rewrites": [
+    { "source": "/:path*", "destination": "/index.html" }
+  ]
 }
