@@ -403,7 +403,8 @@ const getRoadJurisdiction = (streetAddress) => {
 const callVertexAI = async (description, category) => {
   console.log("[API] Calling /api/ai-triage");
   try {
-    const response = await fetch("/api/ai-triage", {
+    // Note: The backend handler for this route must be named 'ai-triage.cjs'
+    const response = await fetch("/api/ai-triage", { 
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ description, category }),
@@ -421,12 +422,12 @@ const callVertexAI = async (description, category) => {
     return analysis;
   } catch (error) {
     console.error("Error calling AI Triage:", error);
-    // Return a default, non-blocking object to allow submission to continue
+    // This allows the submission to proceed with default values if the AI fails
     return {
       suggestedPriority: REQUEST_PRIORITIES.MEDIUM,
       suggestedDepartment: "Public Works",
       estimatedResponseTime: "3-5 business days",
-      reasoning: `AI analysis failed: ${error.message}. Defaulting to Medium.`, // Use error.message for context
+      reasoning: `AI analysis failed: ${error.message}. Defaulting to Medium.`, 
     };
   }
 };
@@ -439,7 +440,8 @@ const callVertexAI = async (description, category) => {
 const callVertexAIPhoto = async (imageUrl) => {
   console.log("[API] Calling /api/ai-analyze-image");
   try {
-    const response = await fetch("/api/ai-analyze-image", {
+    // Note: The backend handler for this route must be named 'ai-analyze-image.cjs'
+    const response = await fetch("/api/ai-analyze-image", { 
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ imageUrl }),
@@ -457,7 +459,7 @@ const callVertexAIPhoto = async (imageUrl) => {
     return analysis;
   } catch (error) {
     console.error("Error calling AI Photo Analysis:", error);
-    return null;
+    throw error; // Re-throw the error so the caller can catch it and log a specific internal note
   }
 };
 
@@ -680,32 +682,67 @@ export default function App() {
     setSuccess(null);
 
     const newRequestId = doc(collection(db, "requests")).id;
+    let aiAnalysis;
 
     try {
-      // --- 1. AI Triage (REAL API CALL) ---
-      const aiAnalysis = await callVertexAI(
+      // --- 1. AI Triage (CRITICAL API CALL - MUST SUCCEED) ---
+      // This step must succeed for the request to be triaged
+      // This calls the 'ai-triage.cjs' endpoint
+      aiAnalysis = await callVertexAI(
         formData.description,
         formData.category
       );
 
       let imageUrl = null;
       let aiPhotoAnalysis = null;
+      let photoErrorNote = null; // New variable to capture photo-related errors
 
-      // --- 2. Upload Photo (if exists) ---
+      // --- 2. UPLOAD PHOTO & 3. AI PHOTO ANALYSIS (NON-CRITICAL) ---
       if (photoFile) {
-        const storageRef = ref(
-          storage,
-          `uploads/${newRequestId}/${photoFile.name}`
-        );
-        const snapshot = await uploadBytes(storageRef, photoFile);
-        imageUrl = await getDownloadURL(snapshot.ref);
+        try {
+          const storageRef = ref(
+            storage,
+            `uploads/${newRequestId}/${photoFile.name}`
+          );
+          const snapshot = await uploadBytes(storageRef, photoFile);
+          imageUrl = await getDownloadURL(snapshot.ref);
 
-        // --- 3. AI Photo Analysis (REAL API CALL) ---
-        aiPhotoAnalysis = await callVertexAIPhoto(imageUrl);
+          // Nested try/catch for AI Photo Analysis
+          try {
+            // This calls the 'ai-analyze-image.cjs' endpoint
+            aiPhotoAnalysis = await callVertexAIPhoto(imageUrl);
+          } catch (photoAnalysisErr) {
+            // Non-critical failure for photo analysis
+            console.error("AI Photo Analysis Failed (non-critical):", photoAnalysisErr.message);
+            photoErrorNote = `AI Photo Analysis Failed: ${photoAnalysisErr.message}. Staff review needed.`;
+          }
+        } catch (uploadErr) {
+          // Catches errors if Firebase storage or the upload fails
+          console.error("Photo Upload Failed (non-critical):", uploadErr.message);
+          photoErrorNote = `Photo Upload Failed: ${uploadErr.message}. Image URL is null.`;
+        }
       }
 
       // --- 4. Create PUBLIC Request Document in `/requests` ---
       const requestDocRef = doc(db, `requests`, newRequestId);
+      
+      const internalNotes = [
+          {
+              timestamp: serverTimestamp(),
+              note: "AI TRIAGE: " + aiAnalysis.reasoning,
+              user: "AI System",
+          },
+      ];
+
+      // Add the photo error note if a non-critical error occurred
+      if (photoErrorNote) {
+          internalNotes.push({
+              timestamp: serverTimestamp(),
+              note: "PHOTO ISSUE: " + photoErrorNote,
+              user: "System Warning",
+          });
+      }
+
       const newRequestData = {
         category: formData.category,
         description: formData.description,
@@ -726,13 +763,7 @@ export default function App() {
           },
         ],
         comments: [],
-        internalNotes: [
-          {
-            timestamp: serverTimestamp(),
-            note: "AI TRIAGE: " + aiAnalysis.reasoning,
-            user: "AI System",
-          },
-        ],
+        internalNotes: internalNotes, // Use the updated array
         aiTriage: aiAnalysis,
         aiPhotoAnalysis: aiPhotoAnalysis,
       };
@@ -783,7 +814,8 @@ export default function App() {
       return newRequestId;
     } catch (err) {
       console.error("Failed to submit request:", err);
-      setError("An error occurred. Please try again.");
+      // This block now mainly catches the Triage step failing (if AI is down/misconfigured)
+      setError("An error occurred during submission. Please check if all fields are valid and try again.");
       return null;
     } finally {
       setIsLoading(false);
@@ -972,7 +1004,11 @@ const ResidentPortal = ({
   const clearPhoto = () => {
     setPhotoFile(null);
     setPhotoPreview(null);
-    document.getElementById("photo-upload").value = null;
+    // Ensure the input value is cleared as well
+    const inputElement = document.getElementById("photo-upload") as HTMLInputElement;
+    if (inputElement) {
+        inputElement.value = "";
+    }
   };
 
   const onLocationSelect = (address, latLng) => {
@@ -1333,6 +1369,14 @@ const GoogleMapSelector = ({ onLocationSelect }) => {
       },
     });
 
+    // FIX: Manually trigger resize after map initialization to fix rendering/positioning bugs
+    const resizeTimeout = setTimeout(() => {
+        if (newMap) {
+            window.google.maps.event.trigger(newMap, 'resize');
+            newMap.setCenter(defaultCenter); // Re-center after resize
+        }
+    }, 300); // 300ms delay ensures container is fully rendered
+
     const newMarker = new window.google.maps.Marker({
       map: newMap,
       position: defaultCenter,
@@ -1399,13 +1443,15 @@ const updateLocation = (latLng, address) => {
       const place = places[0];
       if (!place.geometry || !place.geometry.location) return;
 
-      geocodeLatLng(place.geometry.location);
+      updateLocation(place.geometry.location, place.formatted_address);
       newMap.setZoom(17);
     });
 
     setMap(newMap);
     setMarker(newMarker);
     geocodeLatLng(defaultCenter);
+
+    return () => clearTimeout(resizeTimeout); // Cleanup timeout
   }, [apiKeyLoaded, mapRef, onLocationSelect]);
 
   if (!apiKey) {
@@ -3168,7 +3214,7 @@ const PriorityBadge = ({ priority, large = false }) => {
       }`}
     >
       {priority}
-    </span>
+    </p>
   );
 };
 
