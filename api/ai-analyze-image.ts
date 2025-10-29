@@ -65,8 +65,17 @@ async function getImagePart(imageUrl: string) {
   const bytes = await getBytes(storageRef);
   const buffer = Buffer.from(bytes);
   
-  // Simple MIME type determination (assuming JPEG or PNG based on common uploads)
-  const mimeType = buffer.toString('hex', 0, 4).startsWith('ffd8') ? 'image/jpeg' : 'image/png';
+  // FIX: More robust MIME type determination based on magic numbers.
+  let mimeType = 'application/octet-stream';
+  const hexSignature = buffer.toString('hex', 0, 8); // Read a larger signature for better detection
+
+  if (hexSignature.startsWith('ffd8')) {
+    mimeType = 'image/jpeg'; // JPEG signature (ffd8)
+  } else if (hexSignature.startsWith('89504e47')) {
+    mimeType = 'image/png'; // PNG signature (89504e47)
+  } else if (hexSignature.startsWith('47494638')) {
+    mimeType = 'image/gif'; // GIF signature (47494638)
+  }
   
   return {
     inlineData: {
