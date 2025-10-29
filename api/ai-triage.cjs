@@ -33,7 +33,7 @@ const generationConfig = {
 
 // --- 3. Initialize Vertex AI Client ---
 if (!PROJECT_ID || !CLIENT_EMAIL || !PRIVATE_KEY) {
-  console.error("GCP service account credentials are not set.");
+  console.error("GCP service account credentials aref not set.");
 }
 const vertexAI = new VertexAI({
   project: PROJECT_ID,
