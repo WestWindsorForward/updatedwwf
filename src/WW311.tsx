@@ -687,7 +687,6 @@ export default function App() {
     try {
       // --- 1. AI Triage (CRITICAL API CALL - MUST SUCCEED) ---
       // This step must succeed for the request to be triaged
-      // This calls the 'ai-triage.cjs' endpoint
       aiAnalysis = await callVertexAI(
         formData.description,
         formData.category
@@ -709,7 +708,6 @@ export default function App() {
 
           // Nested try/catch for AI Photo Analysis
           try {
-            // This calls the 'ai-analyze-image.cjs' endpoint
             aiPhotoAnalysis = await callVertexAIPhoto(imageUrl);
           } catch (photoAnalysisErr) {
             // Non-critical failure for photo analysis
@@ -919,7 +917,7 @@ export default function App() {
       return (
         <StaffPortal
           user={user}
-          profile={staffProfile}
+          profile={profile}
           handleLogout={handleStaffLogout}
           view={staffView}
           navigate={navigateStaff}
@@ -3214,7 +3212,7 @@ const PriorityBadge = ({ priority, large = false }) => {
       }`}
     >
       {priority}
-    </p>
+    </span>
   );
 };
 
