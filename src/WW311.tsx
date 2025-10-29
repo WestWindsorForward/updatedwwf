@@ -2403,6 +2403,8 @@ const RequestTable = ({ requests, navigate, profile, compact = false }) => {
   );
 };
 
+// --- (Component: Staff Request Detail) ---
+// This component is updated to safely handle missing AI data.
 const StaffRequestDetail = ({
   navigate,
   request,
@@ -2674,36 +2676,41 @@ const StaffRequestDetail = ({
             </Section>
           )}
 
-          {(request.aiTriage || request.aiPhotoAnalysis) && (
-            <Section title="AI Analysis" icon={<Bot />}>
+          {/* *** FIX: ADDED CHECK FOR request.aiTriage *** */}
+          {request.aiTriage && (
+            <Section title="AI Triage Analysis" icon={<Bot />}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {request.aiTriage && (
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <h4 className="font-semibold text-gray-700 mb-2">
-                      Triage Report
-                    </h4>
-                    <InfoItem
-                      icon={<Zap />}
-                      label="Priority"
-                      value={request.aiTriage.suggestedPriority}
-                    />
-                    <InfoItem
-                      icon={<Users />}
-                      label="Department"
-                      value={request.aiTriage.suggestedDepartment}
-                    />
-                    <InfoItem
-                      icon={<Clock />}
-                      label="Est. Response"
-                      value={request.aiTriage.estimatedResponseTime}
-                    />
-                    <InfoItem
-                      icon={<Star />}
-                      label="Reasoning"
-                      value={request.aiTriage.reasoning}
-                    />
-                  </div>
-                )}
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h4 className="font-semibold text-gray-700 mb-2">
+                    Triage Report
+                  </h4>
+                  <InfoItem
+                    icon={<Zap />}
+                    label="Priority"
+                    // *** FIX: Added optional chaining (?.) and fallback ***
+                    value={request.aiTriage?.suggestedPriority || "N/A"}
+                  />
+                  <InfoItem
+                    icon={<Users />}
+                    label="Department"
+                    // *** FIX: Added optional chaining (?.) and fallback ***
+                    value={request.aiTriage?.suggestedDepartment || "N/A"}
+                  />
+                  <InfoItem
+                    icon={<Clock />}
+                    label="Est. Response"
+                    // *** FIX: Added optional chaining (?.) and fallback ***
+                    value={request.aiTriage?.estimatedResponseTime || "N/A"}
+                  />
+                  <InfoItem
+                    icon={<Star />}
+                    label="Reasoning"
+                    // *** FIX: Added optional chaining (?.) and fallback ***
+                    value={request.aiTriage?.reasoning || "N/A"}
+                  />
+                </div>
+
+                {/* *** FIX: ADDED CHECK FOR request.aiPhotoAnalysis *** */}
                 {request.aiPhotoAnalysis && (
                   <div className="bg-gray-50 p-4 rounded-lg">
                     <h4 className="font-semibold text-gray-700 mb-2">
@@ -2712,17 +2719,22 @@ const StaffRequestDetail = ({
                     <InfoItem
                       icon={<ImageIcon />}
                       label="Identified"
-                      value={request.aiPhotoAnalysis.issueType}
+                      // *** FIX: Added optional chaining (?.) and fallback ***
+                      value={request.aiPhotoAnalysis?.issueType || "N/A"}
                     />
                     <InfoItem
                       icon={<AlertCircle />}
                       label="Severity"
-                      value={request.aiPhotoAnalysis.severity}
+                      // *** FIX: Added optional chaining (?.) and fallback ***
+                      value={request.aiPhotoAnalysis?.severity || "N/A"}
                     />
                     <InfoItem
                       icon={<Settings />}
                       label="Recommendation"
-                      value={request.aiPhotoAnalysis.repairRecommendation}
+                      // *** FIX: Added optional chaining (?.) and fallback ***
+                      value={
+                        request.aiPhotoAnalysis?.repairRecommendation || "N/A"
+                      }
                     />
                   </div>
                 )}
