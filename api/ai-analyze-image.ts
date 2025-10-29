@@ -1,11 +1,15 @@
-import type { VercelRequest, VercelResponse } from "@vercel/node";
-import * as VertexAIModule from "@google-cloud/aiplatform";
+import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { getStorage, ref, getBytes } from 'firebase/storage';
+import { initializeApp, getApp, getApps } from 'firebase/app';
+import * as admin from 'firebase-admin'; // Keep this, though unused directly here
 
-const { VertexAI } = VertexAIModule; // Access the named export via the module namespace
-import { getStorage, ref, getBytes } from "firebase/storage";
-import { initializeApp, getApp, getApps } from "firebase/app";
+// --- 1. Import VertexAI using require() for stability ---
+// This resolves the 'VertexAI is not a constructor' TypeError.
+// @ts-ignore: We use require for stability in Vercel.
+const { VertexAI } = require('@google-cloud/aiplatform');
 
-// AI Config
+// --- 2. Configuration & Constants ---
+// Google Cloud credentials (Set in Vercel Environment Variables)
 const PROJECT_ID = process.env.GCP_PROJECT_ID;
 const CLIENT_EMAIL = process.env.GCP_CLIENT_EMAIL;
 const PRIVATE_KEY = process.env.GCP_PRIVATE_KEY?.replace(/\\n/g, "\n");
@@ -13,8 +17,6 @@ const LOCATION = "us-central1";
 const MODEL_ID = "gemini-1.5-flash-001";
 
 // Firebase Client SDK Config (to download image from storage)
-// This is needed because the API receives a URL, not the file bytes.
-// We use the *client* config here.
 const firebaseConfig = {
   apiKey: process.env.VITE_FIREBASE_API_KEY,
   authDomain: process.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -29,7 +31,10 @@ if (!getApps().length) {
   initializeApp(firebaseConfig);
 }
 
-// Initialize Vertex AI
+// --- 3. Initialize Vertex AI Client ---
+if (!PROJECT_ID || !CLIENT_EMAIL || !PRIVATE_KEY) {
+  console.error("GCP service account credentials are not set.");
+}
 const vertexAI = new VertexAI({
   project: PROJECT_ID,
   location: LOCATION,
@@ -43,67 +48,75 @@ const generativeModel = vertexAI.getGenerativeModel({
   model: MODEL_ID,
 });
 
+// --- 4. Helper Functions ---
+
 const buildPrompt = () => `
   You are an expert 311 issue identifier. Analyze the attached image.
   Return a JSON object with:
   1. "issueType": A brief name for the issue (e.g., "Pothole", "Fallen Tree", "Graffiti").
-  2. "severity": One of ["Low", "Medium", "High"].
+  2. "severity": One of ["Low", "Medium", "High", "Critical"].
   3. "repairRecommendation": A 1-2 sentence suggested action (e.g., "Standard asphalt patch required.").
 `;
 
 // Helper to get image bytes from a Firebase Storage URL
-async function getImageBytes(imageUrl: string) {
+async function getImagePart(imageUrl: string) {
   const storage = getStorage();
-  // Create a storage reference from the URL
   const storageRef = ref(storage, imageUrl);
   const bytes = await getBytes(storageRef);
-  return Buffer.from(bytes).toString("base64");
+  const buffer = Buffer.from(bytes);
+  
+  // Simple MIME type determination (assuming JPEG or PNG based on common uploads)
+  const mimeType = buffer.toString('hex', 0, 4).startsWith('ffd8') ? 'image/jpeg' : 'image/png';
+  
+  return {
+    inlineData: {
+      data: buffer.toString('base64'),
+      mimeType: mimeType,
+    },
+  };
 }
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method Not Allowed" });
+
+// --- 5. Handler Function ---
+export default async function handler(
+  req: VercelRequest,
+  res: VercelResponse
+) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method Not Allowed' });
   }
   if (!PROJECT_ID || !CLIENT_EMAIL || !PRIVATE_KEY) {
-    return res.status(500).json({ error: "AI service not configured" });
+    return res.status(500).json({ error: 'AI service not configured: Missing GCP credentials' });
   }
 
   const { imageUrl } = req.body;
   if (!imageUrl) {
-    return res.status(400).json({ error: "Missing imageUrl" });
+    return res.status(400).json({ error: 'Missing imageUrl' });
   }
 
   try {
-    // 1. Get image bytes from Firebase Storage
-    const imageBase64 = await getImageBytes(imageUrl);
+    // 1. Get image data
+    const imagePart = await getImagePart(imageUrl);
 
-    // 2. Prepare request for Vertex AI
+    // 2. Prepare and call Vertex AI
     const prompt = buildPrompt();
-    const imagePart = {
-      inlineData: {
-        data: imageBase64,
-        mimeType: "image/jpeg", // Assuming jpeg, adjust if needed
-      },
-    };
-    const textPart = { text: prompt };
 
     const request = {
-      contents: [{ role: "user", parts: [imagePart, textPart] }],
+      contents: [{ role: 'user', parts: [imagePart, { text: prompt }] }],
       generationConfig: {
-        maxOutputTokens: 256,
-        temperature: 0.2,
-        responseMimeType: "application/json",
+          maxOutputTokens: 256,
+          temperature: 0.2,
+          responseMimeType: 'application/json',
       },
     };
 
-    // 3. Call Vertex AI
     const result = await generativeModel.generateContent(request);
     const jsonResponse = result.response.candidates[0].content.parts[0].text;
     const analysis = JSON.parse(jsonResponse);
 
     res.status(200).json(analysis);
   } catch (error) {
-    console.error("Error calling Vertex AI for image:", error);
-    res.status(500).json({ error: "Failed to analyze image" });
+    console.error('Error calling Vertex AI for Photo Analysis:', error);
+    res.status(500).json({ error: 'Failed to analyze image with Google AI', details: error.message });
   }
 }
