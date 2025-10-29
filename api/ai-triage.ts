@@ -1,32 +1,17 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import * as VertexAIModule from "@google-cloud/aiplatform";
 
-const { VertexAI } = VertexAIModule; // Access the named export via the module namespace
+// --- 1. Import VertexAI using require() for stability ---
+// This resolves the 'VertexAI is not a constructor' TypeError.
+// @ts-ignore: We use require for stability in Vercel.
+const { VertexAI } = require('@google-cloud/aiplatform');
 
-// AI Config
+// --- 2. Configuration & Constants ---
+// Load environment variables *before* the VertexAI initialization block
 const PROJECT_ID = process.env.GCP_PROJECT_ID;
 const CLIENT_EMAIL = process.env.GCP_CLIENT_EMAIL;
 const PRIVATE_KEY = process.env.GCP_PRIVATE_KEY?.replace(/\\n/g, "\n");
-const LOCATION = "us-central1"; // Or your preferred region
-const MODEL_ID = "gemini-1.5-flash-001"; // Use a fast and modern model
-
-if (!PROJECT_ID || !CLIENT_EMAIL || !PRIVATE_KEY) {
-  console.error("GCP service account credentials are not set.");
-}
-
-// Initialize Vertex AI
-const vertexAI = new VertexAI({
-  project: PROJECT_ID,
-  location: LOCATION,
-  credentials: {
-    client_email: CLIENT_EMAIL,
-    private_key: PRIVATE_KEY,
-  },
-});
-
-const generativeModel = vertexAI.getGenerativeModel({
-  model: MODEL_ID,
-});
+const LOCATION = "us-central1"; 
+const MODEL_ID = "gemini-1.5-flash-001";
 
 // Define possible values
 const priorities = ["Low", "Medium", "High", "Emergency"];
@@ -46,6 +31,24 @@ const generationConfig = {
   responseMimeType: "application/json",
 };
 
+// --- 3. Initialize Vertex AI Client ---
+if (!PROJECT_ID || !CLIENT_EMAIL || !PRIVATE_KEY) {
+  console.error("GCP service account credentials are not set.");
+}
+const vertexAI = new VertexAI({
+  project: PROJECT_ID,
+  location: LOCATION,
+  credentials: {
+    client_email: CLIENT_EMAIL,
+    private_key: PRIVATE_KEY,
+  },
+});
+
+const generativeModel = vertexAI.getGenerativeModel({
+  model: MODEL_ID,
+});
+
+// --- 4. Prompt Logic ---
 const buildPrompt = (description: string, category: string) => `
   You are an expert 311 request triager for West Windsor Township.
   Analyze the following request and return a JSON object with:
@@ -58,6 +61,7 @@ const buildPrompt = (description: string, category: string) => `
   Request Description: "${description}"
 `;
 
+// --- 5. Handler Function ---
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method Not Allowed" });
@@ -81,7 +85,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const result = await generativeModel.generateContent(request);
     const jsonResponse = result.response.candidates[0].content.parts[0].text;
 
-    // Parse the JSON string from the AI
     const analysis = JSON.parse(jsonResponse);
 
     res.status(200).json(analysis);
