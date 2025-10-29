@@ -5,7 +5,7 @@ import { initializeApp } from "firebase/app";
 import {
   getAuth,
   onAuthStateChanged,
-  createUserWithEmailAndPassword, // This is now ONLY used in a (soon-to-be-deleted) mock
+  createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
   IdTokenResult,
@@ -24,7 +24,7 @@ import {
   query,
   where,
   serverTimestamp,
-  Timestamp,
+  Timestamp, // *** FIX: Import Timestamp ***
 } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
@@ -165,6 +165,12 @@ const ChevronLeft = ({ size, className }) => (
     <polyline points="15 18 9 12 15 6"></polyline>
   </Icon>
 );
+// NEW ICON for Stepper
+const ChevronRight = ({ size, className }) => (
+  <Icon size={size} className={className}>
+    <polyline points="9 18 15 12 9 6"></polyline>
+  </Icon>
+);
 const Search = ({ size, className }) => (
   <Icon size={size} className={className}>
     <circle cx="11" cy="11" r="8"></circle>
@@ -249,8 +255,6 @@ const Lock = ({ size, className }) => (
 );
 
 // --- (Firebase Configuration) ---
-// This now reads directly from your Vercel Environment Variables
-// Make sure you have added VITE_FIREBASE_... keys to your Vercel project!
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -260,21 +264,18 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-// Check that config is populated
 if (!firebaseConfig.apiKey) {
   console.error(
     "Firebase config is missing. Make sure VITE_FIREBASE_... environment variables are set."
   );
 }
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
 // --- (Global Constants) ---
-// (Constants like MERCER_COUNTY_POTHOLE_URL, ISSUE_CATEGORIES, etc. remain unchanged)
 const MERCER_COUNTY_POTHOLE_URL =
   "https://www.mercercounty.org/i-want-to/report-a-pothole";
 const STATE_POTHOLE_URL = "https://www.njdotproblemreporting.com/";
@@ -300,12 +301,12 @@ const WEST_WINDSOR_STATE_ROADS = new Set([
   "US-1",
   "Route 1",
   "Brunswick Pike", // US-1
-  "Route 571", // This is Princeton-Hightstown & Washington Rd, but good to have a generic
+  "Route 571",
   "US 130",
   "US-130",
-  "Route 130", // Borders the township
+  "Route 130",
   "I-95",
-  "I-295", // Interstates
+  "I-295",
 ]);
 
 const ISSUE_CATEGORIES = [
@@ -349,7 +350,6 @@ const STAFF_ROLES = {
 };
 
 // --- (Utility Functions) ---
-// (formatTimestamp and getRoadJurisdiction remain unchanged)
 const formatTimestamp = (timestamp) => {
   if (!timestamp) return "N/A";
   const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
@@ -392,18 +392,9 @@ const getRoadJurisdiction = (streetAddress) => {
 };
 
 // --- (API Call Functions) ---
-// These now call our Vercel Serverless Functions.
-
-/**
- * Calls the backend API to get Vertex AI triage analysis.
- * @param {string} description - The request description.
- * @param {string} category - The selected category.
- * @returns {Promise<object>} An AI analysis.
- */
 const callVertexAI = async (description, category) => {
   console.log("[API] Calling /api/ai-triage");
   try {
-    // Note: The backend handler for this route must be named 'ai-triage.cjs'
     const response = await fetch("/api/ai-triage", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -411,7 +402,6 @@ const callVertexAI = async (description, category) => {
     });
 
     if (!response.ok) {
-      // IMPROVED ERROR HANDLING: Read as text to prevent crash if response is non-JSON (e.g., Vercel error page)
       const errorText = await response.text();
       console.error(
         "AI Triage API failed with status:",
@@ -427,7 +417,6 @@ const callVertexAI = async (description, category) => {
     return analysis;
   } catch (error) {
     console.error("Error calling AI Triage:", error);
-    // This allows the submission to proceed with default values if the AI fails
     return {
       suggestedPriority: REQUEST_PRIORITIES.MEDIUM,
       suggestedDepartment: "Public Works",
@@ -437,15 +426,9 @@ const callVertexAI = async (description, category) => {
   }
 };
 
-/**
- * Calls the backend API for Vertex AI photo analysis.
- * @param {string} imageUrl - The URL of the uploaded image.
- * @returns {Promise<object|null>} An AI photo analysis or null.
- */
 const callVertexAIPhoto = async (imageUrl) => {
   console.log("[API] Calling /api/ai-analyze-image");
   try {
-    // Note: The backend handler for this route must be named 'ai-analyze-image.cjs'
     const response = await fetch("/api/ai-analyze-image", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -453,7 +436,6 @@ const callVertexAIPhoto = async (imageUrl) => {
     });
 
     if (!response.ok) {
-      // IMPROVED ERROR HANDLING
       const errorText = await response.text();
       console.error(
         "AI Photo API failed with status:",
@@ -469,16 +451,10 @@ const callVertexAIPhoto = async (imageUrl) => {
     return analysis;
   } catch (error) {
     console.error("Error calling AI Photo Analysis:", error);
-    throw error; // Re-throw the error so the caller can catch it and log a specific internal note
+    throw error;
   }
 };
 
-/**
- * Calls the backend API to send an email via Mailgun.
- * @param {string} to - The recipient's email.
- * @param {string} subject - The email subject.
- * @param {string} body - The email body.
- */
 const sendApiEmail = async (to, subject, body) => {
   console.log("[API] Calling /api/send-email");
   try {
@@ -498,11 +474,6 @@ const sendApiEmail = async (to, subject, body) => {
   }
 };
 
-/**
- * Calls the backend API to send an SMS via Twilio.
- * @param {string} to - The recipient's phone number.
- * @param {string} body - The text message body.
- */
 const sendApiText = async (to, body) => {
   console.log("[API] Calling /api/send-sms");
   try {
@@ -524,7 +495,6 @@ const sendApiText = async (to, body) => {
 
 // --- (Main Application Component) ---
 export default function App() {
-  // --- State Management ---
   const [view, setView] = useState("resident");
   const [staffView, setStaffView] = useState("dashboard");
   const [user, setUser] = useState(null);
@@ -573,14 +543,10 @@ export default function App() {
   }, [view]);
 
   // --- Firebase Firestore Data Listeners ---
-
-  // Listener for ALL requests (for staff)
   useEffect(() => {
     if (!staffProfile) return;
-
     const requestsCollectionRef = collection(db, `requests`);
     const q = query(requestsCollectionRef);
-
     const unsubscribe = onSnapshot(
       q,
       (querySnapshot) => {
@@ -598,15 +564,12 @@ export default function App() {
         setError("Failed to load requests.");
       }
     );
-
     return () => unsubscribe();
   }, [staffProfile]);
 
-  // Listener for PUBLIC requests (for residents)
   useEffect(() => {
     const requestsCollectionRef = collection(db, `requests`);
     const q = query(requestsCollectionRef);
-
     const unsubscribe = onSnapshot(
       q,
       (querySnapshot) => {
@@ -631,11 +594,9 @@ export default function App() {
         console.error("Error fetching public requests:", err);
       }
     );
-
     return () => unsubscribe();
   }, []);
 
-  // Listener for Staff List (for Admins)
   useEffect(() => {
     if (staffProfile && staffProfile.role === STAFF_ROLES.ADMIN) {
       const staffCollectionRef = collection(db, `users`);
@@ -652,19 +613,16 @@ export default function App() {
           console.error("Error fetching staff list:", err);
         }
       );
-
       return () => unsubscribe();
     }
   }, [staffProfile]);
 
   // --- Core Functions ---
-
   const handleStaffLogin = async (email, password) => {
     setIsLoading(true);
     setError(null);
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      // Auth effect will handle redirect
     } catch (err) {
       console.error("Login failed:", err);
       setError(err.message);
@@ -695,8 +653,7 @@ export default function App() {
     let aiAnalysis;
 
     try {
-      // --- 1. AI Triage (CRITICAL API CALL - MUST SUCCEED) ---
-      // This step must succeed for the request to be triaged
+      // --- 1. AI Triage ---
       aiAnalysis = await callVertexAI(
         formData.description,
         formData.category
@@ -704,9 +661,9 @@ export default function App() {
 
       let imageUrl = null;
       let aiPhotoAnalysis = null;
-      let photoErrorNote = null; // New variable to capture photo-related errors
+      let photoErrorNote = null;
 
-      // --- 2. UPLOAD PHOTO & 3. AI PHOTO ANALYSIS (NON-CRITICAL) ---
+      // --- 2. UPLOAD PHOTO & 3. AI PHOTO ANALYSIS ---
       if (photoFile) {
         try {
           const storageRef = ref(
@@ -716,11 +673,9 @@ export default function App() {
           const snapshot = await uploadBytes(storageRef, photoFile);
           imageUrl = await getDownloadURL(snapshot.ref);
 
-          // Nested try/catch for AI Photo Analysis
           try {
             aiPhotoAnalysis = await callVertexAIPhoto(imageUrl);
           } catch (photoAnalysisErr) {
-            // Non-critical failure for photo analysis
             console.error(
               "AI Photo Analysis Failed (non-critical):",
               photoAnalysisErr.message
@@ -728,7 +683,6 @@ export default function App() {
             photoErrorNote = `AI Photo Analysis Failed: ${photoAnalysisErr.message}. Staff review needed.`;
           }
         } catch (uploadErr) {
-          // Catches errors if Firebase storage or the upload fails
           console.error(
             "Photo Upload Failed (non-critical):",
             uploadErr.message
@@ -736,22 +690,26 @@ export default function App() {
           photoErrorNote = `Photo Upload Failed: ${uploadErr.message}. Image URL is null.`;
         }
       }
+      
+      // *** SUBMISSION FIX ***
+      // Get a single client-side timestamp to use for array entries.
+      // `serverTimestamp()` cannot be used inside arrays on a `setDoc` call.
+      const clientTimestamp = Timestamp.now();
 
       // --- 4. Create PUBLIC Request Document in `/requests` ---
       const requestDocRef = doc(db, `requests`, newRequestId);
 
       const internalNotes = [
         {
-          timestamp: serverTimestamp(),
+          timestamp: clientTimestamp, // <-- FIX
           note: "AI TRIAGE: " + aiAnalysis.reasoning,
           user: "AI System",
         },
       ];
 
-      // Add the photo error note if a non-critical error occurred
       if (photoErrorNote) {
         internalNotes.push({
-          timestamp: serverTimestamp(),
+          timestamp: clientTimestamp, // <-- FIX
           note: "PHOTO ISSUE: " + photoErrorNote,
           user: "System Warning",
         });
@@ -767,17 +725,17 @@ export default function App() {
         priority: aiAnalysis.suggestedPriority,
         assignedDepartment: aiAnalysis.suggestedDepartment,
         assignedTo: null,
-        createdAt: serverTimestamp(),
-        lastUpdatedAt: serverTimestamp(),
+        createdAt: serverTimestamp(), // <-- Top-level is OK
+        lastUpdatedAt: serverTimestamp(), // <-- Top-level is OK
         history: [
           {
-            timestamp: serverTimestamp(),
+            timestamp: clientTimestamp, // <-- FIX
             action: "Request Submitted",
             user: "Resident",
           },
         ],
         comments: [],
-        internalNotes: internalNotes, // Use the updated array
+        internalNotes: internalNotes,
         aiTriage: aiAnalysis,
         aiPhotoAnalysis: aiPhotoAnalysis,
       };
@@ -792,12 +750,12 @@ export default function App() {
         phone: formData.phone,
         address: formData.submitterAddress,
         wantsTextAlerts: formData.wantsTextAlerts,
-        createdAt: serverTimestamp(),
+        createdAt: serverTimestamp(), // <-- Top-level is OK
       };
 
       await setDoc(submitterDocRef, submitterData);
 
-      // --- 6. Send Notifications (REAL API CALLS) ---
+      // --- 6. Send Notifications ---
       const successMessage = `Your request (ID: ${newRequestId}) has been submitted.`;
       const emailBody = `
         Thank you, ${formData.name}, for submitting your request.
@@ -809,14 +767,12 @@ export default function App() {
         You can track your request at any time using your Request ID.
       `;
 
-      // Send email
       await sendApiEmail(
         formData.email,
         `Request Submitted: ${newRequestId}`,
         emailBody
       );
 
-      // Send text
       if (formData.wantsTextAlerts && formData.phone) {
         await sendApiText(
           formData.phone,
@@ -828,9 +784,7 @@ export default function App() {
       return newRequestId;
     } catch (err) {
       console.error("Failed to submit request:", err);
-      // *** SUBMISSION FIX ***
-      // Provide a more detailed error message. The original error is generic.
-      // This is likely a FIRESTORE SECURITY RULES issue (e.g., "permission-denied").
+      // Give the user the *real* error message from Firebase
       setError(
         `Submission Failed: ${err.message}. Please check your inputs. (If this persists, please contact support.)`
       );
@@ -840,10 +794,6 @@ export default function App() {
     }
   };
 
-  /**
-   * Handles tracking a request from the resident portal.
-   * @param {string} id - The request ID to track.
-   */
   const handleTrackRequest = async (id) => {
     if (!id) return;
     setIsLoading(true);
@@ -934,20 +884,17 @@ export default function App() {
         />
       );
     case "staff":
-      // FIX: Pass the correct profile prop
-      // The original code had `profile={profile}` but profile was not defined in this scope.
-      // It should be `profile={staffProfile}` which is from the component's state.
       return (
         <StaffPortal
           user={user}
-          profile={staffProfile} 
+          profile={staffProfile}
           handleLogout={handleStaffLogout}
           view={staffView}
           navigate={navigateStaff}
           requests={requests}
           selectedRequestId={selectedRequestId}
           staffList={staffList}
-          setStaffList={setStaffList} // Pass for optimistic updates
+          setStaffList={setStaffList}
           setError={setError}
           setSuccess={setSuccess}
           error={error}
@@ -959,10 +906,178 @@ export default function App() {
   }
 }
 
+// --- (Component: Stepper) ---
+// NEW Component for the redesign
+const Stepper = ({ currentStep }) => {
+  const steps = [
+    { num: 1, title: "Your Info", icon: <User /> },
+    { num: 2, title: "Request Details", icon: <FileText /> },
+    { num: 3, title: "Location", icon: <MapPin /> },
+    { num: 4, title: "Review", icon: <CheckCircle /> },
+  ];
+
+  return (
+    <nav className="flex items-center justify-center p-4" aria-label="Progress">
+      <ol className="flex items-center space-x-2 sm:space-x-4">
+        {steps.map((step, index) => (
+          <li key={step.num}>
+            <div
+              className={`flex items-center ${
+                index < steps.length - 1 ? "w-20 sm:w-32" : ""
+              }`}
+            >
+              <div
+                className={`flex-shrink-0 flex flex-col items-center ${
+                  step.num < currentStep
+                    ? "text-blue-600"
+                    : step.num === currentStep
+                    ? "text-blue-600"
+                    : "text-gray-400"
+                }`}
+              >
+                <div
+                  className={`w-10 h-10 rounded-full flex items-center justify-center border-2 ${
+                    step.num < currentStep
+                      ? "bg-blue-600 border-blue-600 text-white"
+                      : step.num === currentStep
+                      ? "border-blue-600"
+                      : "border-gray-300"
+                  }`}
+                >
+                  {step.num < currentStep ? (
+                    <CheckCircle size={20} />
+                  ) : (
+                    React.cloneElement(step.icon, { size: 20 })
+                  )}
+                </div>
+                <span className="text-xs font-semibold mt-1 text-center">
+                  {step.title}
+                </span>
+              </div>
+              {index < steps.length - 1 && (
+                <div
+                  className={`flex-auto border-t-2 ${
+                    step.num < currentStep
+                      ? "border-blue-600"
+                      : "border-gray-300"
+                  } transition-colors duration-500`}
+                ></div>
+              )}
+            </div>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  );
+};
+
+// --- (Component: ReviewStep) ---
+// NEW Component for the redesign
+const ReviewStep = ({ formData, photoPreview, onEdit, onSubmit, isLoading }) => {
+  return (
+    <div className="space-y-6">
+      <Section title="Review Your Request" icon={<CheckCircle />}>
+        <p className="text-gray-600">
+          Please review all information before submitting.
+        </p>
+
+        {/* Your Information */}
+        <div className="relative p-4 border rounded-lg">
+          <h4 className="text-lg font-semibold mb-3">Your Information</h4>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onEdit(1)}
+            className="absolute top-3 right-3"
+          >
+            <Edit size={16} className="mr-1" /> Edit
+          </Button>
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <InfoItem icon={<User />} label="Name" value={formData.name} />
+            <InfoItem icon={<User />} label="Email" value={formData.email} />
+            <InfoItem
+              icon={<User />}
+              label="Phone"
+              value={formData.phone || "N/A"}
+            />
+            <InfoItem
+              icon={<User />}
+              label="Address"
+              value={formData.submitterAddress || "N/A"}
+            />
+          </div>
+        </div>
+
+        {/* Request Details */}
+        <div className="relative p-4 border rounded-lg">
+          <h4 className="text-lg font-semibold mb-3">Request Details</h4>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onEdit(2)}
+            className="absolute top-3 right-3"
+          >
+            <Edit size={16} className="mr-1" /> Edit
+          </Button>
+          <InfoItem
+            icon={<AlertCircle />}
+            label="Category"
+            value={formData.category}
+          />
+          <InfoItem
+            icon={<FileText />}
+            label="Description"
+            value={formData.description}
+          />
+          {photoPreview && (
+            <div>
+              <p className="text-xs font-medium text-gray-500 mt-2">Photo</p>
+              <img
+                src={photoPreview}
+                alt="Preview"
+                className="w-32 h-32 object-cover rounded-lg shadow-sm mt-1"
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Location */}
+        <div className="relative p-4 border rounded-lg">
+          <h4 className="text-lg font-semibold mb-3">Location</h4>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onEdit(3)}
+            className="absolute top-3 right-3"
+          >
+            <Edit size={16} className="mr-1" /> Edit
+          </Button>
+          <InfoItem
+            icon={<MapPin />}
+            label="Issue Address"
+            value={formData.issueAddress}
+          />
+        </div>
+      </Section>
+
+      {/* Submit Button */}
+      <div className="pt-4 flex flex-col items-center">
+        <Button
+          type="button"
+          size="lg"
+          className="w-full md:w-1/2"
+          onClick={onSubmit}
+          disabled={isLoading}
+        >
+          {isLoading ? <Spinner /> : "Submit Request"}
+        </Button>
+      </div>
+    </div>
+  );
+};
+
 // --- (Component: Resident Portal) ---
-// *** REDESIGNED LAYOUT ***
-// The main form container no longer has a white background or shadow.
-// The <Section> components are now the primary "cards" on the gray page background.
+// *** COMPLETELY REDESIGNED with STEPPER ***
 const ResidentPortal = ({
   setView,
   handleRequestSubmit,
@@ -972,6 +1087,7 @@ const ResidentPortal = ({
   setError,
   setSuccess,
 }) => {
+  const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -989,7 +1105,6 @@ const ResidentPortal = ({
     jurisdiction: "TOWNSHIP",
     url: null,
   });
-  const [useMap, setUseMap] = useState(true);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -997,20 +1112,6 @@ const ResidentPortal = ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
-
-    let jurisdiction = { jurisdiction: "TOWNSHIP", url: null };
-    if (
-      name === "issueAddress" &&
-      formData.category === "Pothole/Road Damage"
-    ) {
-      jurisdiction = getRoadJurisdiction(value);
-    }
-
-    if (name === "category" && value === "Pothole/Road Damage") {
-      jurisdiction = getRoadJurisdiction(formData.issueAddress);
-    }
-
-    setRoadJurisdiction(jurisdiction);
   };
 
   const handleFileChange = (e) => {
@@ -1028,7 +1129,6 @@ const ResidentPortal = ({
   const clearPhoto = () => {
     setPhotoFile(null);
     setPhotoPreview(null);
-    // Ensure the input value is cleared as well
     const inputElement = document.getElementById(
       "photo-upload"
     ) as HTMLInputElement;
@@ -1037,15 +1137,59 @@ const ResidentPortal = ({
     }
   };
 
-  const onLocationSelect = (address, latLng) => {
-    setFormData((prev) => ({
-      ...prev,
-      issueAddress: address,
-      location: latLng,
-    }));
-    if (formData.category === "Pothole/Road Damage") {
-      setRoadJurisdiction(getRoadJurisdiction(address));
+  // *** MAP FIX ***
+  // Wrap this in useCallback. Although the stepper solves the re-render bug,
+  // this is good practice and ensures the map component (which we will memoize)
+  // doesn't get a new function prop unless `formData.category` changes.
+  const onLocationSelect = useCallback(
+    (address, latLng) => {
+      setFormData((prev) => ({
+        ...prev,
+        issueAddress: address,
+        location: latLng,
+      }));
+      if (formData.category === "Pothole/Road Damage") {
+        setRoadJurisdiction(getRoadJurisdiction(address));
+      } else {
+        setRoadJurisdiction({ jurisdiction: "TOWNSHIP", url: null });
+      }
+    },
+    [formData.category] // Dependency: only recreate if category changes
+  );
+
+  const nextStep = () => {
+    setError(null);
+    // Validation
+    if (step === 1) {
+      if (!formData.name || !formData.email) {
+        setError("Please fill in your Name and Email.");
+        return;
+      }
     }
+    if (step === 2) {
+      if (!formData.category || !formData.description) {
+        setError("Please select a Category and provide a Description.");
+        return;
+      }
+    }
+    if (step === 3) {
+      if (!formData.issueAddress || !formData.location) {
+        setError("Please select a location on the map.");
+        return;
+      }
+      if (roadJurisdiction.jurisdiction !== "TOWNSHIP") {
+        setError(
+          `This appears to be a ${roadJurisdiction.jurisdiction} road. Please submit your request directly to the correct agency.`
+        );
+        // We still let them continue to review, but they won't be able to submit.
+      }
+    }
+    setStep((s) => s + 1);
+  };
+
+  const prevStep = () => {
+    setError(null);
+    setStep((s) => s - 1);
   };
 
   const handleSubmit = async (e) => {
@@ -1056,28 +1200,9 @@ const ResidentPortal = ({
       );
       return;
     }
-    if (!formData.category || !formData.description || !formData.issueAddress) {
-      setError("Please fill in Category, Description, and Issue Address.");
-      return;
-    }
 
     const newId = await handleRequestSubmit(formData, photoFile);
     if (newId) {
-      // Reset form
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        submitterAddress: "",
-        category: "",
-        description: "",
-        issueAddress: "",
-        location: null,
-        wantsTextAlerts: false,
-      });
-      clearPhoto();
-      setRoadJurisdiction({ jurisdiction: "TOWNSHIP", url: null });
-      // Show success and redirect
       setSuccess(
         `Success! Your Request ID is ${newId}. You will be redirected...`
       );
@@ -1117,215 +1242,235 @@ const ResidentPortal = ({
       </header>
 
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* *** REDESIGN ***
-          This div is now just the layout container. 
-          The 'bg-white', 'p-6', and 'shadow-lg' have been removed 
-          so the <Section> components can be the primary visual cards.
-        */}
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-semibold mb-6 text-gray-800 text-center">
-            Submit a New Request
-          </h2>
+        <div className="max-w-4xl mx-auto bg-white p-6 sm:p-8 rounded-lg shadow-lg">
+          <Stepper currentStep={step} />
+          <div className="my-6">
+            <MessageDisplay
+              error={error}
+              success={success}
+              setError={setError}
+              setSuccess={setSuccess}
+            />
+          </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            <Section title="Your Information" icon={<User size={20} />}>
-              <p className="text-sm text-gray-600 mb-4">
-                Please provide your information. This is required for updates
-                but will NOT be displayed publicly. No account setup is
-                required.
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input
-                  label="Full Name"
-                  name="name"
-                  value={formData.name}
+            {/* --- STEP 1: Your Information --- */}
+            {step === 1 && (
+              <Section title="Step 1: Your Information" icon={<User />}>
+                <p className="text-sm text-gray-600 mb-4">
+                  This is required for updates but will NOT be displayed
+                  publicly.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Input
+                    label="Full Name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    required
+                  />
+                  <Input
+                    label="Email"
+                    name="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    required
+                  />
+                  <Input
+                    label="Phone (for text alerts)"
+                    name="phone"
+                    type="tel"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                  />
+                  <Input
+                    label="Your Address"
+                    name="submitterAddress"
+                    value={formData.submitterAddress}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <Checkbox
+                  label="Opt-in to text message alerts for this request"
+                  name="wantsTextAlerts"
+                  checked={formData.wantsTextAlerts}
+                  onChange={handleInputChange}
+                  disabled={!formData.phone}
+                />
+              </Section>
+            )}
+
+            {/* --- STEP 2: Request Details --- */}
+            {step === 2 && (
+              <Section title="Step 2: Request Details" icon={<AlertCircle />}>
+                <Select
+                  label="Issue Category"
+                  name="category"
+                  value={formData.category}
                   onChange={handleInputChange}
                   required
-                />
-                <Input
-                  label="Email"
-                  name="email"
-                  type="email"
-                  value={formData.email}
+                >
+                  <option value="">Select a category...</option>
+                  {ISSUE_CATEGORIES.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                </Select>
+
+                <Textarea
+                  label="Description"
+                  name="description"
+                  value={formData.description}
                   onChange={handleInputChange}
+                  placeholder="Please provide as much detail as possible..."
                   required
                 />
-                <Input
-                  label="Phone (for text alerts)"
-                  name="phone"
-                  type="tel"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                />
-                <Input
-                  label="Your Address"
-                  name="submitterAddress"
-                  value={formData.submitterAddress}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <Checkbox
-                label="Opt-in to text message alerts for this request"
-                name="wantsTextAlerts"
-                checked={formData.wantsTextAlerts}
-                onChange={handleInputChange}
-                disabled={!formData.phone}
-              />
-            </Section>
 
-            <Section title="Request Details" icon={<AlertCircle size={20} />}>
-              <Select
-                label="Issue Category"
-                name="category"
-                value={formData.category}
-                onChange={handleInputChange}
-                required
-              >
-                <option value="">Select a category...</option>
-                {ISSUE_CATEGORIES.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
-                  </option>
-                ))}
-              </Select>
-
-              <Textarea
-                label="Description"
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                placeholder="Please provide as much detail as possible..."
-                required
-              />
-
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  Upload Photo (Optional)
-                </label>
-                {photoPreview ? (
-                  <div className="relative group w-40">
-                    <img
-                      src={photoPreview}
-                      alt="Preview"
-                      className="w-40 h-40 object-cover rounded-lg shadow-sm"
-                    />
-                    <button
-                      type="button"
-                      onClick={clearPhoto}
-                      className="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 opacity-75 group-hover:opacity-100 transition-opacity"
-                    >
-                      <X size={16} />
-                    </button>
-                  </div>
-                ) : (
-                  <div className="w-full flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg">
-                    <div className="space-y-1 text-center">
-                      <UploadCloud
-                        size={48}
-                        className="mx-auto text-gray-400"
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Upload Photo (Optional)
+                  </label>
+                  {photoPreview ? (
+                    <div className="relative group w-40">
+                      <img
+                        src={photoPreview}
+                        alt="Preview"
+                        className="w-40 h-40 object-cover rounded-lg shadow-sm"
                       />
-                      <div className="flex text-sm text-gray-600">
-                        <label
-                          htmlFor="photo-upload"
-                          className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none"
-                        >
-                          <span>Upload a file</span>
-                          <input
-                            id="photo-upload"
-                            name="photo-upload"
-                            type="file"
-                            className="sr-only"
-                            onChange={handleFileChange}
-                            accept="image/*"
-                          />
-                        </label>
-                        <p className="pl-1">or drag and drop</p>
+                      <button
+                        type="button"
+                        onClick={clearPhoto}
+                        className="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 opacity-75 group-hover:opacity-100 transition-opacity"
+                      >
+                        <X size={16} />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="w-full flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg">
+                      <div className="space-y-1 text-center">
+                        <UploadCloud
+                          size={48}
+                          className="mx-auto text-gray-400"
+                        />
+                        <div className="flex text-sm text-gray-600">
+                          <label
+                            htmlFor="photo-upload"
+                            className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none"
+                          >
+                            <span>Upload a file</span>
+                            <input
+                              id="photo-upload"
+                              name="photo-upload"
+                              type="file"
+                              className="sr-only"
+                              onChange={handleFileChange}
+                              accept="image/*"
+                            />
+                          </label>
+                          <p className="pl-1">or drag and drop</p>
+                        </div>
+                        <p className="text-xs text-gray-500">
+                          PNG, JPG, GIF up to 10MB
+                        </p>
                       </div>
-                      <p className="text-xs text-gray-500">
-                        PNG, JPG, GIF up to 10MB
-                      </p>
+                    </div>
+                  )}
+                </div>
+              </Section>
+            )}
+
+            {/* --- STEP 3: Issue Location --- */}
+            {step === 3 && (
+              <Section title="Step 3: Issue Location" icon={<MapPin />}>
+                <p className="text-sm text-gray-600 mb-4">
+                  Click, drag the pin, or use the search bar on the map to
+                  select the exact location.
+                </p>
+                <GoogleMapSelector onLocationSelect={onLocationSelect} />
+
+                {/* Display the selected address */}
+                {formData.issueAddress && (
+                  <div className="mt-4 p-3 rounded-lg bg-gray-50 border">
+                    <InfoItem
+                      icon={<MapPin />}
+                      label="Selected Address"
+                      value={formData.issueAddress}
+                    />
+                  </div>
+                )}
+
+                {roadJurisdiction.jurisdiction !== "TOWNSHIP" && (
+                  <div className="mt-4 p-3 rounded-lg bg-yellow-100 border border-yellow-300 text-yellow-800">
+                    <div className="flex items-center">
+                      <AlertCircle size={20} className="mr-3 flex-shrink-0" />
+                      <div>
+                        <h4 className="font-semibold">
+                          {roadJurisdiction.jurisdiction} Road Detected
+                        </h4>
+                        <p className="text-sm">
+                          This appears to be{" "}
+                          {roadJurisdiction.jurisdiction === "STATE"
+                            ? "a State"
+                            : "a Mercer County"}{" "}
+                          road.
+                        </p>
+                        <a
+                          href={roadJurisdiction.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm font-medium text-blue-700 hover:underline"
+                        >
+                          Please submit your request on the{" "}
+                          {roadJurisdiction.jurisdiction} website{" "}
+                          <ArrowRight size={14} className="inline" />
+                        </a>
+                      </div>
                     </div>
                   </div>
                 )}
-              </div>
-            </Section>
+              </Section>
+            )}
 
-            <Section title="Issue Location" icon={<MapPin size={20} />}>
-              <div className="flex items-center justify-between mb-4">
-                <p className="text-sm text-gray-600">
-                  Select the location using the map or type the address below.
-                </p>
+            {/* --- STEP 4: Review & Submit --- */}
+            {step === 4 && (
+              <ReviewStep
+                formData={formData}
+                photoPreview={photoPreview}
+                onEdit={setStep}
+                onSubmit={handleSubmit}
+                isLoading={isLoading}
+              />
+            )}
+
+            {/* --- Navigation Buttons --- */}
+            <div className="pt-6 flex justify-between">
+              {step > 1 && step < 4 && (
                 <Button
                   type="button"
                   variant="outline"
-                  size="sm"
-                  onClick={() => setUseMap(!useMap)}
+                  size="lg"
+                  onClick={prevStep}
                 >
-                  {useMap ? "Type Address Instead" : "Use Map Instead"}
+                  <ChevronLeft size={18} className="mr-2" />
+                  Back
                 </Button>
-              </div>
-
-              {useMap ? (
-                <GoogleMapSelector onLocationSelect={onLocationSelect} />
-              ) : (
-                <Input
-                  label="Issue Address"
-                  name="issueAddress"
-                  value={formData.issueAddress}
-                  onChange={handleInputChange}
-                  placeholder="e.g., 123 Main St, West Windsor, NJ"
-                  required
-                />
               )}
+              {/* Spacer */}
+              {step === 1 && <div></div>}
 
-              {roadJurisdiction.jurisdiction !== "TOWNSHIP" && (
-                <div className="mt-4 p-3 rounded-lg bg-yellow-100 border border-yellow-300 text-yellow-800">
-                  <div className="flex items-center">
-                    <AlertCircle size={20} className="mr-3 flex-shrink-0" />
-                    <div>
-                      <h4 className="font-semibold">
-                        {roadJurisdiction.jurisdiction} Road Detected
-                      </h4>
-                      <p className="text-sm">
-                        This appears to be{" "}
-                        {roadJurisdiction.jurisdiction === "STATE"
-                          ? "a State"
-                          : "a Mercer County"}{" "}
-                        road. The township cannot service this request.
-                      </p>
-                      <a
-                        href={roadJurisdiction.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm font-medium text-blue-700 hover:underline"
-                      >
-                        Please submit your request on the{" "}
-                        {roadJurisdiction.jurisdiction} website{" "}
-                        <ArrowRight size={14} className="inline" />
-                      </a>
-                    </div>
-                  </div>
-                </div>
+              {step < 4 && (
+                <Button
+                  type="button"
+                  variant="primary"
+                  size="lg"
+                  onClick={nextStep}
+                >
+                  Next
+                  <ChevronRight size={18} className="ml-2" />
+                </Button>
               )}
-            </Section>
-
-            {/* This div is for the submit button and messages, outside the last Section card */}
-            <div className="pt-4 flex flex-col items-center">
-              <Button
-                type="submit"
-                size="lg"
-                className="w-full md:w-1/2"
-                disabled={isSubmitDisabled}
-              >
-                {isLoading ? <Spinner /> : "Submit Request"}
-              </Button>
-
-              <MessageDisplay
-                error={error}
-                success={success}
-                setError={setError}
-                setSuccess={setSuccess}
-              />
             </div>
           </form>
         </div>
@@ -1336,21 +1481,17 @@ const ResidentPortal = ({
 
 // --- (Component: GoogleMapSelector) ---
 // *** MAP FIX ***
-// This component now forces the map to satellite view and zooms in
-// every time the location is updated.
-const GoogleMapSelector = ({ onLocationSelect }) => {
+// 1. Wrapped in React.memo to prevent re-renders when parent state changes.
+// 2. Kept the `updateLocation` logic that forces satellite view and zoom.
+const GoogleMapSelector = React.memo(({ onLocationSelect }) => {
   const mapRef = useRef(null);
   const searchBoxRef = useRef(null);
-  const [map, setMap] = useState(null);
-  const [marker, setMarker] = useState(null);
   const [apiKeyLoaded, setApiKeyLoaded] = useState(false);
   const [apiKey, setApiKey] = useState(null);
 
-  // West Windsor coordinates
   const defaultCenter = { lat: 40.2809, lng: -74.5912 };
 
   useEffect(() => {
-    // SECURE: Read key from environment variables
     const key = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
     if (key) {
       setApiKey(key);
@@ -1359,8 +1500,8 @@ const GoogleMapSelector = ({ onLocationSelect }) => {
     }
   }, []);
 
-  const loadGoogleMapsScript = () => {
-    if (!apiKey) return; // Don't load if key is missing
+  const loadGoogleMapsScript = useCallback(() => {
+    if (!apiKey) return;
     if (window.google) {
       setApiKeyLoaded(true);
       return;
@@ -1379,15 +1520,14 @@ const GoogleMapSelector = ({ onLocationSelect }) => {
       );
     };
     document.body.appendChild(script);
-  };
+  }, [apiKey]);
 
   useEffect(() => {
     if (apiKey) {
       loadGoogleMapsScript();
     }
-  }, [apiKey]);
+  }, [apiKey, loadGoogleMapsScript]);
 
-  // Initialize Map
   useEffect(() => {
     if (!apiKeyLoaded || !mapRef.current || !window.google) return;
 
@@ -1403,13 +1543,12 @@ const GoogleMapSelector = ({ onLocationSelect }) => {
       },
     });
 
-    // FIX: Manually trigger resize after map initialization to fix rendering/positioning bugs
     const resizeTimeout = setTimeout(() => {
       if (newMap) {
         window.google.maps.event.trigger(newMap, "resize");
-        newMap.setCenter(defaultCenter); // Re-center after resize
+        newMap.setCenter(defaultCenter);
       }
-    }, 300); // 300ms delay ensures container is fully rendered
+    }, 300);
 
     const newMarker = new window.google.maps.Marker({
       map: newMap,
@@ -1420,17 +1559,12 @@ const GoogleMapSelector = ({ onLocationSelect }) => {
 
     const geocoder = new window.google.maps.Geocoder();
 
-    // *** MAP FIX ***
-    // This function now also sets the map type and zoom
-    // to ensure the satellite map updates as the user expects.
     const updateLocation = (latLng, address) => {
-      // Ensure the position is set on the marker and map
       newMarker.setPosition(latLng);
       newMap.panTo(latLng);
-      newMap.setMapTypeId("satellite"); // Force satellite view
-      newMap.setZoom(17); // Force zoom
+      newMap.setMapTypeId("satellite"); // <-- FORCE SATELLITE
+      newMap.setZoom(17); // <-- FORCE ZOOM
 
-      // CRUCIAL: Pass the POJO (Plain Old JavaScript Object) to React state
       onLocationSelect(address, {
         lat: latLng.lat(),
         lng: latLng.lng(),
@@ -1466,10 +1600,9 @@ const GoogleMapSelector = ({ onLocationSelect }) => {
       searchBoxRef.current
     );
 
-    // FIX: Set explicit bounds for better local search results (West Windsor area)
     const bounds = new window.google.maps.LatLngBounds(
-      new window.google.maps.LatLng(40.2, -74.7), // SW corner (approx)
-      new window.google.maps.LatLng(40.4, -74.4) // NE corner (approx)
+      new window.google.maps.LatLng(40.2, -74.7),
+      new window.google.maps.LatLng(40.4, -74.4)
     );
     searchBox.setBounds(bounds);
 
@@ -1480,16 +1613,14 @@ const GoogleMapSelector = ({ onLocationSelect }) => {
       const place = places[0];
       if (!place.geometry || !place.geometry.location) return;
 
-      // This will now pan, zoom, and set satellite view
       updateLocation(place.geometry.location, place.formatted_address);
     });
 
-    setMap(newMap);
-    setMarker(newMarker);
-    geocodeLatLng(defaultCenter); // Geocode the default center on load
+    // Geocode the default center on initial load
+    geocodeLatLng(defaultCenter);
 
-    return () => clearTimeout(resizeTimeout); // Cleanup timeout
-  }, [apiKeyLoaded, mapRef, onLocationSelect]); // removed defaultCenter from deps
+    return () => clearTimeout(resizeTimeout);
+  }, [apiKeyLoaded, onLocationSelect]);
 
   if (!apiKey) {
     return (
@@ -1511,6 +1642,7 @@ const GoogleMapSelector = ({ onLocationSelect }) => {
 
   return (
     <div className="space-y-4">
+      {/* This input is now controlled by the Google Maps Places API */}
       <input
         ref={searchBoxRef}
         type="text"
@@ -1526,7 +1658,7 @@ const GoogleMapSelector = ({ onLocationSelect }) => {
       </div>
     </div>
   );
-};
+});
 
 // --- (Component: Resident Track Portal) ---
 // (This component remains unchanged)
@@ -1685,7 +1817,6 @@ const ResidentTrackPortal = ({
                     <h4 className="text-lg font-semibold mb-2">
                       Public Comments
                     </h4>
-                    {/* TODO: Add comment submission form */}
                     {trackedRequest.comments.length === 0 ? (
                       <p className="text-sm text-gray-500">
                         No public comments yet.
@@ -1745,38 +1876,34 @@ const ResidentTrackPortal = ({
                       </td>
                     </tr>
                   )}
-                  {publicRequests.slice(0, 50).map(
-                    (
-                      req // Limit to 50
-                    ) => (
-                      <tr key={req.id} className="hover:bg-gray-50">
-                        <td className="px-4 py-4 whitespace-nowrap">
-                          <StatusBadge status={req.status} />
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-800">
-                          {req.category}
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-600">
-                          {req.address}
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-600">
-                          {formatTimestamp(req.createdAt)}
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              setTrackingId(req.id);
-                              handleTrackRequest(req.id);
-                            }}
-                          >
-                            <Eye size={16} />
-                          </Button>
-                        </td>
-                      </tr>
-                    )
-                  )}
+                  {publicRequests.slice(0, 50).map((req) => (
+                    <tr key={req.id} className="hover:bg-gray-50">
+                      <td className="px-4 py-4 whitespace-nowrap">
+                        <StatusBadge status={req.status} />
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-800">
+                        {req.category}
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-600">
+                        {req.address}
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-600">
+                        {formatTimestamp(req.createdAt)}
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setTrackingId(req.id);
+                            handleTrackRequest(req.id);
+                          }}
+                        >
+                          <Eye size={16} />
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -2007,7 +2134,7 @@ const StaffPortal = ({
   );
 };
 
-// (StaffNavLink, StaffDashboard, StatCard, StaffRequestList, RequestTable remain unchanged)
+// --- (Staff Sub-Components) ---
 const StaffNavLink = ({ icon, label, onClick, active }) => (
   <button
     onClick={onClick}
@@ -2276,8 +2403,6 @@ const RequestTable = ({ requests, navigate, profile, compact = false }) => {
   );
 };
 
-// --- (Component: Staff Request Detail) ---
-// This component is updated to call the backend APIs for notifications.
 const StaffRequestDetail = ({
   navigate,
   request,
@@ -2358,12 +2483,6 @@ const StaffRequestDetail = ({
 
   const requestDocRef = doc(db, `requests`, request.id);
 
-  /**
-   * Generic update function for the request.
-   * @param {object} updatedData - The fields to update.
-   * @param {string} historyAction - The message for the history log.
-   * @param {string} notificationMessage - The message for email/text alerts.
-   */
   const updateRequest = async (
     updatedData,
     historyAction,
@@ -2388,18 +2507,15 @@ const StaffRequestDetail = ({
       await updateDoc(requestDocRef, updatePayload);
       setSuccess("Request updated successfully.");
 
-      // Send notifications (REAL API CALLS)
       if (notificationMessage && submitterInfo) {
         const fullMessage = `Update for WW 311 Request ${request.id}: ${notificationMessage}`;
 
-        // Send email
         await sendApiEmail(
           submitterInfo.email,
           `Update: ${request.id}`,
           fullMessage
         );
 
-        // Send text
         if (submitterInfo.wantsTextAlerts && submitterInfo.phone) {
           await sendApiText(submitterInfo.phone, fullMessage);
         }
@@ -2441,10 +2557,6 @@ const StaffRequestDetail = ({
     );
   };
 
-  /**
-   * Adds a new comment (public) or internal note.
-   * @param {'comment' | 'note'} type - The type of message to add.
-   */
   const handleAddMessage = async (type) => {
     const text = type === "comment" ? newComment : newInternalNote;
     if (!text.trim()) return;
@@ -2588,7 +2700,7 @@ const StaffRequestDetail = ({
                     <InfoItem
                       icon={<Star />}
                       label="Reasoning"
-                      value={request.aiTTriage.reasoning}
+                      value={request.aiTriage.reasoning}
                     />
                   </div>
                 )}
@@ -2737,9 +2849,6 @@ const StaffRequestDetail = ({
   );
 };
 
-// --- (Component: Admin User Management) ---
-// This component is NOW SECURE. It calls backend functions
-// to create/delete users, passing the admin's auth token.
 const AdminUserManagement = ({
   profile,
   staffList,
@@ -2776,10 +2885,7 @@ const AdminUserManagement = ({
     }
 
     try {
-      // 1. Get the current admin's auth token
       const token = await auth.currentUser.getIdToken();
-
-      // 2. Call the secure backend API
       const response = await fetch("/api/admin/create-user", {
         method: "POST",
         headers: {
@@ -2802,7 +2908,6 @@ const AdminUserManagement = ({
         department: "",
         role: STAFF_ROLES.WORKER,
       });
-      // The onSnapshot listener will update the list automatically.
     } catch (err) {
       console.error("Failed to create staff user:", err);
       setError(err.message);
@@ -2830,10 +2935,7 @@ const AdminUserManagement = ({
       setSuccess(null);
 
       try {
-        // 1. Get the current admin's auth token
         const token = await auth.currentUser.getIdToken();
-
-        // 2. Call the secure backend API
         const response = await fetch("/api/admin/delete-user", {
           method: "POST",
           headers: {
@@ -2849,7 +2951,6 @@ const AdminUserManagement = ({
         }
 
         setSuccess(`Staff profile for ${staffToDelete.name} deleted.`);
-        // List updates via onSnapshot
       } catch (err) {
         console.error("Failed to delete staff:", err);
         setError(err.message);
@@ -2999,7 +3100,6 @@ const AdminUserManagement = ({
 };
 
 // --- (Shared UI Components) ---
-// (All shared components like Section, Input, Button, etc. remain unchanged)
 const Section = ({ title, icon, children }) => (
   <div className="bg-white p-6 rounded-lg shadow-lg">
     <div className="flex items-center space-x-2 border-b pb-3 mb-4">
