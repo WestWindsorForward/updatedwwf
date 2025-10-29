@@ -4,7 +4,6 @@
       "runtime": "nodejs20.x",
       "memory": 1024,
       "includeFiles": "node_modules"
-      // REMOVED: "module": "commonjs"  <-- This was the error
     }
   },
   "routes": [
@@ -17,7 +16,6 @@
       "dest": "/index.html"
     }
   ],
-  // ADD this global build environment variable to force CommonJS for the functions
   "build": {
     "env": {
       "NODE_RUNTIME_TYPE": "CommonJS"
