@@ -1338,11 +1338,19 @@ const GoogleMapSelector = ({ onLocationSelect }) => {
 
     const geocoder = new window.google.maps.Geocoder();
 
-    const updateLocation = (latLng, address) => {
-      newMarker.setPosition(latLng);
-      newMap.panTo(latLng);
-      onLocationSelect(address, { lat: latLng.lat(), lng: latLng.lng() });
-    };
+// NEW (Corrected to handle the LatLng object reliably):
+const updateLocation = (latLng, address) => {
+  // Ensure the position is set on the marker and map
+  newMarker.setPosition(latLng);
+  newMap.panTo(latLng);
+  
+  // CRUCIAL FIX: Ensure we call .lat() and .lng() on the Google Maps object
+  // and pass the raw number values to the parent component.
+  onLocationSelect(address, { 
+      lat: latLng.lat(), // This line uses the required function
+      lng: latLng.lng()  // This line uses the required function
+  });
+};
 
     const geocodeLatLng = (latLng) => {
       geocoder.geocode({ location: latLng }, (results, status) => {
