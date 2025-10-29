@@ -1,5 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { VertexAI } from "@google-cloud/aiplatform";
+import * as VertexAIModule from "@google-cloud/aiplatform";
+
+const { VertexAI } = VertexAIModule; // Access the named export via the module namespace
 import { getStorage, ref, getBytes } from "firebase/storage";
 import { initializeApp, getApp, getApps } from "firebase/app";
 
