@@ -404,7 +404,7 @@ const callVertexAI = async (description, category) => {
   console.log("[API] Calling /api/ai-triage");
   try {
     // Note: The backend handler for this route must be named 'ai-triage.cjs'
-    const response = await fetch("/api/ai-triage", { 
+    const response = await fetch("/api/ai-triage", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ description, category }),
@@ -413,7 +413,12 @@ const callVertexAI = async (description, category) => {
     if (!response.ok) {
       // IMPROVED ERROR HANDLING: Read as text to prevent crash if response is non-JSON (e.g., Vercel error page)
       const errorText = await response.text();
-      console.error("AI Triage API failed with status:", response.status, "body:", errorText);
+      console.error(
+        "AI Triage API failed with status:",
+        response.status,
+        "body:",
+        errorText
+      );
       throw new Error(`AI Triage API failed: ${response.statusText}`);
     }
 
@@ -427,7 +432,7 @@ const callVertexAI = async (description, category) => {
       suggestedPriority: REQUEST_PRIORITIES.MEDIUM,
       suggestedDepartment: "Public Works",
       estimatedResponseTime: "3-5 business days",
-      reasoning: `AI analysis failed: ${error.message}. Defaulting to Medium.`, 
+      reasoning: `AI analysis failed: ${error.message}. Defaulting to Medium.`,
     };
   }
 };
@@ -441,7 +446,7 @@ const callVertexAIPhoto = async (imageUrl) => {
   console.log("[API] Calling /api/ai-analyze-image");
   try {
     // Note: The backend handler for this route must be named 'ai-analyze-image.cjs'
-    const response = await fetch("/api/ai-analyze-image", { 
+    const response = await fetch("/api/ai-analyze-image", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ imageUrl }),
@@ -450,7 +455,12 @@ const callVertexAIPhoto = async (imageUrl) => {
     if (!response.ok) {
       // IMPROVED ERROR HANDLING
       const errorText = await response.text();
-      console.error("AI Photo API failed with status:", response.status, "body:", errorText);
+      console.error(
+        "AI Photo API failed with status:",
+        response.status,
+        "body:",
+        errorText
+      );
       throw new Error(`AI Photo API failed: ${response.statusText}`);
     }
 
@@ -711,34 +721,40 @@ export default function App() {
             aiPhotoAnalysis = await callVertexAIPhoto(imageUrl);
           } catch (photoAnalysisErr) {
             // Non-critical failure for photo analysis
-            console.error("AI Photo Analysis Failed (non-critical):", photoAnalysisErr.message);
+            console.error(
+              "AI Photo Analysis Failed (non-critical):",
+              photoAnalysisErr.message
+            );
             photoErrorNote = `AI Photo Analysis Failed: ${photoAnalysisErr.message}. Staff review needed.`;
           }
         } catch (uploadErr) {
           // Catches errors if Firebase storage or the upload fails
-          console.error("Photo Upload Failed (non-critical):", uploadErr.message);
+          console.error(
+            "Photo Upload Failed (non-critical):",
+            uploadErr.message
+          );
           photoErrorNote = `Photo Upload Failed: ${uploadErr.message}. Image URL is null.`;
         }
       }
 
       // --- 4. Create PUBLIC Request Document in `/requests` ---
       const requestDocRef = doc(db, `requests`, newRequestId);
-      
+
       const internalNotes = [
-          {
-              timestamp: serverTimestamp(),
-              note: "AI TRIAGE: " + aiAnalysis.reasoning,
-              user: "AI System",
-          },
+        {
+          timestamp: serverTimestamp(),
+          note: "AI TRIAGE: " + aiAnalysis.reasoning,
+          user: "AI System",
+        },
       ];
 
       // Add the photo error note if a non-critical error occurred
       if (photoErrorNote) {
-          internalNotes.push({
-              timestamp: serverTimestamp(),
-              note: "PHOTO ISSUE: " + photoErrorNote,
-              user: "System Warning",
-          });
+        internalNotes.push({
+          timestamp: serverTimestamp(),
+          note: "PHOTO ISSUE: " + photoErrorNote,
+          user: "System Warning",
+        });
       }
 
       const newRequestData = {
@@ -812,8 +828,12 @@ export default function App() {
       return newRequestId;
     } catch (err) {
       console.error("Failed to submit request:", err);
-      // This block now mainly catches the Triage step failing (if AI is down/misconfigured)
-      setError("An error occurred during submission. Please check if all fields are valid and try again.");
+      // *** SUBMISSION FIX ***
+      // Provide a more detailed error message. The original error is generic.
+      // This is likely a FIRESTORE SECURITY RULES issue (e.g., "permission-denied").
+      setError(
+        `Submission Failed: ${err.message}. Please check your inputs. (If this persists, please contact support.)`
+      );
       return null;
     } finally {
       setIsLoading(false);
@@ -914,10 +934,13 @@ export default function App() {
         />
       );
     case "staff":
+      // FIX: Pass the correct profile prop
+      // The original code had `profile={profile}` but profile was not defined in this scope.
+      // It should be `profile={staffProfile}` which is from the component's state.
       return (
         <StaffPortal
           user={user}
-          profile={profile}
+          profile={staffProfile} 
           handleLogout={handleStaffLogout}
           view={staffView}
           navigate={navigateStaff}
@@ -937,6 +960,9 @@ export default function App() {
 }
 
 // --- (Component: Resident Portal) ---
+// *** REDESIGNED LAYOUT ***
+// The main form container no longer has a white background or shadow.
+// The <Section> components are now the primary "cards" on the gray page background.
 const ResidentPortal = ({
   setView,
   handleRequestSubmit,
@@ -1003,9 +1029,11 @@ const ResidentPortal = ({
     setPhotoFile(null);
     setPhotoPreview(null);
     // Ensure the input value is cleared as well
-    const inputElement = document.getElementById("photo-upload") as HTMLInputElement;
+    const inputElement = document.getElementById(
+      "photo-upload"
+    ) as HTMLInputElement;
     if (inputElement) {
-        inputElement.value = "";
+      inputElement.value = "";
     }
   };
 
@@ -1089,8 +1117,13 @@ const ResidentPortal = ({
       </header>
 
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="max-w-4xl mx-auto bg-white p-6 sm:p-8 rounded-lg shadow-lg">
-          <h2 className="text-3xl font-semibold mb-6 text-gray-800">
+        {/* *** REDESIGN ***
+          This div is now just the layout container. 
+          The 'bg-white', 'p-6', and 'shadow-lg' have been removed 
+          so the <Section> components can be the primary visual cards.
+        */}
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-3xl font-semibold mb-6 text-gray-800 text-center">
             Submit a New Request
           </h2>
 
@@ -1170,7 +1203,7 @@ const ResidentPortal = ({
                   Upload Photo (Optional)
                 </label>
                 {photoPreview ? (
-                  <div className="relative group">
+                  <div className="relative group w-40">
                     <img
                       src={photoPreview}
                       alt="Preview"
@@ -1276,6 +1309,7 @@ const ResidentPortal = ({
               )}
             </Section>
 
+            {/* This div is for the submit button and messages, outside the last Section card */}
             <div className="pt-4 flex flex-col items-center">
               <Button
                 type="submit"
@@ -1301,7 +1335,9 @@ const ResidentPortal = ({
 };
 
 // --- (Component: GoogleMapSelector) ---
-// This component now securely loads the API key from your Vercel environment.
+// *** MAP FIX ***
+// This component now forces the map to satellite view and zooms in
+// every time the location is updated.
 const GoogleMapSelector = ({ onLocationSelect }) => {
   const mapRef = useRef(null);
   const searchBoxRef = useRef(null);
@@ -1369,10 +1405,10 @@ const GoogleMapSelector = ({ onLocationSelect }) => {
 
     // FIX: Manually trigger resize after map initialization to fix rendering/positioning bugs
     const resizeTimeout = setTimeout(() => {
-        if (newMap) {
-            window.google.maps.event.trigger(newMap, 'resize');
-            newMap.setCenter(defaultCenter); // Re-center after resize
-        }
+      if (newMap) {
+        window.google.maps.event.trigger(newMap, "resize");
+        newMap.setCenter(defaultCenter); // Re-center after resize
+      }
     }, 300); // 300ms delay ensures container is fully rendered
 
     const newMarker = new window.google.maps.Marker({
@@ -1384,19 +1420,22 @@ const GoogleMapSelector = ({ onLocationSelect }) => {
 
     const geocoder = new window.google.maps.Geocoder();
 
-// NEW (Corrected to handle the LatLng object reliably):
-const updateLocation = (latLng, address) => {
-  // Ensure the position is set on the marker and map
-  newMarker.setPosition(latLng);
-  newMap.panTo(latLng);
-  
-  // CRUCIAL FIX: Ensure we call .lat() and .lng() on the Google Maps object
-  // and pass the raw number values to the parent component.
-  onLocationSelect(address, { 
-      lat: latLng.lat(), // This line uses the required function
-      lng: latLng.lng()  // This line uses the required function
-  });
-};
+    // *** MAP FIX ***
+    // This function now also sets the map type and zoom
+    // to ensure the satellite map updates as the user expects.
+    const updateLocation = (latLng, address) => {
+      // Ensure the position is set on the marker and map
+      newMarker.setPosition(latLng);
+      newMap.panTo(latLng);
+      newMap.setMapTypeId("satellite"); // Force satellite view
+      newMap.setZoom(17); // Force zoom
+
+      // CRUCIAL: Pass the POJO (Plain Old JavaScript Object) to React state
+      onLocationSelect(address, {
+        lat: latLng.lat(),
+        lng: latLng.lng(),
+      });
+    };
 
     const geocodeLatLng = (latLng) => {
       geocoder.geocode({ location: latLng }, (results, status) => {
@@ -1430,7 +1469,7 @@ const updateLocation = (latLng, address) => {
     // FIX: Set explicit bounds for better local search results (West Windsor area)
     const bounds = new window.google.maps.LatLngBounds(
       new window.google.maps.LatLng(40.2, -74.7), // SW corner (approx)
-      new window.google.maps.LatLng(40.4, -74.4)  // NE corner (approx)
+      new window.google.maps.LatLng(40.4, -74.4) // NE corner (approx)
     );
     searchBox.setBounds(bounds);
 
@@ -1441,16 +1480,16 @@ const updateLocation = (latLng, address) => {
       const place = places[0];
       if (!place.geometry || !place.geometry.location) return;
 
+      // This will now pan, zoom, and set satellite view
       updateLocation(place.geometry.location, place.formatted_address);
-      newMap.setZoom(17);
     });
 
     setMap(newMap);
     setMarker(newMarker);
-    geocodeLatLng(defaultCenter);
+    geocodeLatLng(defaultCenter); // Geocode the default center on load
 
     return () => clearTimeout(resizeTimeout); // Cleanup timeout
-  }, [apiKeyLoaded, mapRef, onLocationSelect]);
+  }, [apiKeyLoaded, mapRef, onLocationSelect]); // removed defaultCenter from deps
 
   if (!apiKey) {
     return (
@@ -2283,7 +2322,11 @@ const StaffRequestDetail = ({
       const fetchSubmitterInfo = async () => {
         setIsLoadingSubmitter(true);
         try {
-          const submitterDocRef = doc(db, "request_submitter_info", request.id);
+          const submitterDocRef = doc(
+            db,
+            "request_submitter_info",
+            request.id
+          );
           const docSnap = await getDoc(submitterDocRef);
           if (docSnap.exists()) {
             setSubmitterInfo(docSnap.data());
@@ -2545,7 +2588,7 @@ const StaffRequestDetail = ({
                     <InfoItem
                       icon={<Star />}
                       label="Reasoning"
-                      value={request.aiTriage.reasoning}
+                      value={request.aiTTriage.reasoning}
                     />
                   </div>
                 )}
