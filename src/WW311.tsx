@@ -29,7 +29,6 @@ import {
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 // --- (SVG Icon Components) ---
-// (All your inline SVG components remain unchanged)
 const Icon = ({ size = 24, children, className = "", ...props }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -165,7 +164,6 @@ const ChevronLeft = ({ size, className }) => (
     <polyline points="15 18 9 12 15 6"></polyline>
   </Icon>
 );
-// NEW ICON for Stepper
 const ChevronRight = ({ size, className }) => (
   <Icon size={size} className={className}>
     <polyline points="9 18 15 12 9 6"></polyline>
@@ -598,22 +596,27 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (staffProfile && staffProfile.role === STAFF_ROLES.ADMIN) {
-      const staffCollectionRef = collection(db, `users`);
-      const unsubscribe = onSnapshot(
-        staffCollectionRef,
-        (querySnapshot) => {
-          const staffData = [];
-          querySnapshot.forEach((doc) => {
-            staffData.push({ id: doc.id, ...doc.data() });
-          });
-          setStaffList(staffData);
-        },
-        (err) => {
-          console.error("Error fetching staff list:", err);
-        }
-      );
-      return () => unsubscribe();
+    if (staffProfile) {
+      if (
+        staffProfile.role === STAFF_ROLES.ADMIN ||
+        staffProfile.role === STAFF_ROLES.MANAGER
+      ) {
+        const staffCollectionRef = collection(db, `users`);
+        const unsubscribe = onSnapshot(
+          staffCollectionRef,
+          (querySnapshot) => {
+            const staffData = [];
+            querySnapshot.forEach((doc) => {
+              staffData.push({ id: doc.id, ...doc.data() });
+            });
+            setStaffList(staffData);
+          },
+          (err) => {
+            console.error("Error fetching staff list:", err);
+          }
+        );
+        return () => unsubscribe();
+      }
     }
   }, [staffProfile]);
 
@@ -639,11 +642,6 @@ export default function App() {
     setIsLoading(false);
   };
 
-  /**
-   * Handles submission of a new 311 request from the resident portal.
-   * @param {object} formData - The request data from the form.
-   * @param {File} photoFile - The uploaded photo file.
-   */
   const handleRequestSubmit = async (formData, photoFile) => {
     setIsLoading(true);
     setError(null);
@@ -653,7 +651,6 @@ export default function App() {
     let aiAnalysis;
 
     try {
-      // --- 1. AI Triage ---
       aiAnalysis = await callVertexAI(
         formData.description,
         formData.category
@@ -663,7 +660,6 @@ export default function App() {
       let aiPhotoAnalysis = null;
       let photoErrorNote = null;
 
-      // --- 2. UPLOAD PHOTO & 3. AI PHOTO ANALYSIS ---
       if (photoFile) {
         try {
           const storageRef = ref(
@@ -690,18 +686,13 @@ export default function App() {
           photoErrorNote = `Photo Upload Failed: ${uploadErr.message}. Image URL is null.`;
         }
       }
-      
-      // *** SUBMISSION FIX ***
-      // Get a single client-side timestamp to use for array entries.
-      // `serverTimestamp()` cannot be used inside arrays on a `setDoc` call.
-      const clientTimestamp = Timestamp.now();
 
-      // --- 4. Create PUBLIC Request Document in `/requests` ---
+      const clientTimestamp = Timestamp.now();
       const requestDocRef = doc(db, `requests`, newRequestId);
 
       const internalNotes = [
         {
-          timestamp: clientTimestamp, // <-- FIX
+          timestamp: clientTimestamp,
           note: "AI TRIAGE: " + aiAnalysis.reasoning,
           user: "AI System",
         },
@@ -709,7 +700,7 @@ export default function App() {
 
       if (photoErrorNote) {
         internalNotes.push({
-          timestamp: clientTimestamp, // <-- FIX
+          timestamp: clientTimestamp,
           note: "PHOTO ISSUE: " + photoErrorNote,
           user: "System Warning",
         });
@@ -725,11 +716,11 @@ export default function App() {
         priority: aiAnalysis.suggestedPriority,
         assignedDepartment: aiAnalysis.suggestedDepartment,
         assignedTo: null,
-        createdAt: serverTimestamp(), // <-- Top-level is OK
-        lastUpdatedAt: serverTimestamp(), // <-- Top-level is OK
+        createdAt: serverTimestamp(),
+        lastUpdatedAt: serverTimestamp(),
         history: [
           {
-            timestamp: clientTimestamp, // <-- FIX
+            timestamp: clientTimestamp,
             action: "Request Submitted",
             user: "Resident",
           },
@@ -742,7 +733,6 @@ export default function App() {
 
       await setDoc(requestDocRef, newRequestData);
 
-      // --- 5. Create PRIVATE Submitter Document in `/request_submitter_info` ---
       const submitterDocRef = doc(db, `request_submitter_info`, newRequestId);
       const submitterData = {
         name: formData.name,
@@ -750,12 +740,11 @@ export default function App() {
         phone: formData.phone,
         address: formData.submitterAddress,
         wantsTextAlerts: formData.wantsTextAlerts,
-        createdAt: serverTimestamp(), // <-- Top-level is OK
+        createdAt: serverTimestamp(),
       };
 
       await setDoc(submitterDocRef, submitterData);
 
-      // --- 6. Send Notifications ---
       const successMessage = `Your request (ID: ${newRequestId}) has been submitted.`;
       const emailBody = `
         Thank you, ${formData.name}, for submitting your request.
@@ -784,7 +773,6 @@ export default function App() {
       return newRequestId;
     } catch (err) {
       console.error("Failed to submit request:", err);
-      // Give the user the *real* error message from Firebase
       setError(
         `Submission Failed: ${err.message}. Please check your inputs. (If this persists, please contact support.)`
       );
@@ -806,6 +794,14 @@ export default function App() {
 
       if (docSnap.exists()) {
         const data = docSnap.data();
+        // Fallback for arrays
+        const history = (data.history || []).map((h) => ({
+          action: h.action,
+          timestamp: h.timestamp,
+          user: h.user === "Resident" ? "Resident" : "Township Staff",
+        }));
+        const comments = data.comments || [];
+        
         const publicData = {
           id: docSnap.id,
           category: data.category,
@@ -816,12 +812,8 @@ export default function App() {
           imageUrl: data.imageUrl,
           createdAt: data.createdAt,
           lastUpdatedAt: data.lastUpdatedAt,
-          history: data.history.map((h) => ({
-            action: h.action,
-            timestamp: h.timestamp,
-            user: h.user === "Resident" ? "Resident" : "Township Staff",
-          })),
-          comments: data.comments,
+          history: history,
+          comments: comments,
         };
         setTrackedRequest(publicData);
       } else {
@@ -907,7 +899,6 @@ export default function App() {
 }
 
 // --- (Component: Stepper) ---
-// NEW Component for the redesign
 const Stepper = ({ currentStep }) => {
   const steps = [
     { num: 1, title: "Your Info", icon: <User /> },
@@ -972,7 +963,6 @@ const Stepper = ({ currentStep }) => {
 };
 
 // --- (Component: ReviewStep) ---
-// NEW Component for the redesign
 const ReviewStep = ({ formData, photoPreview, onEdit, onSubmit, isLoading }) => {
   return (
     <div className="space-y-6">
@@ -992,7 +982,7 @@ const ReviewStep = ({ formData, photoPreview, onEdit, onSubmit, isLoading }) => 
           >
             <Edit size={16} className="mr-1" /> Edit
           </Button>
-          <div className="grid grid-cols-2 gap-4 text-sm">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
             <InfoItem icon={<User />} label="Name" value={formData.name} />
             <InfoItem icon={<User />} label="Email" value={formData.email} />
             <InfoItem
@@ -1077,7 +1067,6 @@ const ReviewStep = ({ formData, photoPreview, onEdit, onSubmit, isLoading }) => 
 };
 
 // --- (Component: Resident Portal) ---
-// *** COMPLETELY REDESIGNED with STEPPER ***
 const ResidentPortal = ({
   setView,
   handleRequestSubmit,
@@ -1137,10 +1126,6 @@ const ResidentPortal = ({
     }
   };
 
-  // *** MAP FIX ***
-  // Wrap this in useCallback. Although the stepper solves the re-render bug,
-  // this is good practice and ensures the map component (which we will memoize)
-  // doesn't get a new function prop unless `formData.category` changes.
   const onLocationSelect = useCallback(
     (address, latLng) => {
       setFormData((prev) => ({
@@ -1154,7 +1139,7 @@ const ResidentPortal = ({
         setRoadJurisdiction({ jurisdiction: "TOWNSHIP", url: null });
       }
     },
-    [formData.category] // Dependency: only recreate if category changes
+    [formData.category] // Re-create function only if category changes
   );
 
   const nextStep = () => {
@@ -1177,11 +1162,17 @@ const ResidentPortal = ({
         setError("Please select a location on the map.");
         return;
       }
-      if (roadJurisdiction.jurisdiction !== "TOWNSHIP") {
+      // Re-check jurisdiction just in case
+      const jurisdiction = getRoadJurisdiction(formData.issueAddress);
+      setRoadJurisdiction(jurisdiction);
+      if (
+        jurisdiction.jurisdiction !== "TOWNSHIP" &&
+        formData.category === "Pothole/Road Damage"
+      ) {
         setError(
-          `This appears to be a ${roadJurisdiction.jurisdiction} road. Please submit your request directly to the correct agency.`
+          `This appears to be a ${jurisdiction.jurisdiction} road. Please submit your request directly to the correct agency.`
         );
-        // We still let them continue to review, but they won't be able to submit.
+        // Do not block moving to review step, just warn.
       }
     }
     setStep((s) => s + 1);
@@ -1194,7 +1185,10 @@ const ResidentPortal = ({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (roadJurisdiction.jurisdiction !== "TOWNSHIP") {
+    if (
+      roadJurisdiction.jurisdiction !== "TOWNSHIP" &&
+      formData.category === "Pothole/Road Damage"
+    ) {
       setError(
         `This appears to be a ${roadJurisdiction.jurisdiction} road. Please submit your request directly to the correct agency.`
       );
@@ -1212,9 +1206,6 @@ const ResidentPortal = ({
       }, 4000);
     }
   };
-
-  const isSubmitDisabled =
-    isLoading || roadJurisdiction.jurisdiction !== "TOWNSHIP";
 
   return (
     <div className="min-h-screen bg-gray-100 text-gray-900 font-inter">
@@ -1253,7 +1244,7 @@ const ResidentPortal = ({
             />
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-6">
             {/* --- STEP 1: Your Information --- */}
             {step === 1 && (
               <Section title="Step 1: Your Information" icon={<User />}>
@@ -1390,7 +1381,6 @@ const ResidentPortal = ({
                 </p>
                 <GoogleMapSelector onLocationSelect={onLocationSelect} />
 
-                {/* Display the selected address */}
                 {formData.issueAddress && (
                   <div className="mt-4 p-3 rounded-lg bg-gray-50 border">
                     <InfoItem
@@ -1401,35 +1391,39 @@ const ResidentPortal = ({
                   </div>
                 )}
 
-                {roadJurisdiction.jurisdiction !== "TOWNSHIP" && (
-                  <div className="mt-4 p-3 rounded-lg bg-yellow-100 border border-yellow-300 text-yellow-800">
-                    <div className="flex items-center">
-                      <AlertCircle size={20} className="mr-3 flex-shrink-0" />
-                      <div>
-                        <h4 className="font-semibold">
-                          {roadJurisdiction.jurisdiction} Road Detected
-                        </h4>
-                        <p className="text-sm">
-                          This appears to be{" "}
-                          {roadJurisdiction.jurisdiction === "STATE"
-                            ? "a State"
-                            : "a Mercer County"}{" "}
-                          road.
-                        </p>
-                        <a
-                          href={roadJurisdiction.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-sm font-medium text-blue-700 hover:underline"
-                        >
-                          Please submit your request on the{" "}
-                          {roadJurisdiction.jurisdiction} website{" "}
-                          <ArrowRight size={14} className="inline" />
-                        </a>
+                {roadJurisdiction.jurisdiction !== "TOWNSHIP" &&
+                  formData.category === "Pothole/Road Damage" && (
+                    <div className="mt-4 p-3 rounded-lg bg-yellow-100 border border-yellow-300 text-yellow-800">
+                      <div className="flex items-center">
+                        <AlertCircle
+                          size={20}
+                          className="mr-3 flex-shrink-0"
+                        />
+                        <div>
+                          <h4 className="font-semibold">
+                            {roadJurisdiction.jurisdiction} Road Detected
+                          </h4>
+                          <p className="text-sm">
+                            This appears to be{" "}
+                            {roadJurisdiction.jurisdiction === "STATE"
+                              ? "a State"
+                              : "a Mercer County"}{" "}
+                            road.
+                          </p>
+                          <a
+                            href={roadJurisdiction.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm font-medium text-blue-700 hover:underline"
+                          >
+                            Please submit your request on the{" "}
+                            {roadJurisdiction.jurisdiction} website{" "}
+                            <ArrowRight size={14} className="inline" />
+                          </a>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )}
+                  )}
               </Section>
             )}
 
@@ -1446,12 +1440,14 @@ const ResidentPortal = ({
 
             {/* --- Navigation Buttons --- */}
             <div className="pt-6 flex justify-between">
-              {step > 1 && step < 4 && (
+              {step > 1 && step <= 4 && (
                 <Button
                   type="button"
                   variant="outline"
                   size="lg"
                   onClick={prevStep}
+                  // Don't show "Back" on the final success message
+                  className={success ? "hidden" : ""}
                 >
                   <ChevronLeft size={18} className="mr-2" />
                   Back
@@ -1472,7 +1468,7 @@ const ResidentPortal = ({
                 </Button>
               )}
             </div>
-          </form>
+          </div>
         </div>
       </main>
     </div>
@@ -1480,9 +1476,6 @@ const ResidentPortal = ({
 };
 
 // --- (Component: GoogleMapSelector) ---
-// *** MAP FIX ***
-// 1. Wrapped in React.memo to prevent re-renders when parent state changes.
-// 2. Kept the `updateLocation` logic that forces satellite view and zoom.
 const GoogleMapSelector = React.memo(({ onLocationSelect }) => {
   const mapRef = useRef(null);
   const searchBoxRef = useRef(null);
@@ -1562,8 +1555,8 @@ const GoogleMapSelector = React.memo(({ onLocationSelect }) => {
     const updateLocation = (latLng, address) => {
       newMarker.setPosition(latLng);
       newMap.panTo(latLng);
-      newMap.setMapTypeId("satellite"); // <-- FORCE SATELLITE
-      newMap.setZoom(17); // <-- FORCE ZOOM
+      newMap.setMapTypeId("satellite");
+      newMap.setZoom(17);
 
       onLocationSelect(address, {
         lat: latLng.lat(),
@@ -1616,7 +1609,6 @@ const GoogleMapSelector = React.memo(({ onLocationSelect }) => {
       updateLocation(place.geometry.location, place.formatted_address);
     });
 
-    // Geocode the default center on initial load
     geocodeLatLng(defaultCenter);
 
     return () => clearTimeout(resizeTimeout);
@@ -1642,7 +1634,6 @@ const GoogleMapSelector = React.memo(({ onLocationSelect }) => {
 
   return (
     <div className="space-y-4">
-      {/* This input is now controlled by the Google Maps Places API */}
       <input
         ref={searchBoxRef}
         type="text"
@@ -1661,7 +1652,6 @@ const GoogleMapSelector = React.memo(({ onLocationSelect }) => {
 });
 
 // --- (Component: Resident Track Portal) ---
-// (This component remains unchanged)
 const ResidentTrackPortal = ({
   setView,
   handleTrackRequest,
@@ -1788,7 +1778,7 @@ const ResidentTrackPortal = ({
                   <div className="pt-4">
                     <h4 className="text-lg font-semibold mb-2">History</h4>
                     <ul className="space-y-3">
-                      {trackedRequest.history
+                      {(trackedRequest.history || [])
                         .slice()
                         .reverse()
                         .map((item, index) => (
@@ -1817,7 +1807,8 @@ const ResidentTrackPortal = ({
                     <h4 className="text-lg font-semibold mb-2">
                       Public Comments
                     </h4>
-                    {trackedRequest.comments.length === 0 ? (
+                    {!trackedRequest.comments ||
+                    trackedRequest.comments.length === 0 ? (
                       <p className="text-sm text-gray-500">
                         No public comments yet.
                       </p>
@@ -1915,7 +1906,6 @@ const ResidentTrackPortal = ({
 };
 
 // --- (Component: Staff Login) ---
-// (This component remains unchanged)
 const StaffLogin = ({ setView, handleStaffLogin, isLoading, error }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -1990,7 +1980,6 @@ const StaffLogin = ({ setView, handleStaffLogin, isLoading, error }) => {
 };
 
 // --- (Component: Staff Portal) ---
-// (This component remains unchanged)
 const StaffPortal = ({
   user,
   profile,
@@ -2404,7 +2393,6 @@ const RequestTable = ({ requests, navigate, profile, compact = false }) => {
 };
 
 // --- (Component: Staff Request Detail) ---
-// This component is updated to safely handle missing AI data.
 const StaffRequestDetail = ({
   navigate,
   request,
@@ -2426,22 +2414,22 @@ const StaffRequestDetail = ({
   const canSeeSubmitter = profile.role !== STAFF_ROLES.DEVELOPER;
 
   useEffect(() => {
-    if (!canManage) return;
-
-    const fetchStaff = async () => {
-      try {
-        const staffCollectionRef = collection(db, `users`);
-        const snapshot = await getDocs(staffCollectionRef);
-        const staffData = [];
-        snapshot.forEach((doc) => {
-          staffData.push({ id: doc.id, ...doc.data() });
-        });
-        setAllStaff(staffData);
-      } catch (err) {
-        console.error("Failed to fetch staff list:", err);
-      }
-    };
-    fetchStaff();
+    if (canManage) {
+      const fetchStaff = async () => {
+        try {
+          const staffCollectionRef = collection(db, `users`);
+          const snapshot = await getDocs(staffCollectionRef);
+          const staffData = [];
+          snapshot.forEach((doc) => {
+            staffData.push({ id: doc.id, ...doc.data() });
+          });
+          setAllStaff(staffData);
+        } catch (err) {
+          console.error("Failed to fetch staff list:", err);
+        }
+      };
+      fetchStaff();
+    }
   }, [canManage]);
 
   useEffect(() => {
@@ -2500,10 +2488,12 @@ const StaffRequestDetail = ({
         userId: profile.id,
       };
 
+      const existingHistory = request.history || [];
+
       const updatePayload = {
         ...updatedData,
         lastUpdatedAt: serverTimestamp(),
-        history: [...request.history, newHistoryEntry],
+        history: [...existingHistory, newHistoryEntry],
       };
 
       await updateDoc(requestDocRef, updatePayload);
@@ -2579,13 +2569,15 @@ const StaffRequestDetail = ({
       let notificationMessage = null;
 
       if (type === "comment") {
-        updatePayload = { comments: [...request.comments, newMessage] };
+        const existingComments = request.comments || [];
+        updatePayload = { comments: [...existingComments, newMessage] };
         historyAction = "Public comment added";
         notificationMessage = `A new public comment was added to your request: "${text}"`;
         setNewComment("");
       } else {
+        const existingNotes = request.internalNotes || [];
         updatePayload = {
-          internalNotes: [...request.internalNotes, newMessage],
+          internalNotes: [...existingNotes, newMessage],
         };
         historyAction = "Internal note added";
         setNewInternalNote("");
@@ -2676,41 +2668,36 @@ const StaffRequestDetail = ({
             </Section>
           )}
 
-          {/* *** FIX: ADDED CHECK FOR request.aiTriage *** */}
-          {request.aiTriage && (
-            <Section title="AI Triage Analysis" icon={<Bot />}>
+          {(request.aiTriage || request.aiPhotoAnalysis) && (
+            <Section title="AI Analysis" icon={<Bot />}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h4 className="font-semibold text-gray-700 mb-2">
-                    Triage Report
-                  </h4>
-                  <InfoItem
-                    icon={<Zap />}
-                    label="Priority"
-                    // *** FIX: Added optional chaining (?.) and fallback ***
-                    value={request.aiTriage?.suggestedPriority || "N/A"}
-                  />
-                  <InfoItem
-                    icon={<Users />}
-                    label="Department"
-                    // *** FIX: Added optional chaining (?.) and fallback ***
-                    value={request.aiTriage?.suggestedDepartment || "N/A"}
-                  />
-                  <InfoItem
-                    icon={<Clock />}
-                    label="Est. Response"
-                    // *** FIX: Added optional chaining (?.) and fallback ***
-                    value={request.aiTriage?.estimatedResponseTime || "N/A"}
-                  />
-                  <InfoItem
-                    icon={<Star />}
-                    label="Reasoning"
-                    // *** FIX: Added optional chaining (?.) and fallback ***
-                    value={request.aiTriage?.reasoning || "N/A"}
-                  />
-                </div>
-
-                {/* *** FIX: ADDED CHECK FOR request.aiPhotoAnalysis *** */}
+                {request.aiTriage && (
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-gray-700 mb-2">
+                      Triage Report
+                    </h4>
+                    <InfoItem
+                      icon={<Zap />}
+                      label="Priority"
+                      value={request.aiTriage?.suggestedPriority || "N/A"}
+                    />
+                    <InfoItem
+                      icon={<Users />}
+                      label="Department"
+                      value={request.aiTriage?.suggestedDepartment || "N/A"}
+                    />
+                    <InfoItem
+                      icon={<Clock />}
+                      label="Est. Response"
+                      value={request.aiTriage?.estimatedResponseTime || "N/A"}
+                    />
+                    <InfoItem
+                      icon={<Star />}
+                      label="Reasoning"
+                      value={request.aiTriage?.reasoning || "N/A"}
+                    />
+                  </div>
+                )}
                 {request.aiPhotoAnalysis && (
                   <div className="bg-gray-50 p-4 rounded-lg">
                     <h4 className="font-semibold text-gray-700 mb-2">
@@ -2719,19 +2706,16 @@ const StaffRequestDetail = ({
                     <InfoItem
                       icon={<ImageIcon />}
                       label="Identified"
-                      // *** FIX: Added optional chaining (?.) and fallback ***
                       value={request.aiPhotoAnalysis?.issueType || "N/A"}
                     />
                     <InfoItem
                       icon={<AlertCircle />}
                       label="Severity"
-                      // *** FIX: Added optional chaining (?.) and fallback ***
                       value={request.aiPhotoAnalysis?.severity || "N/A"}
                     />
                     <InfoItem
                       icon={<Settings />}
                       label="Recommendation"
-                      // *** FIX: Added optional chaining (?.) and fallback ***
                       value={
                         request.aiPhotoAnalysis?.repairRecommendation || "N/A"
                       }
@@ -2771,7 +2755,7 @@ const StaffRequestDetail = ({
               <CommentBox
                 title="Internal Notes"
                 icon={<MessageSquare />}
-                messages={request.internalNotes}
+                messages={request.internalNotes || []}
                 value={newInternalNote}
                 onChange={setNewInternalNote}
                 onSubmit={() => handleAddMessage("note")}
@@ -2781,7 +2765,7 @@ const StaffRequestDetail = ({
               <CommentBox
                 title="Public Comments"
                 icon={<MessageSquare />}
-                messages={request.comments}
+                messages={request.comments || []}
                 value={newComment}
                 onChange={setNewComment}
                 onSubmit={() => handleAddMessage("comment")}
@@ -2836,7 +2820,7 @@ const StaffRequestDetail = ({
 
           <Section title="Request History" icon={<Clock />}>
             <ul className="space-y-3">
-              {request.history
+              {(request.history || [])
                 .slice()
                 .reverse()
                 .map((item, index) => (
@@ -2861,6 +2845,7 @@ const StaffRequestDetail = ({
   );
 };
 
+// --- (Component: Admin User Management) ---
 const AdminUserManagement = ({
   profile,
   staffList,
@@ -3374,7 +3359,7 @@ const PriorityBadge = ({ priority, large = false }) => {
 const CommentBox = ({
   title,
   icon,
-  messages,
+  messages, // This might be undefined
   value,
   onChange,
   onSubmit,
@@ -3389,10 +3374,12 @@ const CommentBox = ({
     </div>
 
     <div className="space-y-3 max-h-60 overflow-y-auto pr-2 mb-4">
-      {messages.length === 0 ? (
+      {/* *** FIX: Check if messages is falsy (null/undefined) OR length is 0 *** */}
+      {!messages || messages.length === 0 ? (
         <p className="text-sm text-gray-500">No {title.toLowerCase()} yet.</p>
       ) : (
-        messages
+        /* *** FIX: Use (messages || []) to guarantee .slice() can be called *** */
+        (messages || [])
           .slice()
           .reverse()
           .map((msg, index) => (
